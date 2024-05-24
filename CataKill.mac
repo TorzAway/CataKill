@@ -1,0 +1,1427 @@
+|****************************************************************************************************************
+CataKill.mac v1.0 by Kroaking
+May 23rd, 2024 - 12:05:13PM
+
+This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
+
+****************************************************************************************************************|
+/log on
+
+#Event RyguaGreeting  "#*#Grand Historian Rygua says#*#I am Grand Historian Rygua and I can open your mind#*#I can show you the#*#"
+#Event RyguaCatacombA "#*#Grand Historian Rygua says#*#Should you come across a dragorn known as Dragorn Marshal Greshka, or an ikaav enchantress known as High Enchantress Zy'chia#*#"
+#Event RyguaCatacombB "#*#Grand Historian Rygua says#*#Should you come across a noc known as Elite Overlord Vijaz, or an ikaav wizard known as High Sorceress Vi'Tara#*#"
+#Event RyguaCatacombC "#*#Grand Historian Rygua says#*#Should you come across a noc known as the Master of the Watch, or an ikaav mage named, Elite Pixxt#*#"
+#Event Cannot_See "You cannot see your target"
+#Event Too_Far "Your target is too far away, get closer"
+#Event Cant_Hit "You can't hit them from here"
+
+#define /message "/echo \ay[\atCataKill\ay]\aw "
+
+| --------------------------------------------------------------------------------------------
+Sub Main
+	/if (${Debugging}) /echo Sub Main Entry
+	
+	/declare StuckSpamTimerSet	timer		outer	0
+	/declare StuckSpamTrigger	timer		outer	0
+	/declare OutX1 				int 		outer 	${Me.X}
+	/declare OutY1 				int 		outer	${Me.Y}
+	/declare OutZ1				int			outer	${Me.Z}
+	/declare StuckCountOut 		int 		outer	0
+	/declare BackUpTimer		int			outer 	0
+	/declare GroupWaitTimer		int			outer	0
+	/declare StuckSwitch		int 		outer
+	/declare runcounter 		int 		outer	0
+	/declare Announce			bool		outer	FALSE
+	/declare CurrentExpedition 	string		outer	NULL
+	/declare ExpeditionDesc 	string		outer	NULL
+
+	/message ==================================================================
+ 	/call Declares
+	/message ==================================================================
+	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking
+	/message ==================================================================
+	/delay 1s
+	/call CheckThings
+	
+	|----------------------
+	/if (!${Select[${Zone.ID},152,386,336,330]}) {
+		/echo \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
+		/call GoToMarrs
+	}	
+	|----------------------
+	
+	|----------------------
+ 	/if (${startZone}==${TempleofMarr}) {
+		/echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
+		/call GoToDranik
+	}	
+	|----------------------
+
+	|------------------------------------------------------------------------------
+	/if (${startZone}==${RuinedCityofDranik}) {
+		/echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+		/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+		|/echo CurrentExpedition=(${CurrentExpedition})
+	}
+	|------------------------------------------------------------------------------		
+		
+		
+		|-------------------
+		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
+			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
+			/call GoToExpedition
+		} else {
+			/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !			
+			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/call GotoRecruiter
+			/call GetExpedition
+			/call GoToExpedition
+		}
+		|-------------------
+	}
+	|------------------------------------------------------------------------------
+	
+
+	
+
+	|------------***********************************---------------|
+	:mainloop
+	|/echo START MAINLOOP
+	
+	|----------------------
+ 	/if (${Zone.ID}==${CataCombC}) {
+		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
+		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
+		/echo Start CataCombC
+		
+		/echo DO CODE FOR SINGLEPULL  or SWARMPULL HERE
+		
+		/delay 3s
+		/echo End CataCombC
+	}
+	|----------------------	
+	
+	/doevents
+	/delay 1s
+	|/echo END MAINLOOP
+	/goto :mainloop
+	|------------***********************************---------------|
+	
+
+	/if (${Debugging}) /echo Sub Main Exit
+
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: Declares
+| --------------------------------------------------------------------------------------------
+Sub Declares
+	/if (${Debugging}) /echo Sub Declares Entry
+	/declare FarmMob 			string outer 
+	/declare PullRange 			int outer 
+	/declare Settings 			string outer CataKill_${Me}.ini
+
+	|==================== DO NOT ALTER THESE VALUES ====================
+	/declare MacroName			string	outer	CataKill
+	/declare version			string	outer	1.0.0
+	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
+	/declare FirstRun			int		outer	0
+
+	|--------------------------------------
+	/if (!${Ini[${IniFileName}].Length}) /varset FirstRun 1
+	|--------------------------------------
+	
+	/echo \ay${IniFileName} is the INI being used.
+	|/declare MobIgnore			string 	outer ${MacroName}_MobIgnored.ini
+	/declare Targets 			string 	outer
+	/declare myTargetID 		int 	outer 0
+	/declare reportTarget 		timer 	outer 5s
+	/declare startZone 			int 	outer ${Zone.ID}
+	/declare courseCorrection 	timer 	outer 1s
+	/declare CampY 				int 	outer ${Me.Y}
+	/declare CampX 				int 	outer ${Me.X}
+	/declare CampZ 				int 	outer ${Me.Z}
+	/declare DebugRepeatTimer 	timer 	outer 1s
+	/declare SitDelay 			timer 	outer 5s
+	/declare Endmac 			bool 	outer FALSE
+	
+	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
+	|----------------------------------------------------------
+	/declare ZoneCount				int		outer 	0
+	|----------------------------------------------------------
+
+	|----------------------------------------------------------
+	/declare CampThemeArray[5,5]	string	outer
+	/declare InADungeon				int		outer	0
+	|/declare Adventure_Progress	string	outer	NULL
+	/declare CurrentDC				int		outer	0
+	/declare CurrentDCAC			int		outer	0
+	/declare DranikCExpedition		bool	outer	FALSE
+	|----------------------------------------------------------		
+	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
+	
+	|** Declare colors their escape code for read-ability **|
+	/declare Black 		string outer \ab
+	/declare Blue   	string outer \au
+	/declare Brown      string outer \a-o
+	/declare Cyan   	string outer \at
+	/declare Gray		string outer \a-w
+	/declare Green		string outer \ag
+	/declare Pink   	string outer \am
+	/declare Orange   	string outer \ao
+	/declare Purple   	string outer \ap
+	/declare Red   		string outer \ar
+	/declare Teal   	string outer \at
+	/declare White   	string outer \aw
+	/declare Yellow  	string outer \ay
+	/declare DarkGreen 	string outer \a-g
+	/declare DarkMarroon	string outer \a-m
+	/declare DarkPurple	string outer \a-p
+	/declare DarkRed	string outer \a-r
+	/declare DarkCyan	string outer \a-t
+	/declare DarkBlue	string outer \a-u
+	/declare DarkYellow	string outer \a-y
+	|** End color declarations **|
+	
+	|** E3LDON.mac/PullFarm.mac type declares INIThings **|
+	
+	|** SPECIFIC of CataKill.mac/PullFarm.mac type declares **|
+	/call CheckINI ${IniFileName} General Debugging bool TRUE
+	/call CheckINI ${IniFileName} Camp CampRadius int 2500
+	/call CheckINI ${IniFileName} Pull ZRadius int 500
+	|** SPECIFIC of CataKill.mac/PullFarm.mac type declares **|
+
+	/call CheckINI ${IniFileName} General AssistMe bool TRUE
+	/call CheckINI ${IniFileName} General CheckBots bool TRUE
+	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
+	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
+	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
+	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
+	/call CheckINI ${IniFileName} General LootCorpse bool FALSE
+	
+	/declare BRDTravelSong string  outer "Selo's Song of Travel"
+	/call CheckINI ${IniFileName} BardSong BRDTravelSongSlot string 11	
+	
+	/call CheckINI ${IniFileName} Pull PullAbility string ReplaceMeWithYourSkill
+	/call CheckINI ${IniFileName} Pull PullAbilityRange int 30
+	/call CheckINI ${IniFileName} Pull PullRequiresLineOfSight bool TRUE
+	/call CheckINI ${IniFileName} Pull UseCastSpells bool FALSE
+	
+	/call CheckINI ${IniFileName} Endurance MedEndAt int 8
+	/call CheckINI ${IniFileName} Endurance MedEndTill int 100
+	
+	/call CheckINI ${IniFileName} Mana MedAt int 30
+	/call CheckINI ${IniFileName} Mana MedTill int 100
+	/call CheckINI ${IniFileName} Mana BardMed bool TRUE
+		
+	/call CheckINI ${IniFileName} Alerts AFKGM bool TRUE
+	/call CheckINI ${IniFileName} Alerts UseBeep bool TRUE
+	
+	|** End of LDON.mac/PullFarm.mac type declares **|
+	
+	|** Start ZoneID as variable **|
+	/declare TempleofMarr 		int outer 386
+	/declare RuinedCityofDranik	int outer 336
+	|** Start ZoneID as variable **|		
+	
+	|** Catacombs of Dranik (Caza) Zones **|
+	/declare CataCombC 			int outer 330
+	|** Catacombs of Dranik (Caza) Zones **|
+
+	|** End ZoneID as Variable **|
+	
+	|-------------------------------	
+	/if (${FirstRun}) {
+		/echo \ayCreated INI file \am[\at${IniFileName}\am]\ay with default values.\ax
+		/echo \ayPlease edit the file and restart \at${MacroName}.mac\ay.\ax
+		/echo \arEnding Macro !\ax
+		/end
+	} else {
+		/echo \ayConfig loaded from \am[\at${IniFileName}\am]\ay.\ax
+	}
+	|-------------------------------
+	
+	/if (${Debugging}) /echo Sub Declares Exit
+		
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GoToMarrs
+| --------------------------------------------------------------------------------------------
+Sub GoToMarrs
+	/if (${Debugging}) /echo Sub GoToMarrs Entry
+	
+	/echo \arOoops..   your not in a valid starting zone for macro, Gating to Temple of Marr !
+	
+	|--- Group - Start in Marrs	
+	/delay 10
+	/squelch /e3bca /nav stop
+	/squelch /e3bca /playmelody stop
+	/squelch /e3bca /keypress x 
+	/delay 6
+	/squelch /e3bcaa /stand
+	/delay 5
+	/squelch /e3bca /alt act 511
+	
+	|---  Now Me !
+	/nav stop
+	/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+	/keypress x 
+	/delay 6
+	/stand
+	/delay 5
+	/alt act 511
+	/delay 20s
+
+	|----------------------------
+	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
+		|--- Group - Start in Marrs
+		/squelch /e3bca /nav stop
+		/squelch /e3bca /playmelody stop
+		/squelch /e3bca /keypress x 
+		/delay 6
+		/squelch /e3bcaa /stand
+		/delay 5
+		/squelch /e3bca /alt act 511
+		
+		|---  Now Me !
+		/nav stop
+		/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+		/keypress x 
+		/delay 6
+		/stand
+		/delay 5
+		/alt act 511
+		/delay 20s
+	}
+	|----------------------------	
+	
+	/while (${Zone.ID} != ${TempleofMarr}) {
+		/delay 5s
+	}
+	/call GroupWait
+	/delay 2s
+	
+	/call GoToDranik
+	
+/if (${Debugging}) /echo Sub GoToMarrs Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GoToDranik
+| --------------------------------------------------------------------------------------------
+Sub GoToDranik
+/if (${Debugging}) /echo Sub GoToDranik Entry
+	
+|------------------------------
+/if (${Zone.ID} == ${TempleofMarr}) {
+	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/delay 3s	
+	|----------------------------
+	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
+		|--- Group - Start in Marrs	
+		/delay 10
+		/squelch /e3bca /nav stop
+		/squelch /e3bca /playmelody stop
+		/squelch /e3bca /keypress x 
+		/delay 6
+		/squelch /e3bcaa /stand
+		/delay 5
+		/squelch /e3bca /alt act 511
+		
+		|---  Now Me !
+		/nav stop
+		/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+		/keypress x 
+		/delay 6
+		/stand
+		/delay 5
+		/alt act 511
+		/delay 20s
+	}
+	|----------------------------
+	/squelch /e3bcaa /tar Klonopin
+	/delay 5
+	/squelch /e3bcaa /nav target
+	/delay 5
+	/while (${Navigation.Active}) {
+		/call SetLoc
+		/call CheckStuck
+		/delay 5
+	}
+	/call GroupWait
+	/delay 2s	
+	/bark dranik
+	/delay 2s
+	|---------------
+	/while (${Zone.ID} == ${TempleofMarr}) {
+		/delay 5s
+	}
+	|---------------
+	/delay 10s
+}
+|------------------------------
+
+
+
+
+/if (${Debugging}) /echo Sub GoToDranik Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GotoRecruiter
+| --------------------------------------------------------------------------------------------
+Sub GotoRecruiter
+	/if (${Debugging}) /echo Sub GotoRecruiter Entry
+	
+	|----------- Ruined City of Dranik ------------
+	/if (${Zone.ID} == ${RuinedCityofDranik}) {
+		|---------------
+		/if (!${Defined[Recruiter]}) {
+			/declare Recruiter string outer Grand Historian Rygua
+			/declare RecruiterLoc string outer ${Spawn[${Recruiter}].Y} ${Spawn[${Recruiter}].X} ${Spawn[${Recruiter}].Z}
+		}
+		|---------------
+		|/removelev
+		|----------------------------------------------
+		|/echo {Spawn[${Recruiter}].Distance3D}=(${Spawn[${Recruiter}].Distance3D})
+		
+		/if (${Spawn[${Recruiter}].Distance3D} <= 20) {
+			/echo \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...
+		} else {			
+			/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
+			|----------
+			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
+				/call CheckInvis
+				|------
+				/if (${Me.Invis}) /squelch /e3bcaa /nav loc ${RecruiterLoc}
+				|------
+			}
+			|----------
+			/call GroupWait
+			/delay 3s
+			|-------------
+			/while (${Navigation.Active}) {
+				/call SetLoc
+				/call CheckStuck
+				/delay 5
+			}   
+			|-------------	
+			/if (${Me.XTarget[1].ID}) /call DoClearTargets
+			/if (${Spawn[${Recruiter}].Distance3D} <= 20) /echo \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...
+		}
+		|----------------------------------------------
+	}
+	|----------- Ruined City of Dranik ------------
+
+	/if (${Debugging}) /echo Sub GotoRecruiter Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GetExpedition (Called from GetExpedition)
+| --------------------------------------------------------------------------------------------
+Sub GetExpedition
+	/if (${Debugging}) /echo Sub GetExpedition Entry
+
+	/echo \agGettting an Expedition . . .
+
+	:RequestExpedition
+	/if (${Target.ID} != ${Spawn[${Recruiter}].ID}) /target id ${Spawn[${Recruiter}].ID}
+	/delay 2s ${Target.ID} == ${Spawn[${Recruiter}].ID}
+	/if (${Target.ID} != ${Spawn[${Recruiter}].ID}) /goto :RequestExpedition
+	
+	|----------------------------
+	/if (${Target.ID} == ${Spawn[${Recruiter}].ID}) {
+		/hail
+		/delay 1s
+		/say catacombs
+		/delay 1s
+		/delay 3s ${Window[DynamicZoneWnd].Open}
+		/if (!${Window[DynamicZoneWnd].Open}) /goto :RequestExpedition
+		/doevents
+	}
+	|----------------------------
+	
+	|--------------------------
+	/if (${DranikCExpedition}) {
+		/if (${Window[DynamicZoneWnd].Open}) /e3bcgza /keypress alt+z
+		/doevents flush RyguaCatacombA
+		/doevents flush RyguaCatacombB
+		/doevents flush RyguaCatacombC
+		/call GoToExpedition
+	} else {
+		/goto :RequestExpedition
+	}
+	|--------------------------
+
+	/delay 1s
+	/squelch /target clear
+	
+	/if (${Debugging}) /echo Sub GetExpedition Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GoToExpedition 
+| --------------------------------------------------------------------------------------------
+Sub GoToExpedition
+	/if (${Debugging}) /echo Sub GoToExpedition Entry
+	
+	/e3bcgza /keypress alt+z
+	
+	|------------------------------
+	/echo \agWe have received the correct expedition: \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
+	/call CheckInvis
+	|------
+	/if (${Me.Invis}) /squelch /e3bcaa /nav loc 1019.45 -290.80 -75.26
+	|----------
+	/call GroupWait
+	/delay 3s
+	|-------------
+	/while (${Navigation.Active}) {
+		/call SetLoc
+		/call CheckStuck
+		/delay 5
+	}   
+	|-------------	
+	/if (${Me.XTarget[1].ID}) /call DoClearTargets		
+	/squelch /e3bcaa /face heading -5
+	/delay 1s
+	/squelch /e3bcaa /removelev
+	/squelch /e3bcaa /doortarget
+	/delay 2s
+	/squelch /e3bcaa /click left door
+	|------
+
+	/if (${Debugging}) /echo Sub GoToExpedition Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: DoClearTargets  ( Called by DoSwarmPull )
+| --------------------------------------------------------------------------------------------
+Sub DoClearTargets
+	/if (${Debugging}) /echo Sub DoClearTargets Entry
+	/if (${Me.XTarget[1].ID} || ${Target.ID}) {
+		/delay 5
+		|/keypress º
+		/delay 5
+		/ClearTargets
+		:gotoloopkeepfighting
+		/if (${Me.Sitting}) /stand
+		/if (!${Target.ID} && ${Me.XTarget[1].ID}) {
+			/squelch /e3bca /nav id ${Me.ID}			
+			|/keypress º
+			/delay 5
+			/ClearTargets
+			/delay 20
+			/xtarget set 1 ${Me.Name}
+			/delay 3
+			/xtarget remove
+			/delay 3
+			}
+		/if (${Target.ID} && !${Me.Combat}) {
+			/squelch /e3bca /nav id ${Me.ID}
+			|/keypress º
+			/delay 5
+			/ClearTargets
+			/keypress esc
+			/delay 20
+			}
+		/if (${Target.Type.Find[corpse]}) {
+			/keypress esc
+			/ClearTargets stick
+			}
+		/if (${Target.Distance.Int} > 20) /stick 15
+        /if (${Target.ID} && ${Me.Combat} && ${Target.Type.Equal[npc]}) {
+			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]}) {
+				/alt act 749
+				/quickburn
+				/longburn
+				/delay 20
+				/goto :gotoloopkeepfighting  
+				}
+			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]}) {
+				/alt act 822
+				/fullburn
+				/delay 20
+				/goto :gotoloopkeepfighting  
+				}
+			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]}) /alt act 3215		
+			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive}) /epicburn
+			/if ((${Me.PctHPs} < 95) && ${Cast.Ready[825]})  /alt act 825
+			/if (${Cast.Ready[3822]}) /alt act 3822
+			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]}) {
+				/squelch /e3bca /nav target
+				/assistme
+				/alt act 826
+				}
+            /delay 2s
+            /if (${Debugging}) /echo DEBUG: KillMob: Combat Loop
+			
+            /goto :gotoloopkeepfighting 
+        } 
+		/if (${Me.XTarget[1].ID} || ${Target.ID}) /goto :gotoloopkeepfighting 
+	}
+	/delay 20
+	/if (${Debugging}) /echo Sub DoClearTargets Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: NavToLoc
+| --------------------------------------------------------------------------------------------
+Sub NavToLoc(int Y,int X,int Z)
+	/if (${Debugging}) /echo Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
+	/varset GroupWaitTimer 0
+	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 30) {
+		/if (${Navigation.Active}) {
+			/if (${CheckBots}) /call GroupDeathChk
+			/if (${CheckBots}) /call GroupManaChk
+			/if (${CheckBots}) /call GroupEndChk
+			/if (${CheckBots} && ${UseMerc}) /call CheckMerc
+			/call GMCheck
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
+				/call DoSinglePull
+			} else {
+				/if (${CheckBots}) /call GroupDeathChk
+				/if (${CheckBots}) /call GroupManaChk
+				/if (${CheckBots}) /call GroupEndChk
+				/if (${CheckBots} && ${UseMerc}) /call CheckMerc
+				/call GMCheck
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/delay 10
+		} else {
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
+				/call DoSinglePull
+			} else {
+				/if (${CheckBots}) /call GroupDeathChk
+				/if (${UseMerc}) /call CheckMerc
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/nav loc ${Y} ${X} ${Z}
+		}
+	}
+	/delay 2s
+	|/if (${Navigation.Active}) /nav stop
+	/if (${Debugging}) /echo Sub NavToLoc Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: NavToLoc2
+| --------------------------------------------------------------------------------------------
+Sub NavToLoc2(int Y,int X,int Z)
+	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
+	/varset GroupWaitTimer 0
+	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
+	
+	/delay 3s
+	
+		/if (${Navigation.Active}) {
+			/if (${Debugging}) /echo WaitNav Moving ELSE
+			/if (${CheckBots}) /call GroupDeathChk			
+			/if (${CheckBots}) /call GroupManaChk
+			/if (${CheckBots}) /call GroupEndChk
+			/if (${CheckBots} && ${UseMerc}) /call CheckMerc		
+			/call GMCheck
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
+				/target ${Me.XTarget[1].ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			} else {
+				/if (${Debugging}) /echo WaitNav Moving ELSE
+				/if (${CheckBots}) /call GroupDeathChk				
+				/if (${CheckBots}) /call GroupManaChk
+				/if (${CheckBots}) /call GroupEndChk
+				/if (${CheckBots} && ${UseMerc}) /call CheckMerc
+				/call GMCheck
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/delay 10
+		} else {
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
+				/target ${Me.XTarget[1].ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			} else {
+				/if (${CheckBots}) /call GroupDeathChk
+				/if (${UseMerc}) /call CheckMerc
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/nav loc ${Y} ${X} ${Z}
+		}
+	}
+	/delay 2s
+	|/if (${Navigation.Active}) /nav stop
+	/if (${Debugging}) /echo Sub NavToLoc2 Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: DoorClick
+| --------------------------------------------------------------------------------------------
+Sub DoorClick 
+/if (${Debugging}) /echo Sub DoorClick Entry
+	/doortarget
+	/delay 1s
+	/click left door
+/if (${Debugging}) /echo Sub DoorClick Exit	
+/return 
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckStuck
+| --------------------------------------------------------------------------------------------
+Sub CheckStuck
+	/if (${Debugging}) /echo Sub CheckStuck Entry
+	/if (${Me.Stunned} || !${Navigation.Active}) /return
+	/if (${StuckSpamTrigger}) /return 
+	|/echo ${Math.Distance[${OutY1},${OutX1}]}
+	/if (${Math.Distance[${OutY1},${OutX1}]} < 20) {
+		/varcalc StuckCountOut (${StuckCountOut})+1
+		/if (${StuckCountOut}>6) /echo \arStuck ${StuckCountOut}
+		/if (${Me.ActiveDisc.Name.Equal[Frenzied Resolve Discipline]}) /stopdisc
+		/if (${StuckCountOut}>6) {
+			/call doorclick 
+			/if (${UseBeep}) {
+			/beep
+			/delay 1
+			/beep
+			}
+			/call doorclick 
+			}
+		/varset StuckSpamTrigger 1
+	} else { 
+		/varset StuckCountOut 0
+		}
+	/if (${StuckCountOut}>=8) {
+				/echo \ayThink I'm stuck... \agAttempting to get unstuck...
+				/call Stuck
+				/varset StuckCountOut 0				
+		}	
+	/if (${Debugging}) /echo Sub CheckStuck Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: Stuck
+| --------------------------------------------------------------------------------------------
+sub Stuck
+/if (${Debugging}) /echo Sub Stuck Entry
+/if (${StuckSwitch}) {
+	/if (${Debugging}) /echo Hide Corpse STUCK
+	/hidecorpse all
+	/call BackUp
+	/varset myTargetID 0			
+	/varset StuckSwitch 0
+	/varset StuckCountOut 0
+	} else {
+		/call DoorClick
+		/varset StuckSwitch 1
+		/varset StuckCountOut 0
+		/varset courseCorrection 0
+		/if (${Debugging}) /echo Hide Corpse STUCK
+		/hidecorpse none
+		}
+/if (${Debugging}) /echo Sub Stuck Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: SetLoc
+| --------------------------------------------------------------------------------------------
+sub SetLoc
+	/if (${Debugging}) /echo Sub SetLoc Entry
+	/if (${StuckSpamTimerSet} || !${Navigation.Active}) /return 
+	/varset OutX1 ${Me.X}
+    /varset OutY1 ${Me.Y}
+	/varset StuckSpamTimerSet 5s
+	|----------------------------------------------------------------
+	|/echo (${Int[${Me.X}]}==${OutX1}) && (${Int[${Me.Y}]}==${OutY1})
+	|----------------------------------------------------------------
+	/if (${Debugging}) /echo Sub SetLoc Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GroupWait
+| --------------------------------------------------------------------------------------------
+Sub GroupWait
+/if (${Debugging}) /echo Sub GroupWait Entry
+:WaitForGroup
+/if (${Me.XTarget[1].ID}) {
+	/if (${Navigation.Active}) /nav stop
+	/call DoSinglePull
+	/goto :WaitForGroup
+}
+/echo \ayWaiting for the group. . .
+
+/if (${Debugging}) /echo ${Group.Member[1].CleanName}:(${Group.Member[1].Distance}) ${Group.Member[2].CleanName}:(${Group.Member[2].Distance}) ${Group.Member[3].CleanName}:(${Group.Member[3].Distance}) ${Group.Member[4].CleanName}:(${Group.Member[4].Distance}) ${Group.Member[5].CleanName}:(${Group.Member[5].Distance})
+
+    /while ((${Group.Member[1].Distance} > 40) || (${Group.Member[2].Distance} > 40) || (${Group.Member[3].Distance} > 40) || (${Group.Member[4].Distance} > 40) || (${Group.Member[5].Distance} > 40) || (${Group.Member[6].Distance} > 40)) {
+        /echo \aywaiting for the group, timer ${GroupWaitTimer}.\ax
+		/if (${UseE3BC}) {
+			/e3bca /stand
+			/e3bca /nav id ${Me.ID}
+		}		
+		/if (${UseDanNet}) {
+			/dgex /stand
+			/dgex /nav id ${Me.ID}
+		}
+        /delay 5s
+		/varcalc GroupWaitTimer (${GroupWaitTimer})+1
+		/call GroupWaitTimer
+		/goto :WaitForGroup
+	}
+	/varset GroupWaitTimer 0
+	/echo \ay. . . my group is now here.\ax
+	/if (${Debugging}) /echo Sub GroupWait Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GroupWaitTimer
+| --------------------------------------------------------------------------------------------
+Sub GroupWaitTimer
+	/if (${Debugging}) /echo Sub GroupWaitTimer Entry
+	/if (${GroupWaitTimer}==12) /varset GroupWaitTimer 0
+	/if (${GroupWaitTimer}==10) {
+		/echo \ayA Group Member might be stuck!
+		/if (${UseE3BC}) {
+			/squelch /e3bcaa /stand
+			/squelch /e3bcaa /removelev
+			/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+			/squelch /e3bcaa /keypress back hold
+			/delay 3s
+			/squelch /e3bcaa /keypress back
+		}
+		/if (${UseDanNet}) {
+			/squelch /dgae /stand
+			/squelch /dgae /removelev
+			/squelch /dgae /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+			/squelch /dgae /keypress back hold
+			/delay 3s
+			/squelch /dgae /keypress back
+		}
+	}
+	/if (${GroupWaitTimer}==11) {
+	/echo \ayA Group Member is stuck!
+		/if (${UseE3BC}) {
+			/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+			/squelch /e3bcaa /keypress forward hold
+			/delay 2s
+			/squelch /e3bcaa /keypress forward
+			/delay 2s
+		}	
+		/if (${UseDanNet}) {
+			/squelch /dgae /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+			/squelch /dgae /keypress forward hold
+			/delay 2s
+			/squelch /dgae /keypress forward
+			/delay 2s
+		}		
+	}
+	/if (${Debugging}) /echo Sub GroupWaitTimer Exit
+/return GroupWaitTimer
+|--------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GMCheck
+| --------------------------------------------------------------------------------------------
+Sub GMCheck
+/if (${Debugging}) /echo Sub GMCheck Entry
+/if (${Spawn[gm].ID} && ${AFKGM}) {
+				/echo \ar WARNING GM nearby!
+				/if (${UseBeep}) /beep
+				|------------------------------------------------
+				|--- DON't Call Gmmode, just call FinishAdventure
+				|/call GMMode
+				/call FinishAdventure
+				|------------------------------------------------
+				}
+/if (${Debugging}) /echo Sub GMCheck Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckInvis
+| --------------------------------------------------------------------------------------------
+Sub CheckInvis
+	/if (${Debugging}) /echo Sub CheckInvis Entry
+	
+	/declare x 					int 	local	0
+	
+	|----------------------------------------------------------------------------
+	|--- REFERENCE ----
+	|----------------------------------------------------------------------------
+	|/squelch /e3bcg /alt act 280 	; -- Group Perfected Invisibility to Undead
+	|/squelch /e3bcg /alt act 8301 	; -- Improved Natural Invisibility
+	|/squelch /e3bcg /alt act 1212 	; -- Group Perfected Invisibility to Undead
+	|/squelch /e3bcg /alt act 630 	; -- Group Silent Presence
+	|/squelch /e3bcg /alt act 531 	; -- Cloak of Shadows
+	|/squelch /e3bcg /alt act 518 	; -- Shared Camouflage
+	|/squelch /e3bcg /alt act 1210 	; -- Group Perfect Invisibility
+	|/squelch /e3bcg /alt act 231 	; -- Shauri's Sonorious Clouding
+	|----------------------------------------------------------------------------
+
+	/if (!${Me.Invis}) {
+		/squelch /e3bcg /alt act 280
+		/squelch /e3bcg /alt act 8301
+		/squelch /e3bcg /alt act 1212
+		/squelch /e3bcg /alt act 630
+		/squelch /e3bcg /alt act 531
+		/squelch /e3bcg /alt act 518
+		/squelch /e3bcg /alt act 1210
+		/squelch /e3bcg /alt act 231
+		/delay 5s
+	}
+	
+	|:CheckBrdInvisNow
+	/if (!${Me.Invis}) {
+		/echo \arNeed to make myself invisible!
+		|-----------------------------		
+		/for x 1 to ${Group.Members} 
+			/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {
+				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !				
+				|------------------------				
+				/squelch /e3bct ${Group.Member[${x}].CleanName} /playmelody stop
+				/delay 1s
+				/squelch /e3bct ${Group.Member[${x}].CleanName} /memspell ${BRDTravelSongSlot} ${BRDTravelSong}
+				/delay 3s
+				:CheckBrdInvisNow
+				/if (!${Me.Invis}) {				
+					/squelch /e3bct ${Group.Member[${x}].CleanName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
+					/delay 3s
+					/echo \agWaiting for invis to kick in .....
+					/delay 5s ${Me.Invis}
+					/goto :CheckBrdInvisNow
+				}
+				|------------------------
+			}		
+		/next x
+		|-----------------------------
+		/if (${Me.Class.ShortName.Equal[NEC]} || ${Me.Class.ShortName.Equal[SHD]}) {
+			/if (${Me.AltAbility[Cloak of Shadows]}) {
+				/alt act ${Me.AltAbility[Cloak of Shadows]}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else /if (${Me.ItemReady[Circlet of Shadows]} && !${Me.Buff[Gather Shadows].ID}) {
+            	/useitem Circlet of Shadows
+            	/delay 1s
+            	/echo \agActivating \ay[\apCirclet of Shadows\ay]
+            	/delay 1s !${Me.ItemReady[Circlet of Shadows]}
+        	} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doens't have invis!
+			}
+		} else /if (${Me.Class.ShortName.Equal[BRD]}) {
+			/if (${Me.AltAbility[Shauri's Sonorous Clouding]}) {
+				/alt act ${Me.AltAbility[Shauri's Sonorous Clouding]}
+				/delay 5
+				/removelev
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			}
+		} else /if (${Me.Class.ShortName.Equal[MAG]} || ${Me.Class.ShortName.Equal[WIZ]} || ${Me.Class.ShortName.Equal[ENC]}) {
+			/if (${Me.AltAbility[Perfected Invisibility]}) {
+				/alt act ${Me.AltAbility[Perfected Invisibility]}
+			} else /if (${Me.AltAbility[Group Perfected Invisibility]}) {
+				/alt act ${Me.AltAbility[Group Perfected Invisibility]}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			}
+		} else /if (${Me.Class.ShortName.Equal[SHM]}) {
+			/if (${Me.AltAbility[Spirit Walk]}) {
+				/alt act ${Me.AltAbility[Spirit Walk]}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			}
+		} else /if (${Me.Class.ShortName.Equal[BST]}) {
+			/if (${Me.AltAbility[Natural Invisibility]}) {
+				/alt act ${Me.AltAbility[Natural Invisibility]}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			}
+		} else /if (${Me.Class.ShortName.Equal[RNG]} || ${Me.Class.ShortName.Equal[DRU]}) {
+			/if (${Me.AltAbility[Camouflage]}) {
+				/alt act ${Me.AltAbility[Camouflage]}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			
+			}
+		} else /if (${Me.Class.ShortName.Equal[ROG]}) {
+			/if (${Me.AbilityReady[Hide]}) {
+			/doability "Hide"
+			/delay 1s
+			}
+			/if (${Me.AbilityReady[Sneak]}) {
+			/doability "Sneak"
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			} else {
+				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+			
+			}
+		} else /if (${FindItemCount[Cloudy Potion]}) {
+			/casting "Cloudy Potion|Item"
+		}
+		/if (${Debugging}) /echo Sub CheckInvis Exit
+	}
+	/if (${Debugging}) /echo Sub CheckInvis Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GroupDeathChk
+| --------------------------------------------------------------------------------------------
+Sub GroupDeathChk
+	/if (${Debugging}) /echo Sub GroupDeathChk Entry
+	|--- If ImDead
+	/if (${Me.State.Equal[DEAD]}) {
+		/echo \arYOU~ have died! Waiting for YOU to get off your face.
+		|----------
+		/while (${Me.State.Equal[DEAD]} ) {
+			/call GMCheck
+			/beep
+			/beep
+			/beep
+			/delay 30			
+		}
+		|----------
+	}
+	|--- If ImDead
+	/if (${Me.XTarget[1].ID}) /return
+	|--- If Group --
+	/if (${Group}) {
+		/declare i int local
+		|----------------------------------
+		/for i 1 to ${Group}
+			| -- If GroupMember IsDead
+			/if (${Group.Member[${i}].State.Equal[DEAD]} ) {
+				/echo ${Group.Member[${i}].Name} has died. Waiting for them to get off their face.
+				|------   If No Target ID
+				/if (!${Me.XTarget[1].ID}) {
+					|----------------------------------
+					/while (${Group.Member[${i}].State.Equal[DEAD]} && !${Me.XTarget[1].ID}) {
+						/call GMCheck
+						/if ((${Me.Standing}) && (!${Me.Casting.ID}) && (!${Me.Mount.ID})) /sit
+						/beep
+						/delay 30
+					}
+					|----------------------------------
+					|--
+					/if (${UseE3BC}) {
+						/squelch /e3bcg /stand
+					}
+					/if (${UseDanNet}) {
+                        /squelch /dgga /stand
+                    }
+					|--
+				}
+				|------   If No Target ID
+			}
+			| -- If GroupMember IsDead
+		/next i
+		|----------------------------------
+	}
+	|--- If Group --
+	
+	/if (${Debugging}) /echo Sub GroupDeathChk Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GroupManaChk
+| --------------------------------------------------------------------------------------------
+Sub GroupManaChk
+	/if (${Debugging}) /echo Sub GroupManaChk Entry
+	/if (${Me.XTarget[1].ID}) /return
+	
+	|------------------- If NoCombat	
+	/if (!${Me.Combat}) {
+		|---
+		|--- If Me LowMana	
+		/if ((${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && !${Select[${Me.Class.ShortName},WAR,BER,ROG,MNK,BRD]}) || (${BardMed} && ${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
+			/echo \arYOU are low on mana!
+			|------   If No Target ID
+			/if (!${Me.XTarget[1].ID}) {
+				|--------------------------------------
+				/while ((${Me.PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && !${Select[${Me.Class.ShortName},WAR,BER,ROG,MNK,BRD]}) || (${BardMed} && ${Me.PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
+					/echo \agYour \am[\atMana\am]\ag is currently at \am[\at${Me.PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
+					/call GMCheck
+					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
+					/delay 3s
+				}
+				|--------------------------------------
+				|----
+				/if (${UseE3BC}) {
+                    /squelch /e3bcg /stand
+                }
+				/if (${UseDanNet}) {
+                    /squelch /dgge /stand
+                }
+				|----
+			}
+			|------   If No Target ID
+		}
+		|--- If Me LowMana
+		|--- If Group --		
+		/if (${Group}) {
+			/declare i int local
+			|--------------------------------------
+			/for i 1 to ${Group}
+				|------   If Valid GroupMemeber
+				/if ((${Group.Member[${i}].PctMana} < ${MedAt} && ${Group.Member[${i}].Class.CanCast} && !${Group.Member[${i}].State.Equal[DEAD]} && !${Select[${Group.Member[${i}].Class.ShortName},BRD,WAR,MNK,BER,ROG]}) || (${BardMed} && (${Group.Member[${i}].PctMana} < ${MedAt}) && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
+					/echo \ar${Group.Member[${i}].Name} is low on mana!
+					|--------------
+					| Make Them Sit
+					|--------------
+					/if (${UseE3BC}) {
+						/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
+					}
+					/if (${UseDanNet}) {
+						/squelch /dex ${Group.Member[${i}].CleanName} /sit
+					}
+					|----					
+					/call Refresh
+					|------   If No Target ID
+					/if (!${Me.XTarget[1].ID}) {
+						|--------------------------------------
+						/while ((${Group.Member[${i}].PctMana} < ${MedTill} && ${Group.Member[${i}].Class.CanCast} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && !${Select[${Group.Member[${i}].Class.ShortName},BRD,WAR,MNK,BER,ROG]}) || (${BardMed} && ${Group.Member[${i}].PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
+							/echo \ag${Group.Member[${i}].CleanName}'s \am[\atMana\am]\ag is currently at \am[\at${Group.Member[${i}].PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
+							/call GMCheck
+							/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
+							/delay 3s
+							|----------
+							/if (${Group.Member[${i}].Standing}) {
+								/delay 3s
+								/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
+								/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit
+							}							
+							|----------
+						}
+						|---------------------------------------
+						|----
+						/if (${UseE3BC}) {
+							/squelch /e3bcg /stand
+						}
+						/if (${UseDanNet}) {
+							/squelch /dgge /stand
+						}
+						|----
+					}
+					|------   If No Target ID
+				}
+				|------   If Valid GroupMemeber
+			/next i
+			|--------------------------------------
+		}
+		|--- If Group --
+	}
+	|------------------- If NoCombat
+	
+	/if (${Debugging}) /echo Sub GroupManaChk Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GroupEndChk
+| --------------------------------------------------------------------------------------------
+Sub GroupEndChk
+	/if (${Debugging}) /echo Sub GroupEndChk Entry
+	/if (${Me.XTarget[1].ID}) /return
+	
+	|------------------- If NoCombat
+	/if (!${Me.Combat}) {
+		|---
+		|--- If Me LowEnd
+		/if ((${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
+			/echo \arYOU are low on Endurance!
+			|------   If No Target ID
+			/if (!${Me.XTarget[1].ID}) {
+				|--------------------------------------
+				/while ((${Me.PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
+					/echo \agYour \am[\atEndurance\am]\ag is currently at \am[\at${Me.PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
+					/call GMCheck
+					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
+					/delay 3s
+				}
+				|--------------------------------------
+				|----
+				/if (${UseE3BC}) {
+                    /squelch /e3bcg /stand
+                }
+				/if (${UseDanNet}) {
+                    /squelch /dgge /stand
+                }
+				|----
+			}
+			|------   If No Target ID
+		}
+		|--- If Me LowEnd
+		|--- If Group --
+		/if (${Group}) {
+			/declare i int local
+			|--------------------------------------
+			/for i 1 to ${Group}
+				|------   If Valid GroupMemeber
+				/if (${Group.Member[${i}].ID}) {
+					|------   If GroupMember LowEnd
+					/if ((${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
+						/echo \ar${Group.Member[${i}].Name} is low on Endurance!
+						|--------------
+						| Make Them Sit
+						|--------------
+						/if (${UseE3BC}) {
+							/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
+						}
+						/if (${UseDanNet}) {
+							/squelch /dex ${Group.Member[${i}].CleanName} /sit
+						}
+						|----						
+						/call Refresh
+						|------   If No Target ID
+						/if (!${Me.XTarget[1].ID}) {
+							|---------------------------------------
+							/while ((${Group.Member[${i}].PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Group.Member[${i}].PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
+								/echo \ag${Group.Member[${i}].CleanName}'s \am[\atEndurance\am]\ag is currently at \am[\at${Group.Member[${i}].PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
+								/call GMCheck
+								/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
+								/delay 3s
+								|----------
+								/if (${Group.Member[${i}].Standing}) {
+									/delay 3s
+									/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
+									/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit									
+								}							
+								|----------
+						}
+						|---------------------------------------
+						|----
+							/if (${UseE3BC}) {
+								/squelch /e3bcg /stand
+							}
+							/if (${UseDanNet}) {
+								/squelch /dgge /stand
+							}
+							|----
+						}
+						|------   If No Target ID
+					}
+					|------   If GroupMember LowEnd
+				}
+				|------   If Valid GroupMemeber
+			/next i
+			|--------------------------------------
+		}
+		|--- If Group --
+	}
+	|------------------- If NoCombat
+	
+	/if (${Debugging}) /echo Sub GroupEndChk Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckINI
+| --------------------------------------------------------------------------------------------
+Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
+    /if (${Debugging}) /echo (IniName:${IniName} Section:${Section} Key:${Key} TypeVar:${TypeVar})
+	/if (${Debugging}) /echo Sub CheckINI Entry
+	/if (!${Ini[${IniName},${Section},${Key}].Length}) {
+		/ini ${IniName} ${Section} ${Key} ${Default}
+	}
+	/declare ${Key} ${TypeVar} outer ${Ini[${IniName},${Section},${Key}]}
+	/echo \atLoading \ayINI \ay[\am${IniName}\ay] \ar~ \aoKey: \ag${Key} \aoType: \ag${TypeVar} \aoINI Value: \at\ay[\am${Ini[${IniName},${Section},${Key}]}\ay]
+	/if (${Debugging}) /echo Sub CheckINI Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckThings
+| --------------------------------------------------------------------------------------------
+Sub CheckThings
+	/if (${Debugging}) /echo Sub CheckThings Entry
+	
+	/call CheckPlugin MQ2Nav
+	/call CheckMesh
+	/call CheckPlugin MQ2Melee
+	/call CheckPlugin MQ2MoveUtils
+
+	|----------------------
+	/if (${Bool[${Plugin[MQ2Bucles]}]}) {
+        /squelch /plugin MQ2Bucles unload noauto
+        /echo MQ2Bucles detected! This macro doesn't like it! Unloading temporarily ...
+    }	
+	|----------------------	
+	
+	/if (${LootCorpse}) {
+		/message ==================================================================
+		/message \ay--- ENABLING ${MacroName} LOOTING, we will only loot [\atDiamond Coin\ay] 
+		/message        if configured in your E3 \agLoot Settings.ini\ax
+		/message ==================================================================
+		/squelch /looton
+	} else {
+		/message ==================================================================
+		/message \ar--- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
+		/message ==================================================================
+		/squelch /lootoff
+	}
+	
+	/if (${Endmac}) /end
+	/if (${Debugging}) /echo Sub CheckThings Exit
+	
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckMesh  ( Called from CheckThings )
+| --------------------------------------------------------------------------------------------
+Sub CheckMesh
+	/if (${Debugging}) /echo Sub CheckMesh Entry
+	/if (!${Navigation.MeshLoaded}) {
+		/nav reload
+		/delay 3s ${Navigation.MeshLoaded}
+		/if (!${Navigation.MeshLoaded}) {
+			/echo "\arNo navigational mesh could be found for this zone. Make one and try again"
+			/varset Endmac TRUE
+		}
+	}
+	/if (${Debugging}) /echo Sub CheckMesh Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckPlugin
+| --------------------------------------------------------------------------------------------
+  Sub CheckPlugin(string pluginname)
+  /if (${Debugging}) /echo Sub CheckPlugin Entry
+  	
+	|------------
+	/if (!${Bool[${Plugin[${pluginname}]}]} && !${pluginname.Equal[E3BCS]}) {
+		/echo \ag${pluginname}\ax \arNOT\ax detected! This macro requires it! Loading ...
+		/squelch /plugin ${pluginname}
+		/if (!${Bool[${Plugin[${pluginname}]}]}) {
+			/echo \ag${pluginname}\ax \arSTILL NOT\ax detected! This macro requires it! EXITING ...
+			/endmacro
+		} else {
+		    /echo \ag${pluginname}\ax \atNOW\ax detected !
+		}
+	} else {
+		/echo \ag${pluginname}\ax detected!
+	}
+	|------------
+		
+	/if (${Debugging}) /echo Sub CheckPlugin Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SECTION: -- Events   --   START
+| --------------------------------------------------------------------------------------------
+
+#Event RyguaGreeting #*#Grand Historian Rygua says#*#I am Grand Historian Rygua and I can open your mind#*#I can show you the#*#
+#Event RyguaCatacombA #*#Grand Historian Rygua says#*#Should you come across a dragorn known as Dragorn Marshal Greshka, or an ikaav enchantress known as High Enchantress Zy'chia#*#
+#Event RyguaCatacombB #*#Grand Historian Rygua says#*#Should you come across a noc known as Elite Overlord Vijaz, or an ikaav wizard known as High Sorceress Vi'Tara#*#
+#Event RyguaCatacombC #*#Grand Historian Rygua says#*#Should you come across a noc known as the Master of the Watch, or an ikaav mage named, Elite Pixxt#*#
+
+
+|--------------------------------------------------------
+Sub Event_RyguaGreeting
+	/echo \ayRequesting an expedition from \am[\atGrand Historian Rygua\am]\ay.\ax
+	/say catacombs	
+	/doevents flush RyguaGreeting
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_RyguaCatacombA
+	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Azia)\am]\ar - BOO - Leaving !\ax
+	/varset DranikCExpedition FALSE
+	/e3bcaa /dzquit
+	/doevents flush RyguaCatacombA
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_RyguaCatacombB
+	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Beza)\am]\ar - BOO - Leaving !\ax
+	/varset DranikCExpedition FALSE
+	/e3bcaa /dzquit
+	/doevents flush RyguaCatacombB
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_RyguaCatacombC
+	|/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
+	/varset DranikCExpedition TRUE
+	/doevents flush RyguaCatacombC
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_Cannot_See
+	/stick off 
+	/delay 30 
+	/squelch /call WaitNav ${Target}
+	/delay 5
+	/stick
+	/doevents flush Cannot_See
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_Cant_Hit
+	/stick off 
+	/delay 30 
+	/squelch /call WaitNav ${Target}
+	/delay 5
+	/stick
+	/doevents flush Cant_Hit
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_Too_Far
+	/stick off 
+	/delay 30 
+	/squelch /call WaitNav ${Target}
+	/delay 5
+	/stick
+	/doevents flush Too_Far
+/return
+|--------------------------------------------------------
+| --------------------------------------------------------------------------------------------
+| SECTION: -- Events   --   END
+| --------------------------------------------------------------------------------------------
