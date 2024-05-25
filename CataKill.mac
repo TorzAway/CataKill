@@ -39,6 +39,13 @@ Sub Main
  	/call Declares
 	/message ==================================================================
 	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking
+	|------------------------------------------------------------------------------------------------------
+	/if (${SwarmPull}) {
+		/message \ar***\at \agSwarmPull \arHigh Risk PULLING: \ayis set to \at[\ar${SwarmPull}}\at] 
+	} else {
+		/message \ar***\at \agSwarmPull \arHigh Risk PULLING: \ayis set to \at[\ag${SwarmPull}}\at] 
+	}
+	|------------------------------------------------------------------------------------------------------
 	/message ==================================================================
 	/delay 1s
 	/call CheckThings
@@ -83,19 +90,18 @@ Sub Main
 	|------------------------------------------------------------------------------ MAIN
 	:mainloop
 	|/echo START MAINLOOP
-	|----------------------
- 	/if (${Zone.ID}==${CataCombC}) {
+	|----------------------	
+	|/if (${Zone.ID}==${CataCombC}) {
 		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
 		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
-		/echo Start CataCombC
+		/echo START CataCombC Selective Combat System (Single or SwarmPull)
 		
-		/echo DO CODE FOR SINGLEPULL  or SWARMPULL HERE
+		/echo \agDO CODE FOR SinglePull or SwarmPull HERE !
 		
 		/delay 3s
-		/echo End CataCombC
-	}
+		/echo END CataCombC Selective Combat System (Single or SwarmPull)
+	|}
 	|----------------------	
-	
 	/doevents
 	/delay 1s
 	|/echo END MAINLOOP
@@ -106,6 +112,95 @@ Sub Main
 
 /return
 | --------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+| --------------------------------------------------------------------------------------------
+| SUB: ORPHANED_MAIN 
+| --------------------------------------------------------------------------------------------
+|----------------------
+ 	Sub ORPHANED_MAIN
+	
+	|----------------------	
+	/if (${Zone.ID}==${CataCombC}) {
+		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
+		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
+		/echo START CataCombC Selective Combat System (Single or SwarmPull)
+		
+		/echo \agDO CODE FOR SinglePull or SwarmPull HERE !
+		
+		/delay 3s
+		/echo END CataCombC Selective Combat System (Single or SwarmPull)
+	}
+	|----------------------	
+	
+	|----------------------------
+	| ENGINE SELECT -- START
+	|----------------------------
+	/if (${SwarmPull})  {
+		/message ==================================================================
+		/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
+		/popcustom 13 5 ---> ABOUT TO SWARM PULL . . . get ready! <---
+		/message ==================================================================
+		/delay 3s
+		|-----------------------------------
+		| -- Call check mission zone.
+		|-----------------------------------
+		/call CheckInADungeon
+		/while (${InADungeon}==1) {
+			/call DoSwarmPull
+			/call GMCheck
+			/doevents			
+		}
+	} else {
+		/message ==================================================================
+		/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
+		/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
+		/message ==================================================================
+		/delay 3s	
+		/varset PullRange ${CampRadius}
+		|-----------------------------------
+		| -- Call check mission zone.
+		|-----------------------------------
+		/call CheckInADungeon
+		/while (${InADungeon}==1) {
+			/call DoSinglePull
+			/Call DoClearTargets
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckMissionSuccess
+			/call GMCheck
+			/doevents
+		}
+	}
+	|----------------------------
+	| ENGINE SELECT -- END
+	|----------------------------
+	
+/return
+| --------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 | --------------------------------------------------------------------------------------------
 | SUB: Declares
@@ -241,6 +336,18 @@ Sub Declares
 		
 /return
 | --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckInADungeon
+| --------------------------------------------------------------------------------------------
+Sub CheckInADungeon
+	/if (${Select[${Zone.ID},336]}) {
+		/varset InADungeon 1
+	} else {
+		/varset InADungeon 0
+	}
+/return
+| --------------------------------------------------------------------------------------------	
 
 | --------------------------------------------------------------------------------------------
 | SUB: GoToMarrs
@@ -430,7 +537,6 @@ Sub GoToDranikFromNexus
 /if (${Debugging}) /echo Sub GoToDranik Exit
 /return
 | --------------------------------------------------------------------------------------------
-
 
 | --------------------------------------------------------------------------------------------
 | SUB: GotoRecruiter
