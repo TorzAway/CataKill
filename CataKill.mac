@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 25th, 2024 - 08:18:42PM
+May 25th, 2024 - 09:26:42PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -46,17 +46,23 @@ Sub Main
 	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
 	
 	|----------------------
-	/if (!${Select[${Zone.ID},386,336,330]}) {
+	/if (!${Select[${Zone.ID},152,386,336,330]}) {
 		/echo \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
 		/call GoToMarrs
 	}	
 	|----------------------
 		
 	|----------------------
- 	/if (${startZone}==${TempleofMarr}) {
-		/call GoToDranik
+ 	/if (${startZone}==${Nexus}) {
+		/call GoToDranikFromNexus
 	}	
-	|----------------------	
+	|----------------------			
+		
+	|----------------------
+ 	/if (${startZone}==${TempleofMarr}) {
+		/call GoToDranikFromMarr
+	}	
+	|----------------------		
 	
 	|------------------------------------------------------------------------------
 	/if (${startZone}==${RuinedCityofDranik}) {		
@@ -300,9 +306,9 @@ Sub GoToMarrs
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: GoToDranik
+| SUB: GoToDranikFromMarr
 | --------------------------------------------------------------------------------------------
-Sub GoToDranik
+Sub GoToDranikFromMarr
 /if (${Debugging}) /echo Sub GoToDranik Entry
 	
 |------------------------------
@@ -361,6 +367,70 @@ Sub GoToDranik
 /if (${Debugging}) /echo Sub GoToDranik Exit
 /return
 | --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GoToDranikFromNexus
+| --------------------------------------------------------------------------------------------
+Sub GoToDranikFromNexus
+/if (${Debugging}) /echo Sub GoToDranik Entry
+	
+|------------------------------
+/if (${Zone.ID} == ${Nexus}) {
+	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/delay 3s	
+	|----------------------------
+	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
+		|--- Group - Start in Marrs	
+		/delay 10
+		/squelch /e3bca /nav stop
+		/squelch /e3bca /playmelody stop
+		/squelch /e3bca /keypress x 
+		/delay 6
+		/squelch /e3bcaa /stand
+		/delay 5
+		/squelch /e3bca /alt act 511
+		
+		|---  Now Me !
+		/nav stop
+		/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+		/keypress x 
+		/delay 6
+		/stand
+		/delay 5
+		/alt act 511
+		/delay 20s
+	}
+	|----------------------------
+	/squelch /e3bcaa /tar Valium
+	/delay 5
+	/squelch /e3bcaa /nav target
+	/delay 5
+	/while (${Navigation.Active}) {
+		/call SetLoc
+		/call CheckStuck
+		/delay 5
+	}
+	/call GroupWait
+	/delay 2s	
+	/bark dranik
+	/delay 2s
+}
+|------------------------------
+|---------------
+/while (${Zone.ID} != ${Nexus}) {
+	/delay 5s
+}
+|---------------
+/call GroupWait
+/delay 2s
+
+/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+/call GotoRecruiter	
+
+/if (${Debugging}) /echo Sub GoToDranik Exit
+/return
+| --------------------------------------------------------------------------------------------
+
 
 | --------------------------------------------------------------------------------------------
 | SUB: GotoRecruiter
