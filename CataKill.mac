@@ -783,7 +783,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
 				/target ${Me.XTarget[1].ID}
-				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /e3bcaa /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				|-------------
 				/call Group2Me
@@ -808,7 +808,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
 				/target ${Me.XTarget[1].ID}
-				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /e3bcaa /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				|-------------
 				/call Group2Me
@@ -823,7 +823,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/nav loc ${Y} ${X} ${Z}
+			/if (!${Me.XTarget[1].ID}) /e3bcaa /nav loc ${Y} ${X} ${Z}
 		}
 	}
 	/delay 2s
