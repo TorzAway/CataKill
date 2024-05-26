@@ -1,16 +1,16 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 25th, 2024 - 09:26:42PM
+May 25th, 2024 - 11:25:42PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
 ****************************************************************************************************************|
 /log on
 
-#Event RyguaGreeting  "#*#Grand Historian Rygua says#*#I am Grand Historian Rygua and I can open your mind#*#I can show you the#*#"
-#Event RyguaCatacombA "#*#Grand Historian Rygua says#*#Should you come across a dragorn known as Dragorn Marshal Greshka, or an ikaav enchantress known as High Enchantress Zy'chia#*#"
-#Event RyguaCatacombB "#*#Grand Historian Rygua says#*#Should you come across a noc known as Elite Overlord Vijaz, or an ikaav wizard known as High Sorceress Vi'Tara#*#"
-#Event RyguaCatacombC "#*#Grand Historian Rygua says#*#Should you come across a noc known as the Master of the Watch, or an ikaav mage named, Elite Pixxt#*#"
+#Event Catacomb_A "#*#Should you come across a dragorn known as Dragorn Marshal Greshka#*#"
+#Event Catacomb_B "#*#Should you come across a noc known as Elite Overlord Vijaz#*#"
+#Event Catacomb_C "#*#Should you come across a noc known as the Master of the Watch#*#"
+
 #Event Cannot_See "You cannot see your target"
 #Event Too_Far "Your target is too far away, get closer"
 #Event Cant_Hit "You can't hit them from here"
@@ -60,20 +60,28 @@ Sub Main
 	|----------------------
 		
 	|----------------------
- 	/if (${startZone}==${Nexus}) {
-		/call GoToDranikFromNexus
-	}	
+ 	/if (${startZone}==${Nexus}) /call GoToDranikFromNexus
 	|----------------------			
 		
 	|----------------------
- 	/if (${startZone}==${TempleofMarr}) {
-		/call GoToDranikFromMarr
-	}	
+ 	/if (${startZone}==${TempleofMarr}) /call GoToDranikFromMarr
 	|----------------------		
 	
 	|------------------------------------------------------------------------------
 	/if (${startZone}==${RuinedCityofDranik}) {		
+
+		|--------------------------------------------
+		:OpenDynamicZoneWindow
+		|--- open the Expedition Window to pull data
+		/keypress alt+z
+		/delay 1s
+		/delay 3s ${Window[DynamicZoneWnd].Open}
+		/if (!${Window[DynamicZoneWnd].Open}) /goto :OpenDynamicZoneWindow
+		|--- GRAB THE CURRENT EXPEDITIOn DATA
 		/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+		/keypress alt+z
+		|--------------------------------------------
+	
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
@@ -87,11 +95,24 @@ Sub Main
 	}
 	|------------------------------------------------------------------------------		
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	|------------------------------------------------------------------------------ MAIN
 	:mainloop
 	|/echo START MAINLOOP
 	|----------------------	
-	|/if (${Zone.ID}==${CataCombC}) {
+	/if (${Zone.ID}==${CataCombC}) {
 		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
 		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
 		/echo START CataCombC Selective Combat System (Single or SwarmPull)
@@ -100,7 +121,7 @@ Sub Main
 		
 		/delay 3s
 		/echo END CataCombC Selective Combat System (Single or SwarmPull)
-	|}
+	}
 	|----------------------	
 	/doevents
 	/delay 1s
@@ -246,7 +267,7 @@ Sub Declares
 	|/declare Adventure_Progress	string	outer	NULL
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
-	/declare DranikCExpedition		bool	outer	FALSE
+	/declare DranikCExpedition		int		outer	0
 	|----------------------------------------------------------		
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 	
@@ -336,18 +357,6 @@ Sub Declares
 		
 /return
 | --------------------------------------------------------------------------------------------
-
-| --------------------------------------------------------------------------------------------
-| SUB: CheckInADungeon
-| --------------------------------------------------------------------------------------------
-Sub CheckInADungeon
-	/if (${Select[${Zone.ID},336]}) {
-		/varset InADungeon 1
-	} else {
-		/varset InADungeon 0
-	}
-/return
-| --------------------------------------------------------------------------------------------	
 
 | --------------------------------------------------------------------------------------------
 | SUB: GoToMarrs
@@ -601,30 +610,33 @@ Sub GetExpedition
 	/delay 2s ${Target.ID} == ${Spawn[${Recruiter}].ID}
 	/if (${Target.ID} != ${Spawn[${Recruiter}].ID}) /goto :RequestExpedition
 	
-	|----------------------------
+	|----------------------------!
 	/if (${Target.ID} == ${Spawn[${Recruiter}].ID}) {
-		/hail
+		|--------------------------
 		/delay 1s
 		/say catacombs
+		:WaitForCorrectExpedition
+		|-------------------------------------------------------------------------------------------
+		|----  DO NOT MESS WITH HE DELAYS BEFORE AND AFTER /DOEVETS OR IT WILL NOT PICKUP EVENT !!!!
 		/delay 1s
-		/delay 3s ${Window[DynamicZoneWnd].Open}
-		/if (!${Window[DynamicZoneWnd].Open}) /goto :RequestExpedition
 		/doevents
+		/delay 1s
+		|----  DO NOT MESS WITH HE DELAYS BEFORE AND AFTER /DOEVETS OR IT WILL NOT PICKUP EVENT !!!!
+		|-------------------------------------------------------------------------------------------
+		/if (${DranikCExpedition}==0) /goto :WaitForCorrectExpedition
+			
+		|-------------------------------
+		|--- Have an Expedition -- C !!!
+		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
+			/squelch /target clear
+			/squelch /e3bcaa /keypress alt+z
+			/echo \ayGoing to the expedition now . . . .
+			/call GoToExpedition
+		}
+		|--- Have an Expedition -- C !!!
+		|-------------------------------
 	}
 	|----------------------------
-	
-	|--------------------------
-	/if (${DranikCExpedition}) {
-		/squelch /target clear
-		/if (${Window[DynamicZoneWnd].Open}) /e3bcgza /keypress alt+z
-		/doevents flush RyguaCatacombA
-		/doevents flush RyguaCatacombB
-		/doevents flush RyguaCatacombC
-		/call GoToExpedition
-	} else {
-		/goto :RequestExpedition
-	}
-	|--------------------------
 
 	/if (${Debugging}) /echo Sub GetExpedition Exit
 /return
@@ -636,11 +648,8 @@ Sub GetExpedition
 Sub GoToExpedition
 	/if (${Debugging}) /echo Sub GoToExpedition Entry
 	
-	|-- Close Expedition Window
-	/if (${Window[DynamicZoneWnd].Open}) /e3bcgza /keypress alt+z
-	
 	|------------------------------
-	/echo \agWe have received the correct expedition: \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
+	/echo \ayI am headed to: \am[\atCatacombs of Dranik (Caza)\am]\ag 
 	|--- RESET INVIS !!!
 	/if (${Me.Invis}) /dropinvis
 	/delay 2s
@@ -649,7 +658,6 @@ Sub GoToExpedition
 	
 	|------
 	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
-	/delay 1s
 	/call NavToLoc2 1019.45 -290.80 -75.26
 	/delay 5
 	/while (${Navigation.Active}) {
@@ -1623,6 +1631,18 @@ Sub Refresh
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+| SUB: CheckInADungeon
+| --------------------------------------------------------------------------------------------
+Sub CheckInADungeon
+	/if (${Select[${Zone.ID},336]}) {
+		/varset InADungeon 1
+	} else {
+		/varset InADungeon 0
+	}
+/return
+| --------------------------------------------------------------------------------------------	
+
+| --------------------------------------------------------------------------------------------
 | SUB: CheckINI
 | --------------------------------------------------------------------------------------------
 Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
@@ -1719,41 +1739,43 @@ Sub CheckMesh
 | --------------------------------------------------------------------------------------------
 | SECTION: -- Events   --   START
 | --------------------------------------------------------------------------------------------
-
-#Event RyguaGreeting #*#Grand Historian Rygua says#*#I am Grand Historian Rygua and I can open your mind#*#I can show you the#*#
-#Event RyguaCatacombA #*#Grand Historian Rygua says#*#Should you come across a dragorn known as Dragorn Marshal Greshka, or an ikaav enchantress known as High Enchantress Zy'chia#*#
-#Event RyguaCatacombB #*#Grand Historian Rygua says#*#Should you come across a noc known as Elite Overlord Vijaz, or an ikaav wizard known as High Sorceress Vi'Tara#*#
-#Event RyguaCatacombC #*#Grand Historian Rygua says#*#Should you come across a noc known as the Master of the Watch, or an ikaav mage named, Elite Pixxt#*#
-
-
 |--------------------------------------------------------
-Sub Event_RyguaGreeting
-	/echo \ayRequesting an expedition from \am[\atGrand Historian Rygua\am]\ay.\ax
-	/say catacombs	
-	/doevents flush RyguaGreeting
-/return
-|--------------------------------------------------------
-|--------------------------------------------------------
-Sub Event_RyguaCatacombA
+Sub Event_Catacomb_A
 	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Azia)\am]\ar - BOO - Leaving !\ax
-	/varset DranikCExpedition FALSE
-	/e3bcaa /dzquit
-	/doevents flush RyguaCatacombA
+	/squelch /e3bcaa /dzquit 
+	/delay 1s
+	/varset DranikCExpedition 0
+	/varset CurrentExpedition NULL
+	/delay 1s
+	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
+	/echo \ar - WRONG EXPEDITION !
+	/say catacombs
+	/doevents flush Catacomb_A
 /return
 |--------------------------------------------------------
 |--------------------------------------------------------
-Sub Event_RyguaCatacombB
+Sub Event_Catacomb_B
 	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Beza)\am]\ar - BOO - Leaving !\ax
-	/varset DranikCExpedition FALSE
-	/e3bcaa /dzquit
-	/doevents flush RyguaCatacombB
+	/squelch /e3bcaa /dzquit 
+	/delay 1s
+	/varset DranikCExpedition 0
+	/varset CurrentExpedition NULL
+	/delay 1s
+	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
+	/echo \ar - WRONG EXPEDITION !
+	/say catacombs
+	/doevents flush Catacomb_B
 /return
 |--------------------------------------------------------
 |--------------------------------------------------------
-Sub Event_RyguaCatacombC
-	|/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
-	/varset DranikCExpedition TRUE
-	/doevents flush RyguaCatacombC
+Sub Event_Catacomb_C
+	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
+	/varset DranikCExpedition 1
+	/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+	/delay 1s
+	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
+	/echo \ag + CORRECT EXPEDITION !
+	/doevents flush Catacomb_C
 /return
 |--------------------------------------------------------
 |--------------------------------------------------------
