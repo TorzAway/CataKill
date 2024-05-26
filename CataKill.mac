@@ -785,6 +785,9 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				|-------------
+				/call Group2Me
+				|-------------
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
@@ -807,6 +810,9 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				|-------------
+				/call Group2Me
+				|-------------
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
@@ -875,15 +881,7 @@ Sub WaitNav(NavTargetID)
 		} else {
 			/if (${Me.XTarget[1].ID}) {
 				/if (${Navigation.Active}) /nav stop
-				/if (${UseE3BC}) {
-                    /if (${Debugging}) /bcg (Line: ${Macro.CurLine}) target xtarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
-                    /squelch /bcg //target id ${Me.XTarget[1].ID}
-                } else /if (${UseDanNet}) {
-                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target xtarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
-                    /squelch /dgge /target id ${Me.XTarget[1].ID}
-                } else {
-					/target id ${Me.XTarget[1].ID}
-				}
+				/e3bcaa /target id ${Me.XTarget[1].ID}
 				/varset NavTargetID ${Me.XTarget[1].ID}
 				/if (${Debugging}) /echo CALL DoSinglePull WaitNav II
 				/call DoSinglePull
@@ -1036,8 +1034,7 @@ Sub DoorClick
 |--------------------------------------------------------
 Sub Group2Me
 /if (${Debugging}) /echo Sub Group2Me Entry
-	/if (${UseE3BC}) /e3bcaa /nav id ${Me.ID}
-	/if (${UseDanNet}) /dgge /nav id ${Me.ID}
+	/e3bcaa /nav id ${Me.ID}
 /if (${Debugging}) /echo Sub Group2Me Exit
 /return
 |--------------------------------------------------------
