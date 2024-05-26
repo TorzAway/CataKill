@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 25th, 2024 - 11:25:42 PM
+May 26th, 2024 - 07:48:42 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -137,9 +137,9 @@ Sub Main
 			|-----------------------------------
 			/call CheckInADungeon
 			/while (${InADungeon}==1) {
+				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/call DoSinglePull
 				/Call DoClearTargets
-				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckMissionSuccess
 				/call GMCheck
 				/doevents
 			}
@@ -831,7 +831,9 @@ Sub WaitNav(NavTargetID)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${courseCorrection}) {
+				|------  ALL GO TO TARGET
 				/squelch /e3bcaa /nav id ${NavTargetID}				
+				|------  ALL GO TO TARGET
 				/varset courseCorrection ${courseCorrection.OriginalValue}
 			}
 			/if (${GroupNavToMe}) {
@@ -912,6 +914,77 @@ Sub Zoning
 	/call Refresh
 	/if (${Debugging}) /echo Sub Zoning Exit
 /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: CheckForCorpses
+| --------------------------------------------------------------------------------------------
+  Sub CheckForCorpses
+  /if (${Debugging}) /echo Sub CheckForCorpses Entry
+
+  /call GMCheck
+  /hidecorpse looted
+
+:CheckAgain
+  /echo \ay- Checking for missed corpse(s).
+  /squelch /target radius 100 corpse
+  /delay 5 ${Target.ID}
+
+  /if (${Target.ID} && ${Target.Type.Equal[Corpse]}) {
+    /echo \at+++ \ayLooks like we have a corpse to loot!\ax
+    /if (${Target.ID}) /face nolook
+	
+	|----------------------------------------------	
+	|-----
+	/if (${Navigation.PathExists[id ${Target.ID}]}) {
+		/if (${Target.ID} && !${Me.Casting.ID}) /nav id ${Target.ID} 
+	} else {
+		 /if (${Target.ID} && !${Me.Casting.ID}) /moveto id ${Target.ID} mdist 10	
+	}
+	|-----
+    |----------------------------------------------	
+	
+	|-------------------------
+	/call CheckCasting
+	/delay 5 !${Me.Moving}
+	|-------------------------
+	/if (!${Me.XTarget[1].ID} && !${Me.Casting.ID} && !${Me.Moving}) /call LootMob_E3
+	|-------------------------
+	
+    /squelch /target clear
+    /goto :CheckAgain
+  } else {
+    /echo \ar+++ \ayNo corpse(s) found to loot.\ax
+  }
+
+	/if (${Debugging}) /echo Sub CheckForCorpses Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: LootMob_E3 -- Let E3 Looting handle your corpseloot.
+| --------------------------------------------------------------------------------------------
+  Sub LootMob_E3
+	/if (${Debugging}) /echo Sub LootMob_E3 Entry  
+	
+	/if (${Target.ID}) /face nolook
+	/keypress forward
+	/keypress back
+	/fastdrop on
+	/lootn never
+	/delay 1s
+	|---------------------------------------
+	| -- Let E3 Looting System handle this !
+	|---------------------------------------	
+	/loot
+	|---------------------------------------
+	| -- Let E3 Looting System handle this !
+	|---------------------------------------
+	/delay 1s
+	/doevents
+	
+	/if (${Debugging}) /echo Sub LootMob_E3 Exit  
+  /return
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
@@ -1232,7 +1305,7 @@ Sub TargetShortest
 		/for MobCounter 1 to ${MobsInRadius}
 		/varset MobID ${NearestSpawn[${MobCounter},npc targetable radius ${CampRadius} zradius ${ZRadius} alert 10 noalert 1].ID}
 
-		|/if (${Select[${Spawn[ID ${MobID}].Type},AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
+		/if (${Select[${Spawn[ID ${MobID}].Type},AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
 		/if (${Spawn[ID ${MobID}].Surname.Length}) /continue
 		
 		|------- HARD CODED EXCEPTIONS
