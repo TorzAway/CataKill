@@ -415,7 +415,7 @@ Sub GoToMarrs
 	/delay 2s
 	
 	/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
-	/call GoToDranik
+	/call GoToDranikFromMarr
 	
 /if (${Debugging}) /echo Sub GoToMarrs Exit
 /return
