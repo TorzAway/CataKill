@@ -605,6 +605,7 @@ Sub GoToExpedition
 		/delay 20
 	}
 	|-------------	
+	/call Group2Me
 	/call GroupWait
 	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/doevents
@@ -788,6 +789,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
+				/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -811,6 +813,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
+				/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
