@@ -31,6 +31,7 @@ Sub Main
 	/declare GroupWaitTimer		int			outer	0
 	/declare StuckSwitch		int 		outer
 	/declare runcounter 		int 		outer	0
+	/declare notkillable		int 		outer	0
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
@@ -95,133 +96,70 @@ Sub Main
 	}
 	|------------------------------------------------------------------------------		
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	|------------------------------------------------------------------------------ MAIN
+	| --- MAIN ------------------------------------------------------------------------------
 	:mainloop
 	|/echo START MAINLOOP
-	|----------------------	
+	|--------------------------------------------
+	|----------------------	 IF IN CATACOMB-C
+	|--------------------------------------------
 	/if (${Zone.ID}==${CataCombC}) {
 		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
 		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
-		/echo START CataCombC Selective Combat System (Single or SwarmPull)
 		
-		/echo \agDO CODE FOR SinglePull or SwarmPull HERE !
-		
-		/delay 3s
-		/echo END CataCombC Selective Combat System (Single or SwarmPull)
+		|----------------------------
+		| ENGINE SELECT -- START
+		|----------------------------
+		/if (${SwarmPull})  {
+			/message ==================================================================
+			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
+			/popcustom 13 5 ---> ABOUT TO SWARM PULL . . . get ready! <---
+			/message ==================================================================
+			/delay 3s
+			|-----------------------------------
+			| -- Call check mission zone.
+			|-----------------------------------
+			/call CheckInADungeon
+			/while (${InADungeon}==1) {
+				/echo \ar SWARMPULL NOT SETUP YET !
+				|/call DoSwarmPull
+				/call GMCheck
+				/doevents			
+			}
+		} else {
+			/message ==================================================================
+			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
+			/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
+			/message ==================================================================
+			/delay 3s	
+			/varset PullRange ${CampRadius}
+			|-----------------------------------
+			| -- Call check mission zone.
+			|-----------------------------------
+			/call CheckInADungeon
+			/while (${InADungeon}==1) {
+				/call DoSinglePull
+				/Call DoClearTargets
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckMissionSuccess
+				/call GMCheck
+				/doevents
+			}
+		}
+		|----------------------------
+		| ENGINE SELECT -- END
+		|----------------------------
 	}
-	|----------------------	
+	|--------------------------------------------
+	|----------------------	 IF IN CATACOMB-C
+	|--------------------------------------------
 	/doevents
-	/delay 1s
-	|/echo END MAINLOOP
+	|/delay 1s
 	/goto :mainloop
-	|------------------------------------------------------------------------------ MAIN
+	| --- MAIN ------------------------------------------------------------------------------
 	
 	/if (${Debugging}) /echo Sub Main Exit
 
 /return
 | --------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-| --------------------------------------------------------------------------------------------
-| SUB: ORPHANED_MAIN 
-| --------------------------------------------------------------------------------------------
-|----------------------
- 	Sub ORPHANED_MAIN
-	
-	|----------------------	
-	/if (${Zone.ID}==${CataCombC}) {
-		/if (${Me.XTarget[1].ID}) /call DoClearTargets	
-		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
-		/echo START CataCombC Selective Combat System (Single or SwarmPull)
-		
-		/echo \agDO CODE FOR SinglePull or SwarmPull HERE !
-		
-		/delay 3s
-		/echo END CataCombC Selective Combat System (Single or SwarmPull)
-	}
-	|----------------------	
-	
-	|----------------------------
-	| ENGINE SELECT -- START
-	|----------------------------
-	/if (${SwarmPull})  {
-		/message ==================================================================
-		/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
-		/popcustom 13 5 ---> ABOUT TO SWARM PULL . . . get ready! <---
-		/message ==================================================================
-		/delay 3s
-		|-----------------------------------
-		| -- Call check mission zone.
-		|-----------------------------------
-		/call CheckInADungeon
-		/while (${InADungeon}==1) {
-			/call DoSwarmPull
-			/call GMCheck
-			/doevents			
-		}
-	} else {
-		/message ==================================================================
-		/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
-		/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
-		/message ==================================================================
-		/delay 3s	
-		/varset PullRange ${CampRadius}
-		|-----------------------------------
-		| -- Call check mission zone.
-		|-----------------------------------
-		/call CheckInADungeon
-		/while (${InADungeon}==1) {
-			/call DoSinglePull
-			/Call DoClearTargets
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckMissionSuccess
-			/call GMCheck
-			/doevents
-		}
-	}
-	|----------------------------
-	| ENGINE SELECT -- END
-	|----------------------------
-	
-/return
-| --------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 | --------------------------------------------------------------------------------------------
 | SUB: Declares
@@ -567,27 +505,28 @@ Sub GotoRecruiter
 		/if (${Spawn[${Recruiter}].Distance3D} <= 20) {
 			/echo \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...			
 			/call GetExpedition
-		} else {			
-			/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
-			|----------
-			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
-				/call CheckInvis
-				|------
-				/if (${Me.Invis}) /squelch /e3bcaa /nav loc ${RecruiterLoc}
-				|------
-			}
-			|----------
-			/call GroupWait
-			/delay 3s
+		} else {		
 			|-------------
-			/while (${Navigation.Active}) {
-				/call SetLoc
-				/call CheckStuck
+			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
+				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
+				/call CheckInvis
+				/squelch /e3bca /nav loc ${RecruiterLoc}
+				/delay 1s
+				/call NavToLoc2 ${RecruiterLoc}
 				/delay 5
-			}   
-			|-------------	
-			/if (${Me.XTarget[1].ID}) /call DoClearTargets
-			/goto :RecruiterDistanceCheck
+				|-------------
+				|-------------
+				/while (${Navigation.Active}) {
+					/call SetLoc
+					/call CheckStuck
+					/delay 20
+				}
+				|-------------	
+				/call GroupWait
+				/if (${Me.XTarget[1].ID}) /call DoClearTargets
+				/doevents	
+				/goto :RecruiterDistanceCheck
+			}
 		}
 		|----------------------------------------------
 	}
@@ -648,26 +587,25 @@ Sub GetExpedition
 Sub GoToExpedition
 	/if (${Debugging}) /echo Sub GoToExpedition Entry
 	
-	|------------------------------
 	/echo \ayI am headed to: \am[\atCatacombs of Dranik (Caza)\am]\ag 
 	|--- RESET INVIS !!!
 	/if (${Me.Invis}) /dropinvis
 	/delay 2s
 	/call CheckInvis
-	|--- RESET INVIS !!!
-	
-	|------
+	|--- RESET INVIS !!!	
 	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
+	/delay 1s
 	/call NavToLoc2 1019.45 -290.80 -75.26
 	/delay 5
+	|-------------
 	/while (${Navigation.Active}) {
 		/call SetLoc
 		/call CheckStuck
 		/delay 20
 	}
+	|-------------	
 	/call GroupWait
 	/if (${Me.XTarget[1].ID}) /call DoClearTargets
-	/echo \agEveryone is here. \ayGoing in to task...
 	/doevents
 	/squelch /e3bca /removelev
 	/squelch /e3bca /doortarget CASTLESWITCH
@@ -760,12 +698,12 @@ Sub DoClearTargets
 Sub NavToLoc(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
+	|-------------------------------------------------------------------------------
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 30) {
 		/if (${Navigation.Active}) {
 			/if (${CheckBots}) /call GroupDeathChk
 			/if (${CheckBots}) /call GroupManaChk
 			/if (${CheckBots}) /call GroupEndChk
-			/if (${CheckBots} && ${UseMerc}) /call CheckMerc
 			/call GMCheck
 			/if (${Me.XTarget[1].ID}) {
 				/if (${Navigation.Active}) /nav stop
@@ -775,7 +713,6 @@ Sub NavToLoc(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 				/if (${CheckBots}) /call GroupManaChk
 				/if (${CheckBots}) /call GroupEndChk
-				/if (${CheckBots} && ${UseMerc}) /call CheckMerc
 				/call GMCheck
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
@@ -787,12 +724,12 @@ Sub NavToLoc(int Y,int X,int Z)
 				/call DoSinglePull
 			} else {
 				/if (${CheckBots}) /call GroupDeathChk
-				/if (${UseMerc}) /call CheckMerc
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/nav loc ${Y} ${X} ${Z}
 		}
 	}
+	|-------------------------------------------------------------------------------
 	/delay 2s
 	|/if (${Navigation.Active}) /nav stop
 	/if (${Debugging}) /echo Sub NavToLoc Exit
@@ -806,15 +743,11 @@ Sub NavToLoc2(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
-	
-	/delay 3s
-	
 		/if (${Navigation.Active}) {
 			/if (${Debugging}) /echo WaitNav Moving ELSE
 			/if (${CheckBots}) /call GroupDeathChk			
 			/if (${CheckBots}) /call GroupManaChk
-			/if (${CheckBots}) /call GroupEndChk
-			/if (${CheckBots} && ${UseMerc}) /call CheckMerc		
+			/if (${CheckBots}) /call GroupEndChk		
 			/call GMCheck
 			/if (${Me.XTarget[1].ID}) {
 				/if (${Navigation.Active}) /nav stop
@@ -833,7 +766,6 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk				
 				/if (${CheckBots}) /call GroupManaChk
 				/if (${CheckBots}) /call GroupEndChk
-				/if (${CheckBots} && ${UseMerc}) /call CheckMerc
 				/call GMCheck
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
@@ -853,7 +785,6 @@ Sub NavToLoc2(int Y,int X,int Z)
 			}
 			} else {
 				/if (${CheckBots}) /call GroupDeathChk
-				/if (${UseMerc}) /call CheckMerc
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/nav loc ${Y} ${X} ${Z}
@@ -862,6 +793,95 @@ Sub NavToLoc2(int Y,int X,int Z)
 	/delay 2s
 	|/if (${Navigation.Active}) /nav stop
 	/if (${Debugging}) /echo Sub NavToLoc2 Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: WaitNav
+| --------------------------------------------------------------------------------------------
+Sub WaitNav(NavTargetID)
+	/if (${Debugging}) /echo \agEntering Sub WaitNav for ${Spawn[id ${NavTargetID}].Y} ${Spawn[id ${NavTargetID}].X} ${Spawn[id ${NavTargetID}].Z} at Line: ${Macro.CurLine}
+	/if (!${Spawn[id ${NavTargetID}].ID}) {
+		/delay 5s
+		/return
+	}
+	/while (${Spawn[id ${NavTargetID}].Distance} > ${If[${PullAbilityRange},${PullAbilityRange},30]} || !${Spawn[${myTargetID}].LineOfSight}) {
+		/if (!${Spawn[id ${NavTargetID}].ID}) {
+			/delay 5s
+			/return
+		}
+		/if (${Spawn[id ${NavTargetID}].Distance} < 30) {
+			/nav stop
+		}
+		/if (${Spawn[id ${NavTargetID}].ID}) {
+			/call SetLoc
+			/call CheckStuck
+			/call GMCheck
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/varset NavTargetID ${Me.XTarget[1].ID}
+				/if (${Debugging}) /echo CALL FARM STUFF WaitNAV
+				/call DoSinglePull
+			} else {
+				/if (${Debugging}) /echo \ayWaitNav Moving
+				/if (${CheckBots}) /call GroupDeathChk				
+				/if (${CheckBots}) /call GroupManaChk
+				/if (${CheckBots}) /call GroupEndChk
+				/call GMCheck
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/if (!${courseCorrection}) {
+				/squelch /e3bcaa /nav id ${NavTargetID}				
+				/varset courseCorrection ${courseCorrection.OriginalValue}
+			}
+			/if (${GroupNavToMe}) {
+                /call Group2Me
+            }
+			/delay 10
+		} else {
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${UseE3BC}) {
+                    /if (${Debugging}) /bcg (Line: ${Macro.CurLine}) target xtarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
+                    /squelch /bcg //target id ${Me.XTarget[1].ID}
+                } else /if (${UseDanNet}) {
+                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target xtarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
+                    /squelch /dgge /target id ${Me.XTarget[1].ID}
+                } else {
+					/target id ${Me.XTarget[1].ID}
+				}
+				/varset NavTargetID ${Me.XTarget[1].ID}
+				/if (${Debugging}) /echo CALL DoSinglePull WaitNav II
+				/call DoSinglePull
+			} else {
+				/varcalc BackUpTimer (${BackUpTimer})+1
+				/if (${BackUpTimer}>7) {
+					/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
+					/if (${Debugging}) /echo Setting BackUpTimer Plus 1
+					/call BackUp
+					/varset BackUpTimer 0
+					/varset NavTargetID 0
+					/if (${Me.XTarget[1].ID}) {
+						/varset NavTargetID ${Me.XTarget[1].ID}
+					}
+				}
+				/if (${Debugging}) /echo WaitNav Moving ELSE
+				/if (${CheckBots}) /call GroupDeathChk				
+				/if (${CheckBots}) /call GroupManaChk
+				/if (${CheckBots}) /call GroupEndChk
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/squelch /nav id ${NavTargetID}
+		}
+	}
+	/if (${Navigation.Active}) /nav stop
+	:target
+	/target id ${NavTargetID}
+	/delay 2s ${Target.CleanName.Equal[${Spawn[id ${NavTargetID}].CleanName}]}
+	/if (!${Target.CleanName.Equal[${Spawn[id ${NavTargetID}].CleanName}]} && ${Spawn[id ${NavTargetID}].ID} && !${Me.XTarget[1].ID}) {
+		/goto :target
+	}
+	/if (${Debugging}) /echo Sub WaitNav Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -905,6 +925,17 @@ Sub DoorClick
 /if (${Debugging}) /echo Sub DoorClick Exit	
 /return 
 | --------------------------------------------------------------------------------------------
+
+|--------------------------------------------------------
+|Group2Me
+|--------------------------------------------------------
+Sub Group2Me
+/if (${Debugging}) /echo Sub Group2Me Entry
+	/if (${UseE3BC}) /e3bcaa /nav id ${Me.ID}
+	/if (${UseDanNet}) /dgge /nav id ${Me.ID}
+/if (${Debugging}) /echo Sub Group2Me Exit
+/return
+|--------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
 | SUB: CheckStuck
@@ -1104,20 +1135,13 @@ Sub DoSinglePull(string Enemy)
 					/call BackUp
 					/varset BackUpTimer 0
 				}
-		/if (${UseE3BC} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
+		/if (${AssistMe}) {
 			/if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
 			/squelch /e3bcg /nav id ${Me.ID}
 			/squelch /e3bcg /target id ${Me.XTarget[1].ID}
 			/timed 10 /squelch /e3bcg /pet attack
 			/timed 15 /squelch /e3bcg /pet swarm
 			/timed 20 /squelch /e3bcg /assistme
-		}
-		/if (${UseDanNet} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
-			/squelch /dgge /nav id ${Me.ID}
-			/squelch /dgge /target id ${Me.XTarget[1].ID}
-			/timed 10 /squelch /dgge /pet attack
-			/timed 15 /squelch /dgge /pet swarm
-			/timed 20 /squelch /dgge /assistme
 		}
 		}
 
@@ -1178,6 +1202,87 @@ Sub DoSinglePull(string Enemy)
 	/docommand ${If[${PullAbilityRange}>30,/stop,/stick moveback uw 10]}
 	|-----------------------------------------------
 	/if (${Debugging}) /echo DoSinglePull Sub Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: TargetShortest
+| --------------------------------------------------------------------------------------------
+Sub TargetShortest
+	/if (${Debugging}) /echo Sub TargetShortest Entry
+	/if (${UseClickBuffs}) /call Clickies_Buffs
+	/declare MobsInRadius 	int 	local 	${SpawnCount[npc noalert 1 targetable radius ${CampRadius} zradius ${ZRadius} alert 10]}
+	
+
+	|- Makes scanning in big zones super efficient.
+	/if (${MobsInRadius} > 5) {
+		/varset MobsInRadius 5
+	}
+	/declare MobCounter 	int 	local 	0
+	/declare MobID 			int 	local 	0
+	/declare PathLength		float	local	0
+	/declare MobIDDistance	float	local	0
+	/declare PathCount		int		local	1
+	/declare PathShortest	int 	local 	0
+	/declare MobIDValid		int		local	0
+	/if (${Resting}) /return
+
+	/varset myTargetID 0
+	/if (${MobsInRadius}) {
+		/for MobCounter 1 to ${MobsInRadius}
+		/varset MobID ${NearestSpawn[${MobCounter},npc targetable radius ${CampRadius} zradius ${ZRadius} alert 10 noalert 1].ID}
+
+		|/if (${Select[${Spawn[ID ${MobID}].Type},AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
+		/if (${Spawn[ID ${MobID}].Surname.Length}) /continue
+		
+		|------- HARD CODED EXCEPTIONS
+		|/if (${Spawn[ID ${MobID}].CleanName.Equal[a hatchling]} || ${Spawn[ID ${MobID}].CleanName.Equal[a creaking crate]} || ${Spawn[ID ${MobID}].CleanName.Equal[a hollow tree]} || ${Spawn[ID ${MobID}].CleanName.Equal[a petrified colossal tree]}) {
+		|/continue
+		|}
+		|------- HARD CODED EXCEPTIONS
+
+		/varset MobIDValid 0
+		/varset PathLength ${Navigation.PathLength[id ${MobID}]}
+		/if (${PathLength} > 0) {
+			/if (${PathCount}==1) {
+				/varset myTargetID ${MobID}
+				/varset PathShortest ${PathLength}
+			} else /if (${PathLength} <= ${PathShortest}) {
+				/varset myTargetID ${MobID}
+				/varset PathShortest ${PathLength}
+			}
+			/varcalc PathCount ${PathCount}+1 
+		}
+		
+		/next MobCounter
+		/if (${myTargetID}) /message \agPulling \ay[\ap${Spawn[${myTargetID}].CleanName}\ay] \agNPCID:\ay[\ap${myTargetID}\ay] \awat \ay[\at${PathShortest}\ay] \awfeet.
+		/varset Announce FALSE
+		/varset notkillable 0
+	} else {
+		/varset myTargetID 0
+		/delay 5s ${Me.XTarget} == 0
+		/if (!${Me.XTarget}) {
+			/if (!${Announce}) {
+				/message No more mobs to pull, lets Wait for Respawn!
+				/varset Announce TRUE
+			}
+			/varset notkillable 0
+			/if (${Me.Standing} && !${Navigation.Active}) /sit
+		}
+		/if (${Me.XTarget}) /return
+	}
+	/delay 1
+	/if (${Debugging}) /echo Sub TargetShortest exit
+	/varcalc BackUpTimer (${BackUpTimer})+1
+	/if (${Debugging}) /echo Setting BackUpTimer +1 to ${BackUpTimer}
+	/if (${Debugging} && ${BackUpTimer}>1) /echo \arCould Be Stuck ${BackUpTimer}
+	/if (${BackUpTimer}>10) {
+	/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
+	/if (${Debugging}) /echo Setting BackUpTimer Plus 1
+	/call BackUp
+	/varset BackUpTimer 0
+	}
+	/if (${Debugging}) /echo Sub TargetShortest Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -1634,7 +1739,7 @@ Sub Refresh
 | SUB: CheckInADungeon
 | --------------------------------------------------------------------------------------------
 Sub CheckInADungeon
-	/if (${Select[${Zone.ID},336]}) {
+	/if (${Select[${Zone.ID},330]}) {
 		/varset InADungeon 1
 	} else {
 		/varset InADungeon 0
