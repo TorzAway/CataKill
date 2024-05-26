@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 26th, 2024 - 07:48:42 PM
+May 26th, 2024 - 09:12:42 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -140,6 +140,7 @@ Sub Main
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/call DoSinglePull
 				/Call DoClearTargets
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 				/call GMCheck
 				/doevents
 			}
@@ -621,6 +622,35 @@ Sub GoToExpedition
 /return
 | --------------------------------------------------------------------------------------------
 
+| --------------------------------------------------------------------------------------------------
+| SUB: CheckExpeditionStatus  
+| --------------------------------------------------------------------------------------------------
+Sub CheckExpeditionStatus
+	/if (${Debugging}) /echo Sub CheckExpeditionStatus Entry
+
+	|--------------------------------------------		
+	|--- GRAB THE CURRENT EXPEDITIOn DATA
+	|--------------------------------------------
+	/call CheckInADungeon
+	/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+	/delay 5
+	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition})
+	|--------------------------------------------
+	
+	|-------------------
+	/if (${CurrentExpedition.Length}==0 && !${CurrentExpedition.Find[Catacombs of Dranik]}) {
+		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !	
+		/if (${Zone.ID} == ${RuinedCityofDranik}) {
+			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/call GotoRecruiter
+		}
+	}
+	|-------------------
+		
+	/if (${Debugging}) /echo Sub CheckExpeditionStatus Exit
+/return
+| --------------------------------------------------------------------------------------------
+
 | --------------------------------------------------------------------------------------------
 | SUB: DoClearTargets  ( Called by DoSwarmPull )
 | --------------------------------------------------------------------------------------------
@@ -831,9 +861,11 @@ Sub WaitNav(NavTargetID)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${courseCorrection}) {
-				|------  ALL GO TO TARGET
-				/squelch /e3bcaa /nav id ${NavTargetID}				
-				|------  ALL GO TO TARGET
+				|------  ALL GO TO TARGET - staggered
+				/nav id ${NavTargetID}	
+				/delay 1s
+				/squelch /e3bca /nav id ${NavTargetID}				
+				|------  ALL GO TO TARGET - staggered
 				/varset courseCorrection ${courseCorrection.OriginalValue}
 			}
 			/if (${GroupNavToMe}) {
