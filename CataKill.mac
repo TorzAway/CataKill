@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 26th, 2024 - 11:01:12 PM
+May 26th, 2024 - 03:21:12 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -353,7 +353,7 @@ Sub GoToMarrs
 	/call GroupWait
 	/delay 2s
 	
-	/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
+	/if (${Zone.ID} == ${TempleofMarr}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
 	/call GoToDranikFromMarr
 	
 /if (${Debugging}) /echo Sub GoToMarrs Exit
@@ -472,7 +472,7 @@ Sub GoToDranikFromNexus
 }
 |------------------------------
 |---------------
-/while (${Zone.ID} != ${Nexus}) {
+/while (${Zone.ID} != ${RuinedCityofDranik}) {
 	/delay 5s
 }
 |---------------
@@ -480,7 +480,7 @@ Sub GoToDranikFromNexus
 /delay 2s
 
 /if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
-/call GotoRecruiter	
+/call GotoRecruiter			
 
 /if (${Debugging}) /echo Sub GoToDranik Exit
 /return
