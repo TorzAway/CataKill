@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 26th, 2024 - 03:21:12 PM
+May 27th, 2024 - 09:15:32 aM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -596,7 +596,9 @@ Sub GoToExpedition
 	|--- RESET INVIS !!!	
 	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
 	/delay 1s
-	/call NavToLoc2 1019.45 -290.80 -75.26
+	|---------------------- INVIS VNAV !
+	/call NavToLoc3 1019.45 -290.80 -75.26
+	|---------------------- INVIS VNAV !
 	/delay 5
 	|-------------
 	/while (${Navigation.Active}) {
@@ -768,7 +770,7 @@ Sub NavToLoc(int Y,int X,int Z)
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: NavToLoc2
+| SUB: NavToLoc2 - [Combat and Agro Aware movement]
 | --------------------------------------------------------------------------------------------
 Sub NavToLoc2(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
@@ -789,7 +791,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				/call Group2Me
+				|/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -813,7 +815,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				/call Group2Me
+				|/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -822,7 +824,72 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+		}
+	}
+	/delay 2s
+	|/if (${Navigation.Active}) /nav stop
+	/if (${Debugging}) /echo Sub NavToLoc2 Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: NavToLoc3 - [Combat and Agro Aware movement - with invis recasting]
+| --------------------------------------------------------------------------------------------
+Sub NavToLoc3(int Y,int X,int Z)
+	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
+	/varset GroupWaitTimer 0
+	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
+		/if (${Navigation.Active}) {
+			/if (${Debugging}) /echo WaitNav Moving ELSE
+			/if (${CheckBots}) /call GroupDeathChk			
+			/if (${CheckBots}) /call GroupManaChk
+			/if (${CheckBots}) /call GroupEndChk
+			/call GMCheck
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
+				/target ${Me.XTarget[1].ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				|/call Group2Me
+				/call DoClearTargets
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			} else {
+				/if (${Debugging}) /echo WaitNav Moving ELSE
+				/if (${CheckBots}) /call GroupDeathChk				
+				/if (${CheckBots}) /call GroupManaChk
+				/if (${CheckBots}) /call GroupEndChk
+				/call GMCheck
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/delay 10
+		} else {
+			/if (${Me.XTarget[1].ID}) {
+				/if (${Navigation.Active}) /nav stop
+				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
+				/target ${Me.XTarget[1].ID}
+				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				|/call Group2Me
+				/call DoClearTargets
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			} else {
+				/if (${CheckBots}) /call GroupDeathChk
+			}
+			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /call CheckInvis
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
 		}
 	}
 	/delay 2s
@@ -868,7 +935,7 @@ Sub WaitNav(NavTargetID)
 			/if (!${courseCorrection}) {
 				|------  ALL GO TO TARGET - staggered
 				/nav id ${NavTargetID}	
-				/delay 1s
+				/delay 5
 				/squelch /e3bca /nav id ${NavTargetID}				
 				|------  ALL GO TO TARGET - staggered
 				/varset courseCorrection ${courseCorrection.OriginalValue}
