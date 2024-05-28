@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 28th, 2024 - 02:05:32 PM
+May 28th, 2024 - 02:20:32 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -248,6 +248,7 @@ Sub Declares
 
 	/call CheckINI ${IniFileName} General AssistMe bool TRUE
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
+	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
@@ -700,21 +701,26 @@ Sub DoClearTargets
         /if (${Target.ID} && ${Me.Combat} && ${Target.Type.Equal[npc]}) {
 			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]}) {
 				/alt act 749
-				/quickburn
-				/longburn
+				/if (${DoBurns}) /quickburn
+				/if (${DoBurns}) /longburn
 				/delay 20
 				/goto :gotoloopkeepfighting  
 				}
 			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]}) {
 				/alt act 822
-				/fullburn
+				/if (${DoBurns}) /fullburn
 				/delay 20
 				/goto :gotoloopkeepfighting  
 				}
-			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]}) /alt act 3215		
-			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive}) /epicburn
+			| --- Projection of Doom
+			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]}) /alt act 3215
+			| --- EpicBurn
+			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${DoBurns}) /epicburn
+			| --- Vicious Bite of Chaos
 			/if ((${Me.PctHPs} < 95) && ${Cast.Ready[825]})  /alt act 825
+			| --- Chattering Bones
 			/if (${Cast.Ready[3822]}) /alt act 3822
+			| --- Encroaching Darkness
 			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]}) {
 				/squelch /e3bca /nav target
 				/assistme
