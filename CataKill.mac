@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 28th, 2024 - 02:20:32 PM
+May 28th, 2024 - 05:31:32 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -11,9 +11,9 @@ This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be 
 #Event Catacomb_B "#*#Should you come across a noc known as Elite Overlord Vijaz#*#"
 #Event Catacomb_C "#*#Should you come across a noc known as the Master of the Watch#*#"
 
-#Event Cannot_See "You cannot see your target"
-#Event Too_Far "Your target is too far away, get closer"
-#Event Cant_Hit "You can't hit them from here"
+#Event CantSee "You cannot see your target."
+#Event TooFar  "Your target is #*#, get closer!"
+#Event CantHit "You can't hit them from here."
 
 #define /message "/echo \ay[\atCataKill\ay]\aw "
 
@@ -599,13 +599,14 @@ Sub GoToExpedition
 	/if (${Me.Invis}) /dropinvis
 	/delay 2s
 	/call CheckInvis
-	|--- RESET INVIS !!!	
-	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
-	/delay 1s
+	|--- RESET INVIS !!!
+	
 	|---------------------- INVIS VNAV !
 	/call NavToLoc3 1019.45 -290.80 -75.26
-	|---------------------- INVIS VNAV !
 	/delay 5
+	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
+	|---------------------- INVIS VNAV !
+	
 	|-------------
 	/while (${Navigation.Active}) {
 		/call SetLoc
@@ -698,30 +699,33 @@ Sub DoClearTargets
 			/ClearTargets stick
 			}
 		/if (${Target.Distance.Int} > 20) /stick 15
+		|-------------------------------------------------------------------
         /if (${Target.ID} && ${Me.Combat} && ${Target.Type.Equal[npc]}) {
-			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]}) {
+			| --- Explosion of Spite
+			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]} && ${DoBurns}) {
 				/alt act 749
 				/if (${DoBurns}) /quickburn
 				/if (${DoBurns}) /longburn
 				/delay 20
 				/goto :gotoloopkeepfighting  
 				}
-			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]}) {
+			| --- Explosion of Hatred	
+			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]} && ${DoBurns}) {
 				/alt act 822
 				/if (${DoBurns}) /fullburn
 				/delay 20
 				/goto :gotoloopkeepfighting  
 				}
 			| --- Projection of Doom
-			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]}) /alt act 3215
+			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]} && ${DoBurns}) /alt act 3215
 			| --- EpicBurn
 			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${DoBurns}) /epicburn
 			| --- Vicious Bite of Chaos
-			/if ((${Me.PctHPs} < 95) && ${Cast.Ready[825]})  /alt act 825
+			/if ((${Me.PctHPs} < 95) && ${Cast.Ready[825]} && ${DoBurns})  /alt act 825
 			| --- Chattering Bones
-			/if (${Cast.Ready[3822]}) /alt act 3822
+			/if (${Cast.Ready[3822]} && ${DoBurns}) /alt act 3822
 			| --- Encroaching Darkness
-			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]}) {
+			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]} && ${DoBurns}) {
 				/squelch /e3bca /nav target
 				/assistme
 				/alt act 826
@@ -730,8 +734,9 @@ Sub DoClearTargets
             /if (${Debugging}) /echo DEBUG: KillMob: Combat Loop
 			
             /goto :gotoloopkeepfighting 
-        } 
-		/if (${Me.XTarget[1].ID} || ${Target.ID}) /goto :gotoloopkeepfighting 
+        }
+		|-------------------------------------------------------------------		
+		/if (${Me.XTarget[1].ID} || ${Target.ID}) /goto :gotoloopkeepfighting
 	}
 	/delay 20
 	/if (${Debugging}) /echo Sub DoClearTargets Exit
@@ -866,7 +871,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				|/call Group2Me
+				/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -890,7 +895,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				|/call Group2Me
+				/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1462,6 +1467,198 @@ Sub TargetShortest
 	/varset BackUpTimer 0
 	}
 	/if (${Debugging}) /echo Sub TargetShortest Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: Combat
+| --------------------------------------------------------------------------------------------
+Sub Combat
+	/if (${Debugging}) /echo Sub Combat Entry
+	/if (${Target.ID} && (${Target.Type.Equal[npc]} || ${Target.Type.Equal[pet]})) {
+		/if (${Navigation.Active}) /squelch /nav stop
+		/stick uw loose moveback 8 
+		|/setchattitle Killing ${Target.CleanName}
+		/if (${UseE3BC} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
+			/if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
+			/squelch /e3bcg /nav id ${Me.ID}
+			/squelch /e3bcg /target id ${Me.XTarget[1].ID}
+			/timed 10 /squelch /e3bcg /pet attack
+			/timed 15 /squelch /e3bcg /pet swarm
+			/timed 20 /squelch /e3bcg /assistme
+		}
+		/if (${UseDanNet} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
+				/squelch /dgge /nav id ${Me.ID}
+				/squelch /dgge /target id ${Me.XTarget[1].ID}
+				/timed 10 /squelch /dgge /pet attack
+				/timed 15 /squelch /dgge /pet swarm
+				/timed 20 /squelch /dgge /assistme
+		}
+		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
+			/pet attack
+			}
+		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}									 
+		:waitTillDead
+	
+		/if (${Target.ID} && ${Me.CombatState.Equal[Combat]} && (${Target.Type.Equal[npc]} || ${Target.Type.Equal[pet]})) {
+			/if (!${Me.Combat}) {
+			/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+			/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
+			/pet attack
+			}
+			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			}
+			/if (${Me.Class.CanCast} && ${UseCastSpells}) {
+				/if (!${Defined[i]}) {
+					/declare i int local 0
+				}
+				/if (!${Me.Casting.ID}) {
+					/for i 1 to ${Me.NumGems}
+						/if (!${Me.XTarget}) /break
+						/if (${Me.Gem[${i}].ID}) {
+							/if (${Me.Gem[${i}].TargetType.Equal[Single]} && ${Me.Gem[${i}].SpellType.Equal[Detrimental]} !${Target.Buff[${Me.Gem[${i}].Name}].ID}) {
+								/cast ${i}
+								/delay 3s ${Me.Casting.ID}
+								/echo \agCasting \am${Me.Gem[${i}]} \aw--> \ar${Target.CleanName}
+								/delay ${Math.Calc[${Me.Gem[${i}].CastTime.TotalSeconds}+2].Int}s !${Me.Casting.ID}
+							}
+						}
+					/next i
+				}
+			}
+			
+			/delay 10
+			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+			/goto :waitTillDead
+			/varset notkillable 0
+		} else /if (${Target.Type.Equal[corpse]}) {
+			/target clear
+			/varset myTargetID 0
+		}
+	} else /if (${Me.XTarget[1].ID}) {
+		/if (${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].ID} && ${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].LineOfSight}) {
+			/if (${Navigation.Active}) /nav stop
+			/if (${AssistMe}) {
+                /if (${UseE3BC}) {
+                    /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target XTarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
+                    /squelch /e3bcg /target id ${Me.XTarget[1].ID}
+                }
+				/if (${UseDanNet}) {
+                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target XTarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
+                    /squelch /dgge /target id ${Me.XTarget[1].ID}
+                }
+            } else {
+                /target id ${Me.XTarget[1].ID}
+				/if (${Spawn[id ${Me.XTarget[1].ID}].Distance} > 30) /squelch /nav id ${Me.XTarget[1].ID}
+				/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
+					/pet attack
+					}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+            }
+			|/setchattitle Handling add, ${Spawn[${Me.XTarget[1].ID}].CleanName}
+		} else /if (${Spawn[id ${Me.XTarget[1].ID}].Distance} > 30 || !${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].LineOfSight}) {
+			/squelch /nav id ${Me.XTarget[1].ID}
+			/if (!${Me.CombatState.Equal[Combat]}) {
+                /if (${UseE3BC}) {
+                    /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull1).
+                    /squelch /e3bcg /target id ${Me.ID}
+                    /delay 5
+                    /squelch /e3bcg /stick 10 loose moveback uw
+                } 
+				/if (${UseDanNet}) {
+                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target me and stick (DoSinglePull1).
+                    /squelch /dgge /target id ${Me.ID}
+                    /delay 5
+                    /squelch /dgge /stick 10 loose moveback uw
+                }
+            }
+			|/setchattitle Navigating to add ${Spawn[id ${Me.XTarget[1].ID}].CleanName}
+			/varset BackUpTimer 0
+			/while (${Spawn[${Me.XTarget[1].ID}].Distance} > 30) {
+				/if (!${Navigation.Active}) {
+					/squelch /nav id ${Me.XTarget[1].ID}
+					/if (!${Me.CombatState.Equal[Combat]}) {
+                        /if (${UseE3BC}) {
+                            /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull2).
+                            /squelch /e3bcg /target id ${Me.ID}
+                            /delay 5
+                            /squelch /e3bcg /stick 10 loose moveback uw
+                        }
+						/if (${UseDanNet}) {
+                            /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target me and stick (DoSinglePull2).
+                            /squelch /dgge /target id ${Me.ID}
+                            /delay 5
+                            /squelch /dgge /stick 10 loose moveback uw
+                        }
+                    }
+                }
+                /delay 10
+				/if (!${courseCorrection}) {
+					/squelch /nav id ${Me.XTarget[1].ID}
+					/varset courseCorrection ${courseCorrection.OriginalValue}
+				}
+			/call SetLoc
+			/call CheckStuck
+			/call GMCheck
+			}
+		}
+            /if (${AssistMe} && ${UseE3BC} && !${UseCWTN} && !${UseRGMercs}) {
+                /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
+				/squelch /e3bcg /nav id ${Me.ID}
+                /squelch /e3bcg /target id ${Me.XTarget[1].ID}
+                /timed 10 /squelch /e3bcg /pet attack
+                /timed 15 /squelch /e3bcg /pet swarm
+                /timed 20 /squelch /e3bcg /assistme
+            }
+			/if (${AssistMe} && ${UseDanNet} && !${UseCWTN} && !${UseRGMercs}) {
+                /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) killthis
+				/squelch /dgge /nav id ${Me.ID}
+                /squelch /dgge /target id ${Me.XTarget[1].ID}
+                /timed 10 /squelch /dgge /pet attack
+                /timed 15 /squelch /dgge /pet swarm
+                /timed 20 /squelch /dgge /assistme
+            }
+		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
+			/pet attack
+			}
+		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Target.ID}) /face
+				/squelch /killthis
+				/squelch /attack on
+				/doevents
+				/if (${UseClickDamage}) /call Clickies_Damage
+			}
+		|/setchattitle Killing ${Target.CleanName}
+		/goto :waitTillDead
+		/varset notkillable 0
+	}
+	/if (${Debugging}) /echo Sub Combat Exit
 /return
 | --------------------------------------------------------------------------------------------
 
