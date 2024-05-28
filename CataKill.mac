@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 27th, 2024 - 09:15:32 aM
+May 28th, 2024 - 02:05:32 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -109,6 +109,8 @@ Sub Main
 		|----------------------------
 		| ENGINE SELECT -- START
 		|----------------------------
+		|---- SwarmPull ---- 
+		|----------------------------
 		/if (${SwarmPull})  {
 			/message ==================================================================
 			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
@@ -126,6 +128,9 @@ Sub Main
 				/doevents			
 			}
 		} else {
+		|----------------------------
+		|---- SinglePull ---- 
+		|----------------------------		
 			/message ==================================================================
 			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw> 
 			/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
@@ -620,6 +625,8 @@ Sub GoToExpedition
 	/delay 2s
 	/squelch /click left door
 	/call Zoning
+	
+	/if (${Zone.ID} == ${CataCombC}) /call ResetBard
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
 /return
@@ -791,7 +798,6 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				|/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -815,7 +821,6 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /killthis
 				/squelch /attack on
-				|/call Group2Me
 				/call DoClearTargets
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1475,7 +1480,6 @@ Sub CheckCasting
 /return
 | --------------------------------------------------------------------------------------------
 
-
 | --------------------------------------------------------------------------------------------
 | SUB: GMCheck
 | --------------------------------------------------------------------------------------------
@@ -1491,6 +1495,28 @@ Sub GMCheck
 				|------------------------------------------------
 				}
 /if (${Debugging}) /echo Sub GMCheck Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: ResetBard
+| --------------------------------------------------------------------------------------------
+Sub ResetBard
+	/if (${Debugging}) /echo Sub ResetBard Entry
+	/echo \agPerforming Bard Reset !\ax
+	
+	/declare x 					int 	local	1
+	
+		/for x 1 to ${Group.Members} 
+			/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {
+				/echo \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
+				|------------------------				
+				/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3
+				/delay 3s
+			}		
+		/next x
+
+	/if (${Debugging}) /echo Sub ResetBard Exit
 /return
 | --------------------------------------------------------------------------------------------
 
