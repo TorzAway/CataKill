@@ -1479,20 +1479,13 @@ Sub Combat
 		/if (${Navigation.Active}) /squelch /nav stop
 		/stick uw loose moveback 8 
 		|/setchattitle Killing ${Target.CleanName}
-		/if (${UseE3BC} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
+		/if (${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
 			/if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
 			/squelch /e3bcg /nav id ${Me.ID}
 			/squelch /e3bcg /target id ${Me.XTarget[1].ID}
 			/timed 10 /squelch /e3bcg /pet attack
 			/timed 15 /squelch /e3bcg /pet swarm
 			/timed 20 /squelch /e3bcg /assistme
-		}
-		/if (${UseDanNet} && ${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
-				/squelch /dgge /nav id ${Me.ID}
-				/squelch /dgge /target id ${Me.XTarget[1].ID}
-				/timed 10 /squelch /dgge /pet attack
-				/timed 15 /squelch /dgge /pet swarm
-				/timed 20 /squelch /dgge /assistme
 		}
 		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 			/pet attack
@@ -1584,18 +1577,10 @@ Sub Combat
 		} else /if (${Spawn[id ${Me.XTarget[1].ID}].Distance} > 30 || !${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].LineOfSight}) {
 			/squelch /nav id ${Me.XTarget[1].ID}
 			/if (!${Me.CombatState.Equal[Combat]}) {
-                /if (${UseE3BC}) {
-                    /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull1).
-                    /squelch /e3bcg /target id ${Me.ID}
-                    /delay 5
-                    /squelch /e3bcg /stick 10 loose moveback uw
-                } 
-				/if (${UseDanNet}) {
-                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target me and stick (DoSinglePull1).
-                    /squelch /dgge /target id ${Me.ID}
-                    /delay 5
-                    /squelch /dgge /stick 10 loose moveback uw
-                }
+                /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull1).
+                /squelch /e3bcg /target id ${Me.ID}
+                /delay 5
+                /squelch /e3bcg /stick 10 loose moveback uw
             }
 			|/setchattitle Navigating to add ${Spawn[id ${Me.XTarget[1].ID}].CleanName}
 			/varset BackUpTimer 0
@@ -1603,18 +1588,10 @@ Sub Combat
 				/if (!${Navigation.Active}) {
 					/squelch /nav id ${Me.XTarget[1].ID}
 					/if (!${Me.CombatState.Equal[Combat]}) {
-                        /if (${UseE3BC}) {
-                            /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull2).
-                            /squelch /e3bcg /target id ${Me.ID}
-                            /delay 5
-                            /squelch /e3bcg /stick 10 loose moveback uw
-                        }
-						/if (${UseDanNet}) {
-                            /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target me and stick (DoSinglePull2).
-                            /squelch /dgge /target id ${Me.ID}
-                            /delay 5
-                            /squelch /dgge /stick 10 loose moveback uw
-                        }
+                        /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target me and stick (DoSinglePull2).
+                        /squelch /e3bcg /target id ${Me.ID}
+                        /delay 5
+                        /squelch /e3bcg /stick 10 loose moveback uw
                     }
                 }
                 /delay 10
@@ -1627,21 +1604,13 @@ Sub Combat
 			/call GMCheck
 			}
 		}
-            /if (${AssistMe} && ${UseE3BC} && !${UseCWTN} && !${UseRGMercs}) {
+            /if (${AssistMe} && !${UseCWTN} && !${UseRGMercs}) {
                 /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
 				/squelch /e3bcg /nav id ${Me.ID}
                 /squelch /e3bcg /target id ${Me.XTarget[1].ID}
                 /timed 10 /squelch /e3bcg /pet attack
                 /timed 15 /squelch /e3bcg /pet swarm
                 /timed 20 /squelch /e3bcg /assistme
-            }
-			/if (${AssistMe} && ${UseDanNet} && !${UseCWTN} && !${UseRGMercs}) {
-                /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) killthis
-				/squelch /dgge /nav id ${Me.ID}
-                /squelch /dgge /target id ${Me.XTarget[1].ID}
-                /timed 10 /squelch /dgge /pet attack
-                /timed 15 /squelch /dgge /pet swarm
-                /timed 20 /squelch /dgge /assistme
             }
 		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
