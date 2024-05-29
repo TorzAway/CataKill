@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 29th, 2024 - 08:57:32 AM
+May 29th, 2024 - 11:43:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -69,20 +69,8 @@ Sub Main
 	|----------------------		
 	
 	|------------------------------------------------------------------------------
-	/if (${startZone}==${RuinedCityofDranik}) {		
-
-		|--------------------------------------------
-		:OpenDynamicZoneWindow
-		|--- open the Expedition Window to pull data
-		/keypress alt+z
-		/delay 1s
-		/delay 3s ${Window[DynamicZoneWnd].Open}
-		/if (!${Window[DynamicZoneWnd].Open}) /goto :OpenDynamicZoneWindow
-		|--- GRAB THE CURRENT EXPEDITIOn DATA
-		/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
-		/keypress alt+z
-		|--------------------------------------------
-	
+	/if (${startZone}==${RuinedCityofDranik}) {
+		/call GetExpeditionData
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
@@ -121,12 +109,14 @@ Sub Main
 			| -- Call check mission zone.
 			|-----------------------------------
 			/call CheckInADungeon
+			|-------------------------
 			/while (${InADungeon}==1) {
 				/echo \ar SWARMPULL NOT SETUP YET !
 				|/call DoSwarmPull
 				/call GMCheck
 				/doevents			
 			}
+			|-------------------------
 		} else {
 		|----------------------------
 		|---- SinglePull ---- 
@@ -141,7 +131,9 @@ Sub Main
 			| -- Call check mission zone.
 			|-----------------------------------
 			/call CheckInADungeon
-			/while (${InADungeon}==1) {
+			/call CheckHaveDranikCExp
+			|-------------------------
+			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/call DoSinglePull
 				/Call DoClearTargets
@@ -149,6 +141,7 @@ Sub Main
 				/call GMCheck
 				/doevents
 			}
+			|-------------------------
 		}
 		|----------------------------
 		| ENGINE SELECT -- END
@@ -250,6 +243,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
+	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
 	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
@@ -300,6 +294,73 @@ Sub Declares
 	
 	/if (${Debugging}) /echo Sub Declares Exit
 		
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CampInMarrs
+| --------------------------------------------------------------------------------------------
+Sub CampInMarrs
+	/if (${Debugging}) /echo Sub CampInMarrs Entry
+	/echo \atWe are not set to repeat expeditions, Gating to Temple of Marr to camp !
+	/echo \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
+	|--- Group - Start in Marrs	
+	/delay 10
+	/squelch /e3bca /nav stop
+	/squelch /e3bca /playmelody stop
+	/squelch /e3bca /keypress x 
+	/delay 6
+	/squelch /e3bcaa /stand
+	/delay 5
+	/squelch /e3bca /alt act 511
+	
+	|---  Now Me !
+	/nav stop
+	/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+	/keypress x 
+	/delay 6
+	/stand
+	/delay 5
+	/alt act 511
+	/delay 20s
+
+	|----------------------------
+	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
+		|--- Group - Start in Marrs
+		/squelch /e3bca /nav stop
+		/squelch /e3bca /playmelody stop
+		/squelch /e3bca /keypress x 
+		/delay 6
+		/squelch /e3bcaa /stand
+		/delay 5
+		/squelch /e3bca /alt act 511
+		
+		|---  Now Me !
+		/nav stop
+		/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
+		/keypress x 
+		/delay 6
+		/stand
+		/delay 5
+		/alt act 511
+		/delay 20s
+	}
+	|----------------------------	
+	
+	/while (${Zone.ID} != ${TempleofMarr}) {
+		/delay 5s
+	}
+	/call GroupWait
+	/delay 2s
+	
+	/if (${Zone.ID} == ${TempleofMarr}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
+	/delay 3s
+	/echo \arCAMPING TO DESKTOP !!!\ax
+	/squelch /e3bcaa /camp desktop
+	/delay 3s
+	/end
+	
+/if (${Debugging}) /echo Sub CampInMarrs Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -644,18 +705,21 @@ Sub CheckExpeditionStatus
 	|--- GRAB THE CURRENT EXPEDITIOn DATA
 	|--------------------------------------------
 	/call CheckInADungeon
-	/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
-	/delay 5
-	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition})
+	/call CheckHaveDranikCExp
+	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition})
 	|--------------------------------------------
 	
 	|-------------------
-	/if (${CurrentExpedition.Length}==0 && !${CurrentExpedition.Find[Catacombs of Dranik]}) {
-		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !	
-		/if (${Zone.ID} == ${RuinedCityofDranik}) {
-			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+	/if (${DranikCExpedition}==0 && ${InADungeon}==0) {
+		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
+		|-------------------
+		/if ((${Zone.ID}==${RuinedCityofDranik}) && ${RepeatMission}) {
+			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
 		}
+		|-------------------		
+		/if (!${RepeatMission}) /call CampInMarrs
+	
 	}
 	|-------------------
 		
@@ -2108,14 +2172,67 @@ Sub Refresh
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+| SUB: GetExpeditionData
+| --------------------------------------------------------------------------------------------
+Sub GetExpeditionData
+	/if (${Debugging}) /echo Sub GetExpeditionData Entry
+		|--------------------------------------------
+		:OpenDynamicZoneWindow
+		|--- open the Expedition Window to pull data
+		/keypress alt+z
+		/delay 1s
+		/delay 3s ${Window[DynamicZoneWnd].Open}
+		/if (!${Window[DynamicZoneWnd].Open}) /goto :OpenDynamicZoneWindow
+		|--------------------------------------------------------------
+		|-- Determine if I have a Dranik Catacombs Expedition Assigned.
+		|--------------------------------------------------------------
+		/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+		|--------------------------
+		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
+			/varset DranikCExpedition 1
+		} else {
+			/varset DranikCExpedition 0
+		}	
+		|--------------------------
+		/keypress alt+z
+		|--------------------------------------------
+	/if (${Debugging}) /echo Sub GetExpeditionData Exit
+/return
+| --------------------------------------------------------------------------------------------	
+
+| --------------------------------------------------------------------------------------------
 | SUB: CheckInADungeon
 | --------------------------------------------------------------------------------------------
 Sub CheckInADungeon
+	/if (${Debugging}) /echo Sub CheckInADungeon Entry
 	/if (${Select[${Zone.ID},330]}) {
 		/varset InADungeon 1
 	} else {
 		/varset InADungeon 0
 	}
+	/if (${Debugging}) /echo Sub CheckInADungeon Exit
+/return
+| --------------------------------------------------------------------------------------------	
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckHaveDranikCExp
+| --------------------------------------------------------------------------------------------
+Sub CheckHaveDranikCExp
+	/if (${Debugging}) /echo Sub CheckHaveDranikCExp Entry
+	
+	|--------------------------------------------------------------
+	|-- Determine if I have a Dranik Catacombs Expedition Assigned.
+	|--------------------------------------------------------------
+	/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
+	|--------------------------
+	/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
+		/varset DranikCExpedition 1
+	} else {
+		/varset DranikCExpedition 0
+	}	
+	|--------------------------
+		
+	/if (${Debugging}) /echo Sub CheckHaveDranikCExp Exit
 /return
 | --------------------------------------------------------------------------------------------	
 
