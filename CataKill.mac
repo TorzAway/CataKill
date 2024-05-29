@@ -744,7 +744,7 @@ Sub DoClearTargets
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: NavToLoc
+| SUB: NavToLoc -- [NO Combat and Agro Aware movement]
 | --------------------------------------------------------------------------------------------
 Sub NavToLoc(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
@@ -790,7 +790,7 @@ Sub NavToLoc(int Y,int X,int Z)
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: NavToLoc2 - [Combat and Agro Aware movement]
+| SUB: NavToLoc2 -- [Combat and Agro Aware movement]
 | --------------------------------------------------------------------------------------------
 Sub NavToLoc2(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
@@ -854,7 +854,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: NavToLoc3 - [Combat and Agro Aware movement - with invis recasting]
+| SUB: NavToLoc3 - [Combat and Agro Aware movement - with invis recheck]
 | --------------------------------------------------------------------------------------------
 Sub NavToLoc3(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
