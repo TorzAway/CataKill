@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 28th, 2024 - 06:28:32 PM
+May 29th, 2024 - 08:57:32 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -777,7 +777,9 @@ Sub NavToLoc(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving}) /nav loc ${Y} ${X} ${Z}
+			/delay 5 ${Me.Moving}
+			/delay 5 ${Navigation.Active}			
 		}
 	}
 	|-------------------------------------------------------------------------------
@@ -840,7 +842,9 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/delay 5 ${Me.Moving}
+			/delay 5 ${Navigation.Active}
 		}
 	}
 	/delay 2s
@@ -905,7 +909,9 @@ Sub NavToLoc3(int Y,int X,int Z)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /call CheckInvis
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/delay 5 ${Me.Moving}
+			/delay 5 ${Navigation.Active}
 		}
 	}
 	/delay 2s
@@ -1908,7 +1914,7 @@ Sub GroupManaChk
 					/echo \agYour \am[\atMana\am]\ag is currently at \am[\at${Me.PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
 					/call GMCheck
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
-					/delay 3s
+					/delay 6s
 				}
 				|--------------------------------------
 				|----
@@ -1952,7 +1958,7 @@ Sub GroupManaChk
 							/delay 3s
 							|----------
 							/if (${Group.Member[${i}].Standing}) {
-								/delay 3s
+								/delay 6s
 								/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
 								/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit
 							}							
@@ -2002,7 +2008,7 @@ Sub GroupEndChk
 					/echo \agYour \am[\atEndurance\am]\ag is currently at \am[\at${Me.PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
 					/call GMCheck
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
-					/delay 3s
+					/delay 6s
 				}
 				|--------------------------------------
 				|----
@@ -2048,7 +2054,7 @@ Sub GroupEndChk
 								/delay 3s
 								|----------
 								/if (${Group.Member[${i}].Standing}) {
-									/delay 3s
+									/delay 6s
 									/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
 									/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit									
 								}							
