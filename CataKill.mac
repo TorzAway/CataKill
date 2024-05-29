@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 29th, 2024 - 11:43:12 AM
+May 29th, 2024 - 02:48:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -40,6 +40,9 @@ Sub Main
  	/call Declares
 	/message ==================================================================
 	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking
+	/delay 1s
+	/call CheckThings	
+	
 	|------------------------------------------------------------------------------------------------------
 	/if (${SwarmPull}) {
 		/message \ar***\at \agSwarmPull \arHigh Risk PULLING: \ayis set to \at[\ar${SwarmPull}}\at] 
@@ -47,12 +50,20 @@ Sub Main
 		/message \ar***\at \agSwarmPull \arHigh Risk PULLING: \ayis set to \at[\ag${SwarmPull}}\at] 
 	}
 	|------------------------------------------------------------------------------------------------------
-	/message ==================================================================
-	/delay 1s
-	/call CheckThings
+	/message ==================================================================	
+	/echo \at/E3LDoN \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
+	/echo \at/E3LDoN \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
+	/echo \at/E3LDoN \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
+	/echo \at/E3LDoN \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
+	/echo \at/E3LDoN \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
+	/echo \at/E3LDoN \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
+	/message ==================================================================	
+
+	/echo \agGetting things ready, sit back...
+	/delay 5s
 	
 	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
-	
+
 	|----------------------
 	/if (!${Select[${Zone.ID},152,386,336,330]}) {
 		/echo \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
