@@ -1181,6 +1181,39 @@ Sub Zoning
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+| SUB: OpenPacks
+| --------------------------------------------------------------------------------------------
+	Sub OpenPacks
+	/declare bag int local 0
+	/if (!${Window[InventoryWindow].Open}) /nomodkey /keypress inventory
+	/delay 3s ${Window[InventoryWindow].Open}
+	/for bag 1 to 10
+		/if (!${Window[Pack${bag}].Open}) /nomodkey /itemnotify pack${bag} rightmouseup
+		/delay 3s ${Window[Pack${bag}].Open}
+		/if (${Window[TradeskillWnd].Open}) /nomodkey /notify TradeskillWnd ExperimentButton leftmouseup
+		/delay 5s !${Window[TradeskillWnd].Open}
+	/next bag
+	/return
+|--------------------------------------------------------------------------------------------
+
+
+| --------------------------------------------------------------------------------------------
+| SUB: ClosePacks
+| --------------------------------------------------------------------------------------------
+	Sub ClosePacks
+	/declare bag int local 0
+	/if (!${Window[InventoryWindow].Open}) /nomodkey /keypress inventory
+	/delay 3s ${Window[InventoryWindow].Open}
+	/for bag 1 to 10
+		/if (${Window[Pack${bag}].Open}) /nomodkey /itemnotify pack${bag} rightmouseup
+		/delay 3s !${Window[Pack${bag}].Open}
+	/next bag
+	/if (${Window[InventoryWindow].Open}) /nomodkey /keypress inventory
+	/delay 3s !${Window[InventoryWindow].Open}
+  /return
+|--------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
 | SUB: DoorClick
 | --------------------------------------------------------------------------------------------
 Sub DoorClick 
@@ -1257,6 +1290,48 @@ sub Stuck
 		/hidecorpse none
 		}
 /if (${Debugging}) /echo Sub Stuck Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: BackUp
+| --------------------------------------------------------------------------------------------
+Sub BackUp
+	/if (${Debugging}) /echo Sub Backup Entry
+    /declare strafedir string local
+	/target clear
+	|/call DoorClick
+	/if (${Navigation.Active}) /nav pause
+	/if (${Me.FeetWet}) {
+		/keypress down hold 
+		/delay 10
+		/keypress PAGE_UP hold
+		/delay 20
+		/keypress up hold
+		/keypress right hold
+		/delay 10
+		/keypress left 
+		/keypress down
+		/keypress PAGE_DOWN
+	}
+	/keypress back hold
+	/delay 20
+	/varset myTargetID 0
+	/keypress back
+	/if (${Math.Rand[2]}) {
+		/varset strafedir STRAFE_LEFT
+	} else {
+		/varset strafedir STRAFE_RIGHT
+	}
+	/keypress ${strafedir} hold
+	/delay 20
+	/keypress ${strafedir}
+	/delay 10
+	/keypress forward hold
+	/delay 10
+	/keypress forward
+	|/if (!${Navigation.Active}) /nav pause
+	/if (${Debugging}) /echo Sub Backup Exit
 /return
 | --------------------------------------------------------------------------------------------
 
