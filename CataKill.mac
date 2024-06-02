@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-May 29th, 2024 - 02:48:12 AM
+June 2nd, 2024 - 11:53:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -120,12 +120,17 @@ Sub Main
 			| -- Call check mission zone.
 			|-----------------------------------
 			/call CheckInADungeon
+			/call CheckHaveDranikCExp
 			|-------------------------
 			/while (${InADungeon}==1) {
+				|/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/echo \ar SWARMPULL NOT SETUP YET !
-				|/call DoSwarmPull
-				/call GMCheck
-				/doevents			
+				|/call DoSwarmPull_PathTo
+				|/Call DoClearTargets
+				|/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
+				|/call GMCheck
+				|/doevents			
+				/end
 			}
 			|-------------------------
 		} else {
@@ -277,6 +282,9 @@ Sub Declares
 		
 	/call CheckINI ${IniFileName} Alerts AFKGM bool TRUE
 	/call CheckINI ${IniFileName} Alerts UseBeep bool TRUE
+	
+	/call CheckIni ${Settings} Theme LastSwarmed_Dungeon string NONE
+	/call CheckIni ${Settings} Theme LastSwarmed_Step string 1
 	
 	|** End of LDON.mac/PullFarm.mac type declares **|
 	
@@ -1368,14 +1376,8 @@ Sub GroupWait
 
     /while ((${Group.Member[1].Distance} > 40) || (${Group.Member[2].Distance} > 40) || (${Group.Member[3].Distance} > 40) || (${Group.Member[4].Distance} > 40) || (${Group.Member[5].Distance} > 40) || (${Group.Member[6].Distance} > 40)) {
         /echo \aywaiting for the group, timer ${GroupWaitTimer}.\ax
-		/if (${UseE3BC}) {
-			/e3bca /stand
-			/e3bca /nav id ${Me.ID}
-		}		
-		/if (${UseDanNet}) {
-			/dgex /stand
-			/dgex /nav id ${Me.ID}
-		}
+		/e3bca /stand
+		/e3bca /nav id ${Me.ID}
         /delay 5s
 		/varcalc GroupWaitTimer (${GroupWaitTimer})+1
 		/call GroupWaitTimer
@@ -1395,39 +1397,20 @@ Sub GroupWaitTimer
 	/if (${GroupWaitTimer}==12) /varset GroupWaitTimer 0
 	/if (${GroupWaitTimer}==10) {
 		/echo \ayA Group Member might be stuck!
-		/if (${UseE3BC}) {
-			/squelch /e3bcaa /stand
-			/squelch /e3bcaa /removelev
-			/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
-			/squelch /e3bcaa /keypress back hold
-			/delay 3s
-			/squelch /e3bcaa /keypress back
-		}
-		/if (${UseDanNet}) {
-			/squelch /dgae /stand
-			/squelch /dgae /removelev
-			/squelch /dgae /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
-			/squelch /dgae /keypress back hold
-			/delay 3s
-			/squelch /dgae /keypress back
-		}
+		/squelch /e3bcaa /stand
+		/squelch /e3bcaa /removelev
+		/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+		/squelch /e3bcaa /keypress back hold
+		/delay 3s
+		/squelch /e3bcaa /keypress back
 	}
 	/if (${GroupWaitTimer}==11) {
-	/echo \ayA Group Member is stuck!
-		/if (${UseE3BC}) {
-			/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
-			/squelch /e3bcaa /keypress forward hold
-			/delay 2s
-			/squelch /e3bcaa /keypress forward
-			/delay 2s
-		}	
-		/if (${UseDanNet}) {
-			/squelch /dgae /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
-			/squelch /dgae /keypress forward hold
-			/delay 2s
-			/squelch /dgae /keypress forward
-			/delay 2s
-		}		
+		/echo \ayA Group Member is stuck!
+		/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
+		/squelch /e3bcaa /keypress forward hold
+		/delay 2s
+		/squelch /e3bcaa /keypress forward
+		/delay 2s	
 	}
 	/if (${Debugging}) /echo Sub GroupWaitTimer Exit
 /return GroupWaitTimer
@@ -1707,14 +1690,8 @@ Sub Combat
 		/if (${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].ID} && ${Spawn[id ${Me.XTarget[1].ID} radius 30 zradius 50].LineOfSight}) {
 			/if (${Navigation.Active}) /nav stop
 			/if (${AssistMe}) {
-                /if (${UseE3BC}) {
-                    /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target XTarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
-                    /squelch /e3bcg /target id ${Me.XTarget[1].ID}
-                }
-				/if (${UseDanNet}) {
-                    /if (${Debugging}) /dgt all (Line: ${Macro.CurLine}) target XTarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
-                    /squelch /dgge /target id ${Me.XTarget[1].ID}
-                }
+                /if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) target XTarget ${Spawn[id ${Me.XTarget[1].ID}].Name}
+                /squelch /e3bcg /target id ${Me.XTarget[1].ID}
             } else {
                 /target id ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Me.XTarget[1].ID}].Distance} > 30) /squelch /nav id ${Me.XTarget[1].ID}
@@ -1784,6 +1761,448 @@ Sub Combat
 		/varset notkillable 0
 	}
 	/if (${Debugging}) /echo Sub Combat Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------------
+| SUB: SwarmPullStepMove_1   Receive: SpawnPull_Step from Go2LastSwarmLoc
+| --------------------------------------------------------------------------------------------------
+Sub SwarmPullStepMove_1(string SpawnPull_Step)
+	/declare x 						int 	local 	${SpawnPull_Step}
+	/declare TempSpawnPull_Loc		string 	local	NULL
+	
+	/if (${Debugging}) /echo Sub SwarmPullStepMove_1 Entry
+	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
+	
+	|----------------------------------------------------------------------------------------------
+    /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_1.Size}
+		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_1[1,${x}]}
+		
+		|-----------------------------
+		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
+			/echo \ar The Catacomb steps did not load correctly, reloading !
+			/call DoSwarmPull
+			/delay 10
+		}
+		|-----------------------------
+		
+		|------------------------------------------
+		/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
+			/call GroupDeathChk
+			/call GroupManaChk
+			/call GroupEndChk
+			/if (${UseMerc}) /call CheckMerc
+		}		
+		|------------------------------------------		
+		
+		|------------------------------------------
+		| Move group to me before next step
+		|------------------------------------------
+		/echo \at - Calling the group to me before moving to the next step . . . . 
+		/call GroupWait
+		/delay 1s
+		|------------------------------------------
+
+		|-----------------------------------------------
+		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
+		|-----------------------------------------------
+		/if (${TempSpawnPull_Loc.Length}>0) {
+			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}.Size}_1\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			|--------------------------------------------------------------
+			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
+			|--------------------------------------------------------------
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
+				|----------------------------------------------
+				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
+				/nav loc ${TempSpawnPull_Loc}
+				|----------------------------------------------
+				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
+			}
+			|--------------------------------------------------------------
+			/e3bca /nav loc ${TempSpawnPull_Loc}
+			/delay 5
+			/while (${Navigation.Active}) {
+				/call SetLoc
+				/call CheckStuck
+				/delay 5
+			}
+			/squelch /e3bca /nav id ${Me.ID}
+			/delay 5
+			|----------------------------------------------------------		
+
+			|-------------------------------------------------------------------------------------------------------
+			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+			|-------------------------------------------------------------------------------------------------------
+			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+			/call IniChange "Theme" "LastSwarmed_Step" ${x}
+			|-------------------------------------------------------------------------------------------------------
+
+			|---------------------------------------------------------------
+			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
+			|---------------------------------------------------------------
+			/call DoClearTargets
+			/doevents
+			/call CheckMissionSuccess
+			/delay 10
+		}
+		|-----------------------------------------------
+		| Before we go to next step ...   ECheck if we should loot Corpses.
+		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
+		| Before we go to next step ...   EXIT the loop if we have mission success !
+		|-----------------------------------------------
+		
+    /next x
+	/echo /atCompleted all SpawnPull steps./ax
+	/message ==================================================================
+	/echo /ayStarting Main Cycle Run !!!!!!/ax
+	/message ==================================================================
+	/delay 3s
+	/call DoSwarmPull_MainLoop
+	|----------------------------------------------------------------------------------------------
+	/delay 10
+	/if (${Debugging}) /echo Sub SwarmPullStepMove_1 Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------------
+| SUB: SwarmPullStepMove_2   Receive: SpawnPull_Step from Go2LastSwarmLoc
+| --------------------------------------------------------------------------------------------------
+Sub SwarmPullStepMove_2(string SpawnPull_Step)
+	/declare x 						int 	local 	${SpawnPull_Step}
+	/declare TempSpawnPull_Loc		string 	local	NULL
+	
+	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
+	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
+	
+	|----------------------------------------------------------------------------------------------
+    /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_2.Size}
+		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
+		
+		|-----------------------------
+		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
+			/echo \ar The Catacomb steps did not load correctly, reloading !
+			/call DoSwarmPull
+			/delay 10
+		}
+		|-----------------------------
+		
+		|------------------------------------------
+		/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
+			/call GroupDeathChk
+			/call GroupManaChk
+			/call GroupEndChk
+			/if (${UseMerc}) /call CheckMerc
+		}		
+		|------------------------------------------		
+		
+		|------------------------------------------
+		| Move group to me before next step
+		|------------------------------------------
+		/echo \at - Calling the group to me before moving to the next step . . . . 
+		/call GroupWait
+		/delay 1s
+		|------------------------------------------
+
+		|-----------------------------------------------
+		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
+		|-----------------------------------------------
+		/if (${TempSpawnPull_Loc.Length}>0) {
+			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			|--------------------------------------------------------------
+			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
+			|--------------------------------------------------------------
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
+				|----------------------------------------------
+				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
+				/nav loc ${TempSpawnPull_Loc}
+				|----------------------------------------------
+				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
+			}
+			|--------------------------------------------------------------
+			/e3bca /nav loc ${TempSpawnPull_Loc}
+			/delay 5
+			/while (${Navigation.Active}) {
+				/call SetLoc
+				/call CheckStuck
+				/delay 5
+			}
+			/squelch /e3bca /nav id ${Me.ID}
+			/delay 5
+			|----------------------------------------------------------		
+
+			|-------------------------------------------------------------------------------------------------------
+			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+			|-------------------------------------------------------------------------------------------------------
+			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+			/call IniChange "Theme" "LastSwarmed_Step" ${x}
+			|-------------------------------------------------------------------------------------------------------
+
+			|---------------------------------------------------------------
+			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
+			|---------------------------------------------------------------
+			/call DoClearTargets
+			/doevents
+			/call CheckMissionSuccess
+			/delay 10
+		}
+		|-----------------------------------------------
+		| Before we go to next step ...   ECheck if we should loot Corpses.
+		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
+		| Before we go to next step ...   EXIT the loop if we have mission success !
+		|-----------------------------------------------
+		
+    /next x
+	/echo Completed all SpawnPull steps.
+	|----------------------------------------------------------------------------------------------
+	/delay 10
+	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: Go2LastSwarmLoc     ( Always Call This to pick up From LastSwarmed_Step )
+| --------------------------------------------------------------------------------------------
+Sub Go2LastSwarmLoc
+	/if (${Debugging}) /echo Sub Go2LastSwarmLoc Entry
+	|------------------------------------------------------------------------------------------------------------
+	|- READ:  LastSwarmed_Dungeon and LastSwarmed_Step from ini file, to pickup at this point if restarted macro.
+	|------------------------------------------------------------------------------------------------------------
+	/varset LastSwarmed_Dungeon ${Ini[${Settings},Theme,LastSwarmed_Dungeon]}
+	/varset LastSwarmed_Step ${Ini[${Settings},Theme,LastSwarmed_Step]}
+	|-------------------------------------------------------------------------------------------------------
+	|/echo \arGo2LastSwarmLoc: \ayLastSwarmed_Dungeon=(${LastSwarmed_Dungeon}) | LastSwarmed_Step=(${LastSwarmed_Step})	
+	|-------------------------------------------------------------------------------------------------------
+	/if (${Debugging}) /echo LastSwarmed_Dungeon=(${LastSwarmed_Dungeon}) | LastSwarmed_Step=(${LastSwarmed_Step})	
+	/echo \agThe last known spawn pull \aySTEP\ag is: \ay[\am${LastSwarmed_Step}\ay]
+
+	|--------------------------------------------------------------------------------------------------------------------------
+	| - Call the SwarmPullStepMove function and pass the location and step from INI file 
+	| - (The Array Values have already defined from DoSwarmPull)
+	| -
+	| If we are in same dungeon, pickup from LastSwarmed_Loc .. else..  run the path fresh !
+	| SwarmPullStepMove will pick up the path in a loop where the step number will change X in the loop !
+	|--------------------------------------------------------------------------------------------------------------------------
+	|/echo {Zone.ShortName}=(${Zone.ShortName}) | {Ini.File.Zone.Name}=(${LastSwarmed_Dungeon}) 
+	|-----------------------------------------------------------------------
+	| Change values to pass STEP 1 if we arent in the last recorded dungeon.
+	|-----------------------------------------------------------------------
+	/if (!${Zone.ShortName.Equal[${LastSwarmed_Dungeon}]}) {
+		/call ForeceSpawnStepReset
+	}
+	|-----------------------------------------------------------------------
+	|/echo \arGo2LastSwarmLoc: \ay/call SwarmPullStepMove ${LastSwarmed_Step}
+	|-----------------------------------------------------------------------
+	/if (${SwarmPull}) {
+		/call SwarmPullStepMove_1 ${LastSwarmed_Step}
+	} else {
+		/call SwarmPullStepMove_2 ${LastSwarmed_Step}
+	}
+	|-----------------------------------------------------------------------
+
+	|--------------------------------------------------------------------------------------------------------------------------	
+	/if (${Debugging}) /echo Sub Go2LastSwarmLoc Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: DoSwarmPull_PathTo		Note: Define The Array Variables and kick off Go2LastSwarmLoc
+| --------------------------------------------------------------------------------------------
+Sub DoSwarmPull_PathTo
+/if (${Debugging}) /echo Sub DoSwarmPull_PathTo Entry
+
+/message \agSetting up pathing to \ay[\arSwarm Pull\ay] \agdungeon. . . . . 
+/message ==================================================================
+
+|---------------------------------------------------------
+| Delete any EXISTING LocalStepArray
+|---------------------------------------------------------
+/if (${Defined[LocalStepArray_${Zone.ShortName}]}) {
+	/echo \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}\am]\ax
+	/deletevar LocalStepArray_${Zone.ShortName}
+}
+|---------------------------------------------------------
+
+|------------------------1: CataCombC 
+	/echo \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
+	|------------------------------------------------------
+	|  Define The Array Variables so the dungeon can be Run
+	|------------------------------------------------------
+	|------------------------------------------------------
+	/echo \ayCreating dynamic dungeon array.
+	/if (!${Defined[LocalStepArray_${Zone.ShortName}_1]}) {
+		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_1[1,14]\am]\ax
+		/declare LocalStepArray_${Zone.ShortName}_1[1,14]	string	outer
+		/delay 10
+	}
+	|------------------------------------------------------
+	
+	|---------------------------------- PATH TO MAIN CYCLE
+	/varset LocalStepArray_${Zone.ShortName}_1[1,1] -20.83 -82.37 -2.72
+	/varset LocalStepArray_${Zone.ShortName}_1[1,2] 199.91 118.39 -53.53
+	/varset LocalStepArray_${Zone.ShortName}_1[1,5] 627.67 96.03 -71.11
+	/varset LocalStepArray_${Zone.ShortName}_1[1,4] 665.50 -32.93 -73.64
+	/varset LocalStepArray_${Zone.ShortName}_1[1,5] 451.78 -33.66 -71.95
+	|---------------------------------- 1st large room below
+	/varset LocalStepArray_${Zone.ShortName}_1[1,6] 800.04 206.63 -95.55
+	/varset LocalStepArray_${Zone.ShortName}_1[1,7] 800.04 400.91 -92.62
+	/varset LocalStepArray_${Zone.ShortName}_1[1,8] 800.04 706.04 -92.56
+	|---------------------------------- 1st large room above
+	/varset LocalStepArray_${Zone.ShortName}_1[1,9] 888.57 -140.53 -114.78
+	/varset LocalStepArray_${Zone.ShortName}_1[1,10] 982.44 211.49 -114.78
+	|---------------------------------- 2nd large room below
+	/varset LocalStepArray_${Zone.ShortName}_1[1,11] 1145.28 22.82 -113.12
+	/varset LocalStepArray_${Zone.ShortName}_1[1,12] 1344.02 25.44 -113.35
+	|---------------------------------- 2nd large room above
+	/varset LocalStepArray_${Zone.ShortName}_1[1,13] 1593.92 193.18 -135.82
+	/varset LocalStepArray_${Zone.ShortName}_1[1,14] 1757.71 303.57 -135.19
+	|---------------------------------- PATH TO MAIN CYCLE	
+	
+	|------------------------------------------------------
+	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,1]}\am]\ay
+	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,2]}\am]\ay
+	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,3]}\am]\ay
+	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,4]}\am]\ay
+	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,5]}\am]\ay
+	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,6]}\am]\ay
+	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,7]}\am]\ay
+	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,8]}\am]\ay
+	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,9]}\am]\ay
+	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,10]}\am]\ay
+	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,11]}\am]\ay
+	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,12]}\am]\ay
+	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,13]}\am]\ay
+	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,14]}\am]\ay
+	/message ==================================================================
+	|----------------------------------------------------
+	/echo \agGet ready, the fun is starting soon !
+	/delay 5
+	/Call DoClearTargets
+	/delay 10
+	|- Call Go2LastSwarmLoc after Defining Array
+	/call Go2LastSwarmLoc
+	|------------
+ }
+|------------------------1: CataCombC
+
+/if (${Debugging}) /echo Sub DoSwarmPull_PathTo Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: DoSwarmPull_MainLoop		Note: Define The Array Variables and kick off Go2LastSwarmLoc
+| --------------------------------------------------------------------------------------------
+Sub DoSwarmPull_MainLoop
+/if (${Debugging}) /echo Sub DoSwarmPull_MainLoop Entry
+
+/message \agSetting up pathing to \ay[\arSwarm Pull\ay] \agdungeon. . . . . 
+/message ==================================================================
+
+|---------------------------------------------------------
+| Delete any EXISTING LocalStepArray
+|---------------------------------------------------------
+/if (${Defined[LocalStepArray_${Zone.ShortName}]}) {
+	/echo \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}\am]\ax
+	/deletevar LocalStepArray_${Zone.ShortName}
+}
+|---------------------------------------------------------
+
+|------------------------1: CataCombC 
+	/echo \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
+	|------------------------------------------------------
+	|  Define The Array Variables so the dungeon can be Run
+	|------------------------------------------------------
+	|------------------------------------------------------
+	/echo \ayCreating dynamic dungeon array.
+	/if (!${Defined[LocalStepArray_${Zone.ShortName}]}) {
+		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}[1,18]\am]\ax
+		/declare LocalStepArray_${Zone.ShortName}[1,18]	string	outer
+		/delay 10
+	}
+	|------------------------------------------------------
+	
+---------------------------------- MAIN CYCLE BELOW
+---------------------------------- LEFT BOTTOM
+Step 1=
+Step 2=
+Step 3=
+---------------------------------- LEFT BOTTOM
+---------------------------------- LEFT MIDDLE
+Step 4=
+Step 5=
+Step 6=
+---------------------------------- LEFT MIDDLE
+---------------------------------- LEFT TOP
+Step 7=
+Step 8=
+Step 9=
+---------------------------------- LEFT TOP
+---------------------------------- RIGHT TOP
+Step 10=
+Step 11=
+Step 12=
+---------------------------------- RIGHT TOP
+---------------------------------- RIGHT MIDDLE
+Step 13=
+Step 14=
+Step 15=
+---------------------------------- RIGHT MIDDLE
+---------------------------------- RIGHT BOTTOM
+Step 16=
+Step 17=
+Step 18=
+---------------------------------- RIGHT BOTTOM
+---------------------------------- MAIN CYCLE ABOVE
+	
+	
+	|---------------------------------- PATH TO MAIN CYCLE
+	/varset LocalStepArray_${Zone.ShortName}[1,1] -20.83 -82.37 -2.72
+	/varset LocalStepArray_${Zone.ShortName}[1,2] 199.91 118.39 -53.53
+	/varset LocalStepArray_${Zone.ShortName}[1,5] 627.67 96.03 -71.11
+	/varset LocalStepArray_${Zone.ShortName}[1,4] 665.50 -32.93 -73.64
+	/varset LocalStepArray_${Zone.ShortName}[1,5] 451.78 -33.66 -71.95
+	|---------------------------------- 1st large room below
+	/varset LocalStepArray_${Zone.ShortName}[1,6] 800.04 206.63 -95.55
+	/varset LocalStepArray_${Zone.ShortName}[1,7] 800.04 400.91 -92.62
+	/varset LocalStepArray_${Zone.ShortName}[1,8] 800.04 706.04 -92.56
+	|---------------------------------- 1st large room above
+	/varset LocalStepArray_${Zone.ShortName}[1,9] 888.57 -140.53 -114.78
+	/varset LocalStepArray_${Zone.ShortName}[1,10] 982.44 211.49 -114.78
+	|---------------------------------- 2nd large room below
+	/varset LocalStepArray_${Zone.ShortName}[1,11] 1145.28 22.82 -113.12
+	/varset LocalStepArray_${Zone.ShortName}[1,12] 1344.02 25.44 -113.35
+	|---------------------------------- 2nd large room above
+	/varset LocalStepArray_${Zone.ShortName}[1,13] 1593.92 193.18 -135.82
+	/varset LocalStepArray_${Zone.ShortName}[1,14] 1757.71 303.57 -135.19
+	|---------------------------------- PATH TO MAIN CYCLE	
+	
+	|------------------------------------------------------
+	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,1]}\am]\ay
+	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,2]}\am]\ay
+	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,3]}\am]\ay
+	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,4]}\am]\ay
+	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,5]}\am]\ay
+	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,6]}\am]\ay
+	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,7]}\am]\ay
+	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,8]}\am]\ay
+	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,9]}\am]\ay
+	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,10]}\am]\ay
+	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,11]}\am]\ay
+	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,12]}\am]\ay
+	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,13]}\am]\ay
+	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}[1,14]}\am]\ay
+	/message ==================================================================
+	|----------------------------------------------------
+	/echo \agGet ready, the fun is starting soon !
+	/delay 5
+	/Call DoClearTargets
+	/delay 10
+	|- Call Go2LastSwarmLoc after Defining Array
+	/call Go2LastSwarmLoc
+	|------------
+ }
+|------------------------1: CataCombC
+
+/if (${Debugging}) /echo Sub DoSwarmPull_MainLoop Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -2022,15 +2441,7 @@ Sub GroupDeathChk
 						/beep
 						/delay 30
 					}
-					|----------------------------------
-					|--
-					/if (${UseE3BC}) {
-						/squelch /e3bcg /stand
-					}
-					/if (${UseDanNet}) {
-                        /squelch /dgga /stand
-                    }
-					|--
+					/squelch /e3bcg /stand
 				}
 				|------   If No Target ID
 			}
@@ -2066,15 +2477,7 @@ Sub GroupManaChk
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 					/delay 6s
 				}
-				|--------------------------------------
-				|----
-				/if (${UseE3BC}) {
-                    /squelch /e3bcg /stand
-                }
-				/if (${UseDanNet}) {
-                    /squelch /dgge /stand
-                }
-				|----
+                /squelch /e3bcg /stand
 			}
 			|------   If No Target ID
 		}
@@ -2090,12 +2493,7 @@ Sub GroupManaChk
 					|--------------
 					| Make Them Sit
 					|--------------
-					/if (${UseE3BC}) {
-						/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
-					}
-					/if (${UseDanNet}) {
-						/squelch /dex ${Group.Member[${i}].CleanName} /sit
-					}
+					/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
 					|----					
 					/call Refresh
 					|------   If No Target ID
@@ -2109,20 +2507,11 @@ Sub GroupManaChk
 							|----------
 							/if (${Group.Member[${i}].Standing}) {
 								/delay 6s
-								/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
-								/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit
+								/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
 							}							
 							|----------
 						}
-						|---------------------------------------
-						|----
-						/if (${UseE3BC}) {
-							/squelch /e3bcg /stand
-						}
-						/if (${UseDanNet}) {
-							/squelch /dgge /stand
-						}
-						|----
+						/squelch /e3bcg /stand
 					}
 					|------   If No Target ID
 				}
@@ -2160,15 +2549,7 @@ Sub GroupEndChk
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 					/delay 6s
 				}
-				|--------------------------------------
-				|----
-				/if (${UseE3BC}) {
-                    /squelch /e3bcg /stand
-                }
-				/if (${UseDanNet}) {
-                    /squelch /dgge /stand
-                }
-				|----
+                /squelch /e3bcg /stand
 			}
 			|------   If No Target ID
 		}
@@ -2186,13 +2567,7 @@ Sub GroupEndChk
 						|--------------
 						| Make Them Sit
 						|--------------
-						/if (${UseE3BC}) {
-							/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
-						}
-						/if (${UseDanNet}) {
-							/squelch /dex ${Group.Member[${i}].CleanName} /sit
-						}
-						|----						
+						/squelch /e3bct ${Group.Member[${i}].CleanName} /sit
 						/call Refresh
 						|------   If No Target ID
 						/if (!${Me.XTarget[1].ID}) {
@@ -2205,20 +2580,12 @@ Sub GroupEndChk
 								|----------
 								/if (${Group.Member[${i}].Standing}) {
 									/delay 6s
-									/if (${UseE3BC}) /squelch /e3bct ${Group.Member[${i}].CleanName} /sit
-									/if (${UseDanNet}) /squelch /dex ${Group.Member[${i}].CleanName} /sit									
+									/squelch /e3bct ${Group.Member[${i}].CleanName} /sit							
 								}							
 								|----------
 						}
 						|---------------------------------------
-						|----
-							/if (${UseE3BC}) {
-								/squelch /e3bcg /stand
-							}
-							/if (${UseDanNet}) {
-								/squelch /dgge /stand
-							}
-							|----
+						/squelch /e3bcg /stand
 						}
 						|------   If No Target ID
 					}
