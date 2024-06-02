@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 2nd, 2024 - 03:24:12 AM
+June 2nd, 2024 - 03:44:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -122,7 +122,7 @@ Sub Main
 			/call CheckInADungeon
 			/call CheckHaveDranikCExp
 			|-------------------------
-			/while (${InADungeon}==1) {
+			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				|/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/echo \ar SWARMPULL NOT SETUP YET !
 				|/call DoSwarmPull_PathTo
@@ -707,6 +707,9 @@ Sub GoToExpedition
 	/squelch /doortarget CASTLESWITCH
 	/delay 2s
 	/squelch /click left door
+	|--- Reset the Cycle Loop
+	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/delay 10
 	/call Zoning
 	
 	/if (${Zone.ID} == ${CataCombC}) /call ResetBard
@@ -734,6 +737,9 @@ Sub CheckExpeditionStatus
 		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
 		/if ((${Zone.ID}==${RuinedCityofDranik}) && ${RepeatMission}) {
+			| RESET THE CompletedPathToSteps VALUE
+			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+			/delay 10
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
 		}
@@ -1254,7 +1260,6 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			|---------------------------------------------------------------
 			/call DoClearTargets
 			/doevents
-			/call CheckExpeditionStatus
 			/delay 10
 		}
 		|-----------------------------------------------
@@ -1262,7 +1267,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
-		
+		/call CheckExpeditionStatus
     /next x
 	|----------------------------------------------------------------------------------------------
 	/message ==================================================================
@@ -1290,7 +1295,8 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
-	|----------------------------------------------------------------------------------------------
+	:MainLoopCycle
+	|-------------------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_2.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
 		
@@ -1359,7 +1365,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			|---------------------------------------------------------------
 			/call DoClearTargets
 			/doevents
-			/call CheckExpeditionStatus
 			/delay 10
 		}
 		|-----------------------------------------------
@@ -1367,10 +1372,93 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
-		
+		/call CheckExpeditionStatus
     /next x
-	/echo Completed all SpawnPull steps ... TIME TO REVERSEE !!!!
-	|-------------------------------------------------------------------------------------------------------		
+	|-------------------------------------------------------------------------------------------------------
+
+	/echo \arCompleted all SpawnPull Masincycle ... TIME TO REVERSEE !!!!
+
+	|-------------------------------------------------------------------------------------------------------
+    /for x ${LocalStepArray_${Zone.ShortName}_2.Size} to ${SpawnPull_Step}
+		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
+		
+		|-----------------------------
+		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
+			/echo \ar The Catacomb steps did not load correctly, reloading !
+			/call DoSwarmPull
+			/delay 10
+		}
+		|-----------------------------
+		
+		|------------------------------------------
+		/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
+			/call GroupDeathChk
+			/call GroupManaChk
+			/call GroupEndChk
+			/if (${UseMerc}) /call CheckMerc
+		}		
+		|------------------------------------------		
+		
+		|------------------------------------------
+		| Move group to me before next step
+		|------------------------------------------
+		/echo \at - Calling the group to me before moving to the next step . . . . 
+		/call GroupWait
+		/delay 1s
+		|------------------------------------------
+
+		|-----------------------------------------------
+		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
+		|-----------------------------------------------
+		/if (${TempSpawnPull_Loc.Length}>0) {
+			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			|--------------------------------------------------------------
+			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
+			|--------------------------------------------------------------
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
+				|----------------------------------------------
+				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
+				/nav loc ${TempSpawnPull_Loc}
+				|----------------------------------------------
+				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
+			}
+			|--------------------------------------------------------------
+			/e3bca /nav loc ${TempSpawnPull_Loc}
+			/delay 5
+			/while (${Navigation.Active}) {
+				/call SetLoc
+				/call CheckStuck
+				/delay 5
+			}
+			/squelch /e3bca /nav id ${Me.ID}
+			/delay 5
+			|----------------------------------------------------------		
+
+			|-------------------------------------------------------------------------------------------------------
+			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+			|-------------------------------------------------------------------------------------------------------
+			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+			/call IniChange "Theme" "LastSwarmed_Step" ${x}
+			/delay 10
+			|-------------------------------------------------------------------------------------------------------
+
+			|---------------------------------------------------------------
+			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
+			|---------------------------------------------------------------
+			/call DoClearTargets
+			/doevents
+			/delay 10
+		}
+		|-----------------------------------------------
+		| Before we go to next step ...   ECheck if we should loot Corpses.
+		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
+		| Before we go to next step ...   EXIT the loop if we have mission success !
+		|-----------------------------------------------
+		/call CheckExpeditionStatus
+    /next x
+	|-------------------------------------------------------------------------------------------------------
+	
+	/goto :MainLoopCycle
 	
 	|----------------------------------------------------------------------------------------------
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Exit
@@ -1415,6 +1503,7 @@ Sub Go2LastSwarmLoc
 	|- Retrieve the last mission results
 	|-----------------------------------
 	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
+	/delay 10
 	|-----------------------------------
 	
 	/if (${CompletedPathToSteps.Equal[FALSE]}) {
@@ -1506,6 +1595,7 @@ Sub DoSwarmPull_PathTo
 	/delay 10
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/delay 10
 	/varset CompletedPathToSteps FALSE
 	/call Go2LastSwarmLoc
 	|------------
@@ -1607,6 +1697,9 @@ Sub DoSwarmPull_MainLoop
 	/delay 5
 	/Call DoClearTargets
 	/delay 10
+	|- Call Go2LastSwarmLoc after Defining Array
+	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
+	/delay 10	
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call Go2LastSwarmLoc
 	|------------
