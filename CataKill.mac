@@ -787,7 +787,7 @@ Sub CheckExpeditionStatus
 	|-----------------------------------------------------------------------
 	/if (${DranikCExpedition}==0 && ${InADungeon}==1) {
 		:WaitTillIGetBooted
-		/echo \ay - Looks like out expedition is over, but we havent been booted yet, waiting !\ax
+		/echo \ay - Looks like our expedition is over, but we havent been booted yet, waiting !\ax
 		/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /delay 60s
 		/goto :WaitTillIGetBooted
 	}
