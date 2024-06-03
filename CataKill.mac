@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 2nd, 2024 - 03:44:12 AM
+June 3rd, 2024 - 08:03:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1198,7 +1198,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
-			/call DoSwarmPull
+			/call DoSwarmPull_PathTo
 			/delay 10
 		}
 		|-----------------------------
@@ -1303,7 +1303,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
-			/call DoSwarmPull
+			/call DoSwarmPull_MainLoop
 			/delay 10
 		}
 		|-----------------------------
@@ -1385,7 +1385,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
-			/call DoSwarmPull
+			/call DoSwarmPull_MainLoop
 			/delay 10
 		}
 		|-----------------------------
@@ -1637,7 +1637,6 @@ Sub DoSwarmPull_MainLoop
 		/delay 10
 	}
 	|------------------------------------------------------
-	|------------------------------------------------------
 	
 	|---------------------------------- MAIN CYCLE BELOW
 	|---------------------------------- LEFT BOTTOM
@@ -1671,7 +1670,7 @@ Sub DoSwarmPull_MainLoop
 	/varset LocalStepArray_${Zone.ShortName}_2[1,18] ??.?? ??.?? ??.??]
 	|---------------------------------- RIGHT BOTTOM
 	|---------------------------------- MAIN CYCLE ABOVE
-
+	
 	|------------------------------------------------------
 	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
 	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
