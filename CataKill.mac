@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 09:50:12 AM
+June 3rd, 2024 - 11:07:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -127,12 +127,20 @@ Sub Main
 			|-------------------------
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				|/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
-				/echo \ar SWARMPULL NOT SETUP YET !
+				/echo \ar *** SWARMPULL NOT FULLY SETUP YET ***
+				|------------------------------------------
+				|/if (${CompletedPathToSteps.Equal[FALSE]}) {
+				|	/call DoSwarmPull_PathTo
+				|} 
+				|/if (${CompletedPathToSteps.Equal[TRUE]}) {
+				|	/call DoSwarmPull_MainLoop
+				|}					
+				|------------------------------------------
 				|/call DoSwarmPull_PathTo
 				|/Call DoClearTargets
 				|/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 				|/call GMCheck
-				|/doevents			
+				/doevents			
 				/end
 			}
 			|-------------------------
@@ -378,6 +386,11 @@ Sub CampInMarrs
 	
 	/if (${Zone.ID} == ${TempleofMarr}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
 	/delay 3s
+	|------------------------
+	|--- Reset the Cycle Loop
+	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/delay 10
+	|------------------------	
 	/echo \arCAMPING TO DESKTOP !!!\ax
 	/squelch /e3bcaa /camp desktop
 	/delay 3s
@@ -679,6 +692,12 @@ Sub GetExpedition
 			/squelch /target clear
 			/squelch /e3bcaa /keypress alt+z
 			/echo \ayGoing to the expedition now . . . .
+			|------------------------
+			|--- Reset the Cycle Loop
+			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+			/varset CompletedPathToSteps FALSE
+			/delay 10
+			|------------------------
 			/call GoToExpedition
 		}
 		|--- Have an Expedition -- C !!!
@@ -728,9 +747,12 @@ Sub GoToExpedition
 	/squelch /doortarget CASTLESWITCH
 	/delay 2s
 	/squelch /click left door
+	|------------------------
 	|--- Reset the Cycle Loop
 	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/varset CompletedPathToSteps FALSE
 	/delay 10
+	|------------------------
 	/call Zoning
 	
 	/if (${Zone.ID} == ${CataCombC}) /call ResetBard
@@ -754,6 +776,12 @@ Sub CheckExpeditionStatus
 	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition}) | CompletedPathToSteps=(${CompletedPathToSteps}) 
 	|--------------------------------------------
 	
+	|-----------------------------------------------------------------
+	| We are still in an ative expedition and in the expedition zone !
+	|-----------------------------------------------------------------
+	/if (${DranikCExpedition}==1 && ${InADungeon}==1) /return
+	|-----------------------------------------------------------------
+	
 	|-----------------------------------------------------------------------
 	|--- Expedition Over, but i havenbet been booted out to Dranik yet !!!!
 	|-----------------------------------------------------------------------
@@ -770,15 +798,11 @@ Sub CheckExpeditionStatus
 		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
 		/if ((${Zone.ID}==${RuinedCityofDranik}) && ${RepeatMission}) {
-			| RESET THE CompletedPathToSteps VALUE
-			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-			/delay 10
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
 		}
 		|-------------------		
 		/if (!${RepeatMission}) /call CampInMarrs
-	
 	}
 	|-----------------------------------------------------------------------
 		
@@ -787,7 +811,7 @@ Sub CheckExpeditionStatus
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-| SUB: DoClearTargets  ( Called by DoSwarmPull )
+| SUB: DoClearTargets  
 | --------------------------------------------------------------------------------------------
 Sub DoClearTargets
 	/if (${Debugging}) /echo Sub DoClearTargets Entry
@@ -1329,6 +1353,9 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
 	:MainLoopCycle
+	/message ==================================================================
+	/message \ag+++\ax \ayStarting SpawnPull Maincycle:\ax \ao...\ax \arLets go !\ax
+	/message ==================================================================
 	|-------------------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_2.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
@@ -1408,9 +1435,9 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/call CheckExpeditionStatus
     /next x
 	|-------------------------------------------------------------------------------------------------------
-
-	/echo \arCompleted all SpawnPull Masincycle ... TIME TO REVERSEE !!!!
-
+	/message ==================================================================
+	/message \ar+++\ax \aoCompleted SpawnPull Maincycle:\ax \atREVERSING CYCLE PATERN NOW\ax \ay...\ax \agLets go back !\ax
+	/message ==================================================================
 	|-------------------------------------------------------------------------------------------------------
     /for x ${LocalStepArray_${Zone.ShortName}_2.Size} to ${SpawnPull_Step}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
@@ -1628,8 +1655,8 @@ Sub DoSwarmPull_PathTo
 	/delay 10
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/varset ompletedPathToSteps FALSE
 	/delay 10
-	/varset CompletedPathToSteps FALSE
 	/call Go2LastSwarmLoc
 	|------------
  }
@@ -1731,6 +1758,7 @@ Sub DoSwarmPull_MainLoop
 	/delay 10
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
+	/varset CompletedPathToSteps TRUE
 	/delay 10	
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call Go2LastSwarmLoc
