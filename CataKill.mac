@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 09:43:12 AM
+June 3rd, 2024 - 09:50:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -65,7 +65,7 @@ Sub Main
 	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
 
 	|----------------------
-	/if (!${Select[${Zone.ID},152,386,336,330]}) {
+	/if (!${Select[${Zone.ID},152,202,386,336,330]}) {
 		/echo \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
 		/call GoToMarrs
 	}	
@@ -73,6 +73,10 @@ Sub Main
 		
 	|----------------------
  	/if (${startZone}==${Nexus}) /call GoToDranikFromNexus
+	|----------------------			
+	
+	|----------------------
+ 	/if (${startZone}==${PlaneofKnowledge}) /call GoToDranikFromPoK
 	|----------------------			
 		
 	|----------------------
@@ -289,6 +293,7 @@ Sub Declares
 	
 	|** Start ZoneID as variable **|
 	/declare Nexus				int	outer 152
+	/declare PlaneofKnowledge 	int outer 202
 	/declare TempleofMarr 		int outer 386
 	/declare RuinedCityofDranik	int outer 336
 	|** Start ZoneID as variable **|		
@@ -518,29 +523,6 @@ Sub GoToDranikFromNexus
 /if (${Zone.ID} == ${Nexus}) {
 	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
 	/delay 3s	
-	|----------------------------
-	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
-		|--- Group - Start in Marrs	
-		/delay 10
-		/squelch /e3bca /nav stop
-		/squelch /e3bca /playmelody stop
-		/squelch /e3bca /keypress x 
-		/delay 6
-		/squelch /e3bcaa /stand
-		/delay 5
-		/squelch /e3bca /alt act 511
-		
-		|---  Now Me !
-		/nav stop
-		/if (${Select[${Me.Class.ShortName},BRD]}) /playmelody stop
-		/keypress x 
-		/delay 6
-		/stand
-		/delay 5
-		/alt act 511
-		/delay 20s
-	}
-	|----------------------------
 	/squelch /e3bcaa /tar Valium
 	/delay 5
 	/squelch /e3bcaa /nav target
@@ -570,6 +552,47 @@ Sub GoToDranikFromNexus
 /if (${Debugging}) /echo Sub GoToDranik Exit
 /return
 | --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: GoToDranikFromPoK
+| --------------------------------------------------------------------------------------------
+Sub GoToDranikFromPoK
+/if (${Debugging}) /echo Sub GoToDranikFromPoK Entry
+	
+|------------------------------
+/if (${Zone.ID} == ${PlaneofKnowledge}) {
+	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/delay 3s	
+	/squelch /e3bcaa /tar Valium
+	/delay 5
+	/squelch /e3bcaa /nav target
+	/delay 5
+	/while (${Navigation.Active}) {
+		/call SetLoc
+		/call CheckStuck
+		/delay 5
+	}
+	/call GroupWait
+	/delay 2s	
+	/bark dranik
+	/delay 2s
+}
+|------------------------------
+|---------------
+/while (${Zone.ID} != ${RuinedCityofDranik}) {
+	/delay 5s
+}
+|---------------
+/call GroupWait
+/delay 2s
+
+/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+/call GotoRecruiter			
+
+/if (${Debugging}) /echo Sub GoToDranikFromPoK Exit
+/return
+| --------------------------------------------------------------------------------------------
+
 
 | --------------------------------------------------------------------------------------------
 | SUB: GotoRecruiter
