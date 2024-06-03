@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 08:03:12 AM
+June 3rd, 2024 - 09:43:12 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -119,8 +119,7 @@ Sub Main
 			|-----------------------------------
 			| -- Call check mission zone.
 			|-----------------------------------
-			/call CheckInADungeon
-			/call CheckHaveDranikCExp
+			/call CheckExpeditionStatus
 			|-------------------------
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				|/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
@@ -146,8 +145,7 @@ Sub Main
 			|-----------------------------------
 			| -- Call check mission zone.
 			|-----------------------------------
-			/call CheckInADungeon
-			/call CheckHaveDranikCExp
+			/call CheckExpeditionStatus
 			|-------------------------
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
@@ -729,10 +727,22 @@ Sub CheckExpeditionStatus
 	|--------------------------------------------
 	/call CheckInADungeon
 	/call CheckHaveDranikCExp
-	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition})
+	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
+	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition}) | CompletedPathToSteps=(${CompletedPathToSteps}) 
 	|--------------------------------------------
 	
-	|-------------------
+	|-----------------------------------------------------------------------
+	|--- Expedition Over, but i havenbet been booted out to Dranik yet !!!!
+	|-----------------------------------------------------------------------
+	/if (${DranikCExpedition}==0 && ${InADungeon}==1) {
+		:WaitTillIGetBooted
+		/echo \ay - Looks like out expedition is over, but we havent been booted yet, waiting !\ax
+		/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /delay 60s
+		/goto :WaitTillIGetBooted
+	}
+	|-----------------------------------------------------------------------
+	
+	|-----------------------------------------------------------------------
 	/if (${DranikCExpedition}==0 && ${InADungeon}==0) {
 		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
@@ -747,7 +757,7 @@ Sub CheckExpeditionStatus
 		/if (!${RepeatMission}) /call CampInMarrs
 	
 	}
-	|-------------------
+	|-----------------------------------------------------------------------
 		
 	/if (${Debugging}) /echo Sub CheckExpeditionStatus Exit
 /return
