@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 11:07:12 AM
+June 3rd, 2024 - 03:07:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -798,6 +798,13 @@ Sub CheckExpeditionStatus
 		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
 		/if ((${Zone.ID}==${RuinedCityofDranik}) && ${RepeatMission}) {
+			|------------------------
+			|--- Reset the Cycle Loop
+			|------------------------
+			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+			/varset CompletedPathToSteps FALSE
+			/delay 10
+			|------------------------		
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
 		}
@@ -1653,9 +1660,9 @@ Sub DoSwarmPull_PathTo
 	/delay 5
 	/Call DoClearTargets
 	/delay 10
-	|- Call Go2LastSwarmLoc after Defining Array
-	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-	/varset ompletedPathToSteps FALSE
+	|--------------- SET CompletedPathToSteps
+	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
+	/varset CompletedPathToSteps TRUE
 	/delay 10
 	/call Go2LastSwarmLoc
 	|------------
@@ -1755,10 +1762,6 @@ Sub DoSwarmPull_MainLoop
 	/echo \agGet ready, the fun is starting soon !
 	/delay 5
 	/Call DoClearTargets
-	/delay 10
-	|- Call Go2LastSwarmLoc after Defining Array
-	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
-	/varset CompletedPathToSteps TRUE
 	/delay 10	
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call Go2LastSwarmLoc
