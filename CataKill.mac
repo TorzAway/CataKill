@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 03:07:11 PM
+June 3rd, 2024 - 08:27:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -206,7 +206,6 @@ Sub Declares
 	|--------------------------------------
 	
 	/echo \ay${IniFileName} is the INI being used.
-	|/declare MobIgnore			string 	outer ${MacroName}_MobIgnored.ini
 	/declare Targets 			string 	outer
 	/declare myTargetID 		int 	outer 0
 	/declare reportTarget 		timer 	outer 5s
@@ -225,9 +224,7 @@ Sub Declares
 	|----------------------------------------------------------
 
 	|----------------------------------------------------------
-	/declare CampThemeArray[5,5]	string	outer
 	/declare InADungeon				int		outer	0
-	|/declare Adventure_Progress	string	outer	NULL
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
 	/declare DranikCExpedition		int		outer	0
@@ -295,7 +292,7 @@ Sub Declares
 	
 	/call CheckIni ${Settings} Theme LastSwarmed_Dungeon string NONE
 	/call CheckIni ${Settings} Theme LastSwarmed_Step string 1
-	/call CheckIni ${Settings} Theme CompletedPathToSteps FALSE
+	/call CheckIni ${Settings} Theme CompletedPathToSteps bool TRUE
 		
 	|** End of LDON.mac/PullFarm.mac type declares **|
 	
