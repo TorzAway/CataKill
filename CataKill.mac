@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 3rd, 2024 - 08:27:11 PM
+June 5th, 2024 - 01:29:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -126,22 +126,19 @@ Sub Main
 			/call CheckExpeditionStatus
 			|-------------------------
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
-				|/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
-				/echo \ar *** SWARMPULL NOT FULLY SETUP YET ***
+				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				|------------------------------------------
-				|/if (${CompletedPathToSteps.Equal[FALSE]}) {
-				|	/call DoSwarmPull_PathTo
-				|} 
-				|/if (${CompletedPathToSteps.Equal[TRUE]}) {
-				|	/call DoSwarmPull_MainLoop
-				|}					
+				/if (${CompletedPathToSteps.Equal[FALSE]}) {
+					/call DoSwarmPull_PathTo
+				} 
+				/if (${CompletedPathToSteps.Equal[TRUE]}) {
+					/call DoSwarmPull_MainLoop
+				}					
 				|------------------------------------------
-				|/call DoSwarmPull_PathTo
-				|/Call DoClearTargets
-				|/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
-				|/call GMCheck
-				/doevents			
-				/end
+				/Call DoClearTargets
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
+				/call GMCheck
+				/doevents
 			}
 			|-------------------------
 		} else {
@@ -958,7 +955,6 @@ Sub DoSinglePull(string Enemy)
 		/call GroupDeathChk
 		/call GroupManaChk
 		/call GroupEndChk
-		/if (${UseMerc}) /call CheckMerc
 	}
 	/if (${Debugging}) /echo \aymyTargetID has an ID: ${Spawn[id ${myTargetID}].ID} - is a corpse: ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} - I have an XTarget: !${Me.XTarget[1].ID}
 	/if (!${Spawn[id ${myTargetID}].ID} || ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} && !${Me.XTarget[1].ID} && !${Me.Casting.ID}) {
@@ -1252,6 +1248,10 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_1 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
+	/message ==================================================================
+	/message \ag+++\ax \ayStarting \arSpawnPull \atPathTo \agCycle:\ax \ao...\ax \arLets go !\ax
+	/message ==================================================================	
+	
 	|----------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_1.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_1[1,${x}]}
@@ -1269,7 +1269,6 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			/call GroupDeathChk
 			/call GroupManaChk
 			/call GroupEndChk
-			/if (${UseMerc}) /call CheckMerc
 		}		
 		|------------------------------------------		
 		
@@ -1352,14 +1351,17 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/declare x 						int 	local 	${SpawnPull_Step}
 	/declare TempSpawnPull_Loc		string 	local	NULL
+	/declare CampReturnLoc			string	local	1905.66 336.42 -134.67
 	
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
 	:MainLoopCycle
+	/delay 1s
 	/message ==================================================================
-	/message \ag+++\ax \ayStarting SpawnPull Maincycle:\ax \ao...\ax \arLets go !\ax
+	/message \ag+++\ax \ayStarting \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \arLets go !\ax
 	/message ==================================================================
+	/delay 3s
 	|-------------------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_2.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
@@ -1377,7 +1379,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			/call GroupDeathChk
 			/call GroupManaChk
 			/call GroupEndChk
-			/if (${UseMerc}) /call CheckMerc
 		}		
 		|------------------------------------------		
 		
@@ -1439,88 +1440,26 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/call CheckExpeditionStatus
     /next x
 	|-------------------------------------------------------------------------------------------------------
+
+	| --- NAV TO CampReturnLoc
 	/message ==================================================================
-	/message \ar+++\ax \aoCompleted SpawnPull Maincycle:\ax \atREVERSING CYCLE PATERN NOW\ax \ay...\ax \agLets go back !\ax
+	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \atRETURNING TO CAMP !!!\ax
 	/message ==================================================================
-	|-------------------------------------------------------------------------------------------------------
-    /for x ${LocalStepArray_${Zone.ShortName}_2.Size} to ${SpawnPull_Step}
-		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
-		
-		|-----------------------------
-		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
-			/echo \ar The Catacomb steps did not load correctly, reloading !
-			/call DoSwarmPull_MainLoop
-			/delay 10
-		}
-		|-----------------------------
-		
-		|------------------------------------------
-		/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
-			/call GroupDeathChk
-			/call GroupManaChk
-			/call GroupEndChk
-			/if (${UseMerc}) /call CheckMerc
-		}		
-		|------------------------------------------		
-		
-		|------------------------------------------
-		| Move group to me before next step
-		|------------------------------------------
-		/echo \at - Calling the group to me before moving to the next step . . . . 
-		/call GroupWait
-		/delay 1s
-		|------------------------------------------
-
-		|-----------------------------------------------
-		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
-		|-----------------------------------------------
-		/if (${TempSpawnPull_Loc.Length}>0) {
-			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
-			|--------------------------------------------------------------
-			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
-			|--------------------------------------------------------------
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
-				|----------------------------------------------
-				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
-				/nav loc ${TempSpawnPull_Loc}
-				|----------------------------------------------
-				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
-			}
-			|--------------------------------------------------------------
-			/e3bca /nav loc ${TempSpawnPull_Loc}
-			/delay 5
-			/while (${Navigation.Active}) {
-				/call SetLoc
-				/call CheckStuck
-				/delay 5
-			}
-			/squelch /e3bca /nav id ${Me.ID}
-			/delay 5
-			|----------------------------------------------------------		
-
-			|-------------------------------------------------------------------------------------------------------
-			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
-			|-------------------------------------------------------------------------------------------------------
-			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
-			/call IniChange "Theme" "LastSwarmed_Step" ${x}
-			/delay 10
-			|-------------------------------------------------------------------------------------------------------
-
-			|---------------------------------------------------------------
-			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
-			|---------------------------------------------------------------
-			/call DoClearTargets
-			/doevents
-			/delay 10
-		}
-		|-----------------------------------------------
-		| Before we go to next step ...   ECheck if we should loot Corpses.
-		/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
-		| Before we go to next step ...   EXIT the loop if we have mission success !
-		|-----------------------------------------------
-		/call CheckExpeditionStatus
-    /next x
-	|-------------------------------------------------------------------------------------------------------
+	/e3bcaa /nav loc ${CampReturnLoc}	
+	/delay 1s
+	
+	|------------------------------------------
+	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
+		/call GroupDeathChk
+		/call GroupManaChk
+		/call GroupEndChk
+	}		
+	|------------------------------------------		
+	
+	/message ==================================================================
+	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \agLets do it again !!!\ax
+	/message ==================================================================
+	/delay 3s
 	
 	/goto :MainLoopCycle
 	
@@ -1614,13 +1553,13 @@ Sub DoSwarmPull_PathTo
 		/delay 10
 	}
 	|------------------------------------------------------
-	
+		
 	|---------------------------------- PATH TO MAIN CYCLE
 	/varset LocalStepArray_${Zone.ShortName}_1[1,1] -20.83 -82.37 -2.72
 	/varset LocalStepArray_${Zone.ShortName}_1[1,2] 199.91 118.39 -53.53
-	/varset LocalStepArray_${Zone.ShortName}_1[1,5] 627.67 96.03 -71.11
+	/varset LocalStepArray_${Zone.ShortName}_1[1,3] 627.67 96.03 -71.11
 	/varset LocalStepArray_${Zone.ShortName}_1[1,4] 665.50 -32.93 -73.64
-	/varset LocalStepArray_${Zone.ShortName}_1[1,5] 451.78 -33.66 -71.95
+	/varset LocalStepArray_${Zone.ShortName}_1[1,5] 477.28 -42.11 -76.19
 	|---------------------------------- 1st large room below
 	/varset LocalStepArray_${Zone.ShortName}_1[1,6] 800.04 206.63 -95.55
 	/varset LocalStepArray_${Zone.ShortName}_1[1,7] 800.04 400.91 -92.62
@@ -1634,7 +1573,7 @@ Sub DoSwarmPull_PathTo
 	|---------------------------------- 2nd large room above
 	/varset LocalStepArray_${Zone.ShortName}_1[1,13] 1593.92 193.18 -135.82
 	/varset LocalStepArray_${Zone.ShortName}_1[1,14] 1757.71 303.57 -135.19
-	|---------------------------------- PATH TO MAIN CYCLE	
+	|---------------------------------- PATH TO MAIN CYCLE
 	
 	|------------------------------------------------------
 	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,1]}\am]\ay
@@ -1704,36 +1643,36 @@ Sub DoSwarmPull_MainLoop
 	
 	|---------------------------------- MAIN CYCLE BELOW
 	|---------------------------------- LEFT BOTTOM
-	/varset LocalStepArray_${Zone.ShortName}_2[1,1] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,2] ??.?? ??.?? ??.?? 
-	/varset LocalStepArray_${Zone.ShortName}_2[1,3] ??.?? ??.?? ??.??
+	/varset LocalStepArray_${Zone.ShortName}_2[1,1] 2016.83 451.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,2] 2016.83 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,3] 2016.83 711.16 -135.32
 	|---------------------------------- LEFT BOTTOM
 	|---------------------------------- LEFT MIDDLE
-	/varset LocalStepArray_${Zone.ShortName}_2[1,4] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,5] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,6] ??.?? ??.?? ??.??
+	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2247.83 451.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2247.83 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2247.83 711.16 -135.32
 	|---------------------------------- LEFT MIDDLE
 	|---------------------------------- LEFT TOP
-	/varset LocalStepArray_${Zone.ShortName}_2[1,7] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,8] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,9] ??.?? ??.?? ??.??
+	/varset LocalStepArray_${Zone.ShortName}_2[1,7] 2449.70 451.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 2449.70 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,9] 2449.70 711.16 -135.32
 	|---------------------------------- LEFT TOP
-	|---------------------------------- RIGHT TOP
-	/varset LocalStepArray_${Zone.ShortName}_2[1,10] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,11] ??.?? ??.?? ??.??
-	/varset LocalStepArray_${Zone.ShortName}_2[1,12] ??.?? ??.?? ??.??
+	|---------------------------------- RIGHT TOP	    
+	/varset LocalStepArray_${Zone.ShortName}_2[1,10] 2449.70 251.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,11] 2449.70 91.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,12] 2449.70 -68.40 -135.32
 	|---------------------------------- RIGHT TOP
 	|---------------------------------- RIGHT MIDDLE
-	/varset LocalStepArray_${Zone.ShortName}_2[1,13] ??.?? ??.?? ??.?? 
-	/varset LocalStepArray_${Zone.ShortName}_2[1,14] ??.?? ??.?? ??.?? 
-	/varset LocalStepArray_${Zone.ShortName}_2[1,15] ??.?? ??.?? ??.??
+	/varset LocalStepArray_${Zone.ShortName}_2[1,13] 2228.83 251.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,14] 2228.83 91.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,15] 2228.83 -68.40 -135.32
 	|---------------------------------- RIGHT MIDDLE
 	|---------------------------------- RIGHT BOTTOM
-	/varset LocalStepArray_${Zone.ShortName}_2[1,16] ??.?? ??.?? ??.?? 
-	/varset LocalStepArray_${Zone.ShortName}_2[1,17] ??.?? ??.?? ??.?? 
-	/varset LocalStepArray_${Zone.ShortName}_2[1,18] ??.?? ??.?? ??.??]
+	/varset LocalStepArray_${Zone.ShortName}_2[1,16] 2007.83 251.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,17] 2007.83 91.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,18] 2007.83 -32.97 -133.30
 	|---------------------------------- RIGHT BOTTOM
-	|---------------------------------- MAIN CYCLE ABOVE
+	|---------------------------------- MAIN CYCLE ABOVE	
 	
 	|------------------------------------------------------
 	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
