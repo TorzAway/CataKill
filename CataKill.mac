@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 01:29:11 PM
+June 5th, 2024 - 01:49:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -128,10 +128,9 @@ Sub Main
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				|------------------------------------------
-				/if (${CompletedPathToSteps.Equal[FALSE]}) {
+				/if (${CompletedPathToSteps}==0) {
 					/call DoSwarmPull_PathTo
-				} 
-				/if (${CompletedPathToSteps.Equal[TRUE]}) {
+				} else {
 					/call DoSwarmPull_MainLoop
 				}					
 				|------------------------------------------
@@ -1356,6 +1355,12 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
+	|-- MOVE TO CAMP
+	/squelch /e3bca /nav loc ${CampReturnLoc}
+	/delay 1s
+	/call NavToLoc2 ${CampReturnLoc}
+	/delay 5
+	
 	:MainLoopCycle
 	/delay 1s
 	/message ==================================================================
@@ -1445,8 +1450,10 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/message ==================================================================
 	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \atRETURNING TO CAMP !!!\ax
 	/message ==================================================================
-	/e3bcaa /nav loc ${CampReturnLoc}	
+	/squelch /e3bca /nav loc ${CampReturnLoc}
 	/delay 1s
+	/call NavToLoc2 ${CampReturnLoc}
+	/delay 5
 	
 	|------------------------------------------
 	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
@@ -1496,7 +1503,7 @@ Sub Go2LastSwarmLoc
 	| Change values to pass STEP 1 if we arent in the last recorded dungeon.
 	|-----------------------------------------------------------------------
 	/if (!${Zone.ShortName.Equal[${LastSwarmed_Dungeon}]}) {
-		/call ForeceSpawnStepReset
+		/call ForceSpawnStepReset
 	}
 	|-----------------------------------------------------------------------
 	|/echo \arGo2LastSwarmLoc: \ay/call SwarmPullStepMove ${LastSwarmed_Step}
@@ -1508,11 +1515,9 @@ Sub Go2LastSwarmLoc
 	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
 	/delay 10
 	|-----------------------------------
-	
-	/if (${CompletedPathToSteps.Equal[FALSE]}) {
+	/if (${CompletedPathToSteps}==0) {
 		/call SwarmPullStepMove_1 ${LastSwarmed_Step}
-	} 
-	/if (${CompletedPathToSteps.Equal[TRUE]}) {
+	} else {
 		/call SwarmPullStepMove_2 ${LastSwarmed_Step}
 	}
 	|-----------------------------------------------------------------------
@@ -1521,6 +1526,25 @@ Sub Go2LastSwarmLoc
 	/if (${Debugging}) /echo Sub Go2LastSwarmLoc Exit
 /return
 | --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------------
+| SUB: ForceSpawnStepReset
+| --------------------------------------------------------------------------------------------------
+Sub ForceSpawnStepReset
+/if (${Debugging}) /echo Sub ForceSpawnStepReset Entry
+
+	/echo \arForcing LastSwarmed_Step reset to step \ay(\at1\ay)
+
+	|----------------------------------------------------------
+	| -- Write STEP 1 to the ini file since we want to set our initial first step for that zone.
+	|------------------------------------------
+	/call IniChange "Theme" "LastSwarmed_Step" 1
+	/delay 20
+	|------------------------------------------
+
+/if (${Debugging}) /echo Sub ForceSpawnStepReset Exit
+/return
+| --------------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
 | SUB: DoSwarmPull_PathTo		Note: Define The Array Variables and kick off Go2LastSwarmLoc
@@ -1583,13 +1607,13 @@ Sub DoSwarmPull_PathTo
 	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,5]}\am]\ay
 	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,6]}\am]\ay
 	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,7]}\am]\ay
-	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,8]}\am]\ay
-	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,9]}\am]\ay
-	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,10]}\am]\ay
-	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,11]}\am]\ay
-	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,12]}\am]\ay
-	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,13]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,14]}\am]\ay
+	/echo \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,8]}\am]\ay
+	/echo \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,9]}\am]\ay
+	/echo \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,10]}\am]\ay
+	/echo \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,11]}\am]\ay
+	/echo \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,12]}\am]\ay
+	/echo \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,13]}\am]\ay
+	/echo \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,14]}\am]\ay
 	/message ==================================================================
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
@@ -1682,17 +1706,17 @@ Sub DoSwarmPull_MainLoop
 	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
 	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
 	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay
-	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,8]}\am]\ay
-	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,9]}\am]\ay
-	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,10]}\am]\ay
-	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,11]}\am]\ay
-	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,12]}\am]\ay
-	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,13]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,14]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,15]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,16]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,17]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,18]}\am]\ay
+	/echo \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,8]}\am]\ay
+	/echo \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,9]}\am]\ay
+	/echo \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,10]}\am]\ay
+	/echo \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,11]}\am]\ay
+	/echo \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,12]}\am]\ay
+	/echo \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,13]}\am]\ay
+	/echo \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,14]}\am]\ay
+	/echo \ayStep \am[\ag15\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,15]}\am]\ay
+	/echo \ayStep \am[\ag16\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,16]}\am]\ay
+	/echo \ayStep \am[\ag17\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,17]}\am]\ay
+	/echo \ayStep \am[\ag18\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,18]}\am]\ay
 	/message ==================================================================
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
