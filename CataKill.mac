@@ -288,7 +288,7 @@ Sub Declares
 	
 	/call CheckIni ${Settings} Theme LastSwarmed_Dungeon string NONE
 	/call CheckIni ${Settings} Theme LastSwarmed_Step string 1
-	/call CheckIni ${Settings} Theme CompletedPathToSteps bool TRUE
+	/call CheckIni ${Settings} Theme CompletedPathToSteps bool FALSE
 		
 	|** End of LDON.mac/PullFarm.mac type declares **|
 	
