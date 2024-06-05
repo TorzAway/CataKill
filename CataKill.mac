@@ -128,7 +128,7 @@ Sub Main
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				|------------------------------------------
-				/if (${CompletedPathToSteps}==0) {
+				/if (!${CompletedPathToSteps}) {
 					/call DoSwarmPull_PathTo
 				} else {
 					/call DoSwarmPull_MainLoop
@@ -1311,7 +1311,6 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			|-------------------------------------------------------------------------------------------------------
 			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
 			/call IniChange "Theme" "LastSwarmed_Step" ${x}
-			/delay 10
 			|-------------------------------------------------------------------------------------------------------
 
 			|---------------------------------------------------------------
@@ -1427,7 +1426,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			|-------------------------------------------------------------------------------------------------------
 			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
 			/call IniChange "Theme" "LastSwarmed_Step" ${x}
-			/delay 10
 			|-------------------------------------------------------------------------------------------------------
 
 			|---------------------------------------------------------------
@@ -1515,7 +1513,7 @@ Sub Go2LastSwarmLoc
 	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
 	/delay 10
 	|-----------------------------------
-	/if (${CompletedPathToSteps}==0) {
+	/if (!${CompletedPathToSteps}) {
 		/call SwarmPullStepMove_1 ${LastSwarmed_Step}
 	} else {
 		/call SwarmPullStepMove_2 ${LastSwarmed_Step}
