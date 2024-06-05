@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 06:27:11 PM
+June 5th, 2024 - 06:33:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1619,8 +1619,8 @@ Sub DoSwarmPull_PathTo
 	/Call DoClearTargets
 	/delay 10
 	|--------------- SET CompletedPathToSteps
-	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
-	/varset CompletedPathToSteps TRUE
+	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/varset CompletedPathToSteps FALSE
 	/delay 10
 	/call Go2LastSwarmLoc
 	|------------
