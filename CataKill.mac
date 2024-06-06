@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 06:33:11 PM
+June 5th, 2024 - 09:43:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -128,7 +128,7 @@ Sub Main
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				|------------------------------------------
-				/if (!${CompletedPathToSteps}) {
+				/if (!${CompletedPathTo}) {
 					/call DoSwarmPull_PathTo
 				} else {
 					/call DoSwarmPull_MainLoop
@@ -288,7 +288,7 @@ Sub Declares
 	
 	/call CheckIni ${Settings} Theme LastSwarmed_Dungeon string NONE
 	/call CheckIni ${Settings} Theme LastSwarmed_Step string 1
-	/call CheckIni ${Settings} Theme CompletedPathToSteps bool FALSE
+	/call CheckIni ${Settings} Theme CompletedPathTo bool FALSE
 		
 	|** End of LDON.mac/PullFarm.mac type declares **|
 	
@@ -381,7 +381,7 @@ Sub CampInMarrs
 	/delay 3s
 	|------------------------
 	|--- Reset the Cycle Loop
-	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
+	/call IniChange "Theme" "CompletedPathTo" "FALSE"
 	/delay 10
 	|------------------------	
 	/echo \arCAMPING TO DESKTOP !!!\ax
@@ -687,8 +687,8 @@ Sub GetExpedition
 			/echo \ayGoing to the expedition now . . . .
 			|------------------------
 			|--- Reset the Cycle Loop
-			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-			/varset CompletedPathToSteps FALSE
+			/call IniChange "Theme" "CompletedPathTo" "FALSE"
+			/varset CompletedPathTo FALSE
 			/delay 10
 			|------------------------
 			/call GoToExpedition
@@ -742,8 +742,8 @@ Sub GoToExpedition
 	/squelch /click left door
 	|------------------------
 	|--- Reset the Cycle Loop
-	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-	/varset CompletedPathToSteps FALSE
+	/call IniChange "Theme" "CompletedPathTo" "FALSE"
+	/varset CompletedPathTo FALSE
 	/delay 10
 	|------------------------
 	/call Zoning
@@ -765,8 +765,8 @@ Sub CheckExpeditionStatus
 	|--------------------------------------------
 	/call CheckInADungeon
 	/call CheckHaveDranikCExp
-	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
-	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition}) | CompletedPathToSteps=(${CompletedPathToSteps}) 
+	/varset CompletedPathTo ${Ini[${Settings},Theme,CompletedPathTo]}
+	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition}) | CompletedPathTo=(${CompletedPathTo}) 
 	|--------------------------------------------
 	
 	|-----------------------------------------------------------------
@@ -794,8 +794,8 @@ Sub CheckExpeditionStatus
 			|------------------------
 			|--- Reset the Cycle Loop
 			|------------------------
-			/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-			/varset CompletedPathToSteps FALSE
+			/call IniChange "Theme" "CompletedPathTo" "FALSE"
+			/varset CompletedPathTo FALSE
 			/delay 10
 			|------------------------		
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
@@ -1331,9 +1331,9 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/message ==================================================================
 	/echo /atCompleted all SwarmPull "PathTo" steps./ax
 	/echo /atUpdating (\ay${Settings})\ax INI file with PathTo completion./ax
-	/call IniChange "Theme" "CompletedPathToSteps" "TRUE"
-	/varset CompletedPathToSteps TRUE
-	/echo /ayStarting Main Cycle Run !!!!!!/ax
+	/call IniChange "Theme" "CompletedPathTo" "TRUE"
+	/varset CompletedPathTo TRUE
+	/echo /ayStarting Main Cycle Run !!!/ax
 	/message ==================================================================
 	/delay 3s
 	/call DoSwarmPull_MainLoop
@@ -1510,10 +1510,10 @@ Sub Go2LastSwarmLoc
 	|-----------------------------------
 	|- Retrieve the last mission results
 	|-----------------------------------
-	/varset CompletedPathToSteps ${Ini[${Settings},Theme,CompletedPathToSteps]}
+	/varset CompletedPathTo ${Ini[${Settings},Theme,CompletedPathTo]}
 	/delay 10
 	|-----------------------------------
-	/if (!${CompletedPathToSteps}) {
+	/if (!${CompletedPathTo}) {
 		/call SwarmPullStepMove_1 ${LastSwarmed_Step}
 	} else {
 		/call SwarmPullStepMove_2 ${LastSwarmed_Step}
@@ -1618,9 +1618,9 @@ Sub DoSwarmPull_PathTo
 	/delay 5
 	/Call DoClearTargets
 	/delay 10
-	|--------------- SET CompletedPathToSteps
-	/call IniChange "Theme" "CompletedPathToSteps" "FALSE"
-	/varset CompletedPathToSteps FALSE
+	|--------------- SET CompletedPathTo
+	/call IniChange "Theme" "CompletedPathTo" "FALSE"
+	/varset CompletedPathTo FALSE
 	/delay 10
 	/call Go2LastSwarmLoc
 	|------------
