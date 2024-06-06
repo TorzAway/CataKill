@@ -1276,7 +1276,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
 		|-----------------------------------------------
 		/if (${TempSpawnPull_Loc.Length}>0) {
-			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}_1\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
 			|--------------------------------------------------------------
 			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 			|--------------------------------------------------------------
