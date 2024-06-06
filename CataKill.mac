@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 09:54:11 PM
+June 5th, 2024 - 10:41:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1332,7 +1332,9 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/echo /atCompleted all SwarmPull "PathTo" steps./ax
 	/echo /atUpdating (\ay${Settings})\ax INI file with PathTo completion./ax
 	/call IniChange "Theme" "CompletedPathTo" "TRUE"
+	/call IniChange "Theme" "LastSwarmed_Step" "1"
 	/varset CompletedPathTo TRUE
+	/varset LastSwarmed_Step 1
 	/echo /ayStarting Main Cycle Run !!!/ax
 	/message ==================================================================
 	/delay 3s
