@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 10:48:11 PM
+June 5th, 2024 - 11:00:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2828,6 +2828,7 @@ Sub CheckThings
 	
 	/call CheckPlugin MQ2Nav
 	/call CheckMesh
+	/call CheckPlugin MQ2Events
 	/call CheckPlugin MQ2Melee
 	/call CheckPlugin MQ2MoveUtils
 
