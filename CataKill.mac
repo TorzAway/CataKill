@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 6th, 2024 - 03:55:11 pM
+June 6th, 2024 - 04:52:12 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -135,8 +135,11 @@ Sub Main
 					/call DoSwarmPull_PathTo
 				} else {
 					|------------------------------------------------------
-					/if (!${BiggerSwarms}) /call DoSwarmPull_MainLoop
-					/if (${BiggerSwarms})  /call DoSwarmPull_MainLoop_Bigger
+					/if (!${BiggerSwarms}) {
+						/call DoSwarmPull_MainLoop
+					} else {
+						/call DoSwarmPull_MainLoop_Bigger
+					}
 					|------------------------------------------------------
 				}					
 				|------------------------------------------
@@ -1340,8 +1343,11 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/message ==================================================================
 	/delay 3s
 	|------------------------------------------------------
-	/if (!${BiggerSwarms}) /call DoSwarmPull_MainLoop
-	/if (${BiggerSwarms}) /call DoSwarmPull_MainLoop_Bigger
+	/if (!${BiggerSwarms}) {
+		/call DoSwarmPull_MainLoop
+	} else {
+		/call DoSwarmPull_MainLoop_Bigger
+	}
 	|------------------------------------------------------
 	/delay 10
 		
