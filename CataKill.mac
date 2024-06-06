@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 6th, 2024 - 06:07:11 AM
+June 6th, 2024 - 09:14:11 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -382,6 +382,7 @@ Sub CampInMarrs
 	|------------------------
 	|--- Reset the Cycle Loop
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
+	/call ForceSpawnStepReset
 	|------------------------	
 	/echo \arCAMPING TO DESKTOP !!!\ax
 	/squelch /e3bcaa /camp desktop
@@ -687,6 +688,7 @@ Sub GetExpedition
 			|------------------------
 			|--- Reset the Cycle Loop
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
+			/call ForceSpawnStepReset
 			|------------------------
 			/call GoToExpedition
 		}
@@ -737,10 +739,6 @@ Sub GoToExpedition
 	/squelch /doortarget CASTLESWITCH
 	/delay 2s
 	/squelch /click left door
-	|------------------------
-	|--- Reset the Cycle Loop
-	/call IniChange "Theme" "CompletedPathTo" "FALSE"
-	|------------------------
 	/call Zoning
 	
 	/if (${Zone.ID} == ${CataCombC}) /call ResetBard
@@ -790,6 +788,7 @@ Sub CheckExpeditionStatus
 			|--- Reset the Cycle Loop
 			|------------------------
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
+			/call ForceSpawnStepReset
 			|------------------------		
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
@@ -1512,7 +1511,6 @@ Sub Go2LastSwarmLoc
 	|- Retrieve the last mission results
 	|-----------------------------------
 	/varset CompletedPathTo ${Ini[${Settings},Theme,CompletedPathTo]}
-	/delay 10
 	|-----------------------------------
 	/if (!${CompletedPathTo}) {
 		/call SwarmPullStepMove_1 ${LastSwarmed_Step}
@@ -1621,6 +1619,7 @@ Sub DoSwarmPull_PathTo
 	/delay 10
 	|--------------- SET CompletedPathTo
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
+	/call ForceSpawnStepReset
 	/call Go2LastSwarmLoc
 	|------------
  }
