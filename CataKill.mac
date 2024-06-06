@@ -57,9 +57,6 @@ Sub Main
 	/echo \at/E3LDoN \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
 	/echo \at/E3LDoN \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
 	/echo \at/E3LDoN \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
-	
-	BiggerSwarms
-	
 	/echo \at/E3LDoN \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
 	/echo \at/E3LDoN \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
 	/echo \at/E3LDoN \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
