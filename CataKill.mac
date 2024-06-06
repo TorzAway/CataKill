@@ -1635,7 +1635,6 @@ Sub DoSwarmPull_PathTo
 	/delay 10
 	|--------------- SET CompletedPathTo
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
-	/call ForceSpawnStepReset
 	/call Go2LastSwarmLoc
 	|------------
  }
@@ -1680,17 +1679,17 @@ Sub DoSwarmPull_MainLoop
 	|---------------------------------- MAIN CYCLE BELOW
 	|---------------------------------- LEFT BOTTOM
 	/varset LocalStepArray_${Zone.ShortName}_2[1,1] 2016.83 451.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,2] 2016.83 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,2] 2016.83 571.16 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,3] 2016.83 711.16 -135.32
 	|---------------------------------- LEFT BOTTOM
 	|---------------------------------- LEFT MIDDLE
 	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2247.83 451.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2247.83 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2247.83 571.16 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2247.83 711.16 -135.32
 	|---------------------------------- LEFT MIDDLE
 	|---------------------------------- LEFT TOP
 	/varset LocalStepArray_${Zone.ShortName}_2[1,7] 2449.70 451.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 2449.70 581.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 2449.70 571.16 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,9] 2449.70 711.16 -135.32
 	|---------------------------------- LEFT TOP
 	|---------------------------------- RIGHT TOP	    
