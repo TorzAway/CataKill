@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 11:00:11 PM
+June 6th, 2024 - 06:07:11 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1271,6 +1271,10 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		/call GroupWait
 		/delay 1s
 		|------------------------------------------
+		
+		|-------------------------
+		/call CheckCasting
+		|-------------------------	
 
 		|-----------------------------------------------
 		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
@@ -1386,7 +1390,11 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/call GroupWait
 		/delay 1s
 		|------------------------------------------
-
+		
+		|-------------------------
+		/call CheckCasting
+		|-------------------------
+		
 		|-----------------------------------------------
 		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
 		|-----------------------------------------------
