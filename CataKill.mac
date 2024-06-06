@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 5th, 2024 - 10:41:11 PM
+June 5th, 2024 - 10:48:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -382,7 +382,6 @@ Sub CampInMarrs
 	|------------------------
 	|--- Reset the Cycle Loop
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
-	/delay 10
 	|------------------------	
 	/echo \arCAMPING TO DESKTOP !!!\ax
 	/squelch /e3bcaa /camp desktop
@@ -688,8 +687,6 @@ Sub GetExpedition
 			|------------------------
 			|--- Reset the Cycle Loop
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
-			/varset CompletedPathTo FALSE
-			/delay 10
 			|------------------------
 			/call GoToExpedition
 		}
@@ -743,8 +740,6 @@ Sub GoToExpedition
 	|------------------------
 	|--- Reset the Cycle Loop
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
-	/varset CompletedPathTo FALSE
-	/delay 10
 	|------------------------
 	/call Zoning
 	
@@ -795,8 +790,6 @@ Sub CheckExpeditionStatus
 			|--- Reset the Cycle Loop
 			|------------------------
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
-			/varset CompletedPathTo FALSE
-			/delay 10
 			|------------------------		
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/call GotoRecruiter
@@ -1332,9 +1325,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/echo /atCompleted all SwarmPull "PathTo" steps./ax
 	/echo /atUpdating (\ay${Settings})\ax INI file with PathTo completion./ax
 	/call IniChange "Theme" "CompletedPathTo" "TRUE"
-	/call IniChange "Theme" "LastSwarmed_Step" "1"
-	/varset CompletedPathTo TRUE
-	/varset LastSwarmed_Step 1
+	/call ForceSpawnStepReset	
 	/echo /ayStarting Main Cycle Run !!!/ax
 	/message ==================================================================
 	/delay 3s
@@ -1622,8 +1613,6 @@ Sub DoSwarmPull_PathTo
 	/delay 10
 	|--------------- SET CompletedPathTo
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
-	/varset CompletedPathTo FALSE
-	/delay 10
 	/call Go2LastSwarmLoc
 	|------------
  }
