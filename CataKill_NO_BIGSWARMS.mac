@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 6th, 2024 - 08:12:11 PM
+June 6th, 2024 - 09:23:13 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -268,6 +268,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
 	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
+	/call CheckINI ${IniFileName} General UseMq2Melee bool FALSE
 	/call CheckINI ${IniFileName} General LootCorpse bool FALSE
 	
 	/declare BRDTravelSong string  outer "Selo's Song of Travel"
@@ -2837,7 +2838,16 @@ Sub CheckThings
 	/call CheckPlugin MQ2Nav
 	/call CheckMesh
 	/call CheckPlugin MQ2Events
-	/call CheckPlugin MQ2Melee
+	|-----------------------------
+	/if (${UseMq2Melee}) {
+		/call CheckPlugin MQ2Melee
+	} else {
+		/if (${Bool[${Plugin[MQ2Melee]}]}) {
+			/echo \ay -- Unloading \am[\atMQ2Melee\am]\ay plugin.
+			/squelch /plugin MQ2Melee unload noauto
+		}
+	}
+	|-----------------------------
 	/call CheckPlugin MQ2MoveUtils
 
 	|----------------------
