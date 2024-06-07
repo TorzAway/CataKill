@@ -66,6 +66,10 @@ Sub Main
 	/delay 5s
 	
 	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
+	|--------------
+	/call GroupWait
+	/delay 2s
+	|--------------
 
 	|----------------------
 	/if (!${Select[${Zone.ID},152,202,386,336,330]}) {
@@ -89,7 +93,6 @@ Sub Main
 	|------------------------------------------------------------------------------
 	/if (${startZone}==${RuinedCityofDranik}) {
 		/call GetExpeditionData
-		/call GroupWait
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
