@@ -89,7 +89,6 @@ Sub Main
 	|------------------------------------------------------------------------------
 	/if (${startZone}==${RuinedCityofDranik}) {
 		/call GetExpeditionData
-		/call Group2Me
 		/call GroupWait
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
