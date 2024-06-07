@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 09:43:13 PM
+June 7th, 2024 - 10:19:13 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1305,13 +1305,13 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
 				|----------------------------------------------
 				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
-				/nav loc ${TempSpawnPull_Loc}
 				|----------------------------------------------
-				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
+				/squelch /nav loc ${TempSpawnPull_Loc}
+				/delay 7
+				/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}
+				|----------------------------------------------
 			}
 			|--------------------------------------------------------------
-			/e3bca /nav loc ${TempSpawnPull_Loc}
-			/delay 5
 			/while (${Navigation.Active}) {
 				/call SetLoc
 				/call CheckStuck
@@ -1375,12 +1375,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
 	
-	|-- MOVE TO CAMP
-	/squelch /e3bca /nav loc ${CampReturnLoc}
-	/delay 1s
-	/call NavToLoc2 ${CampReturnLoc}
-	/delay 5
-	
 	:MainLoopCycle
 	/delay 1s
 	/message ==================================================================
@@ -1430,13 +1424,13 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
 				|----------------------------------------------
 				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
-				/nav loc ${TempSpawnPull_Loc}
 				|----------------------------------------------
-				/squelch /e3bca /nav loc ${TempSpawnPull_Loc}
+				/squelch /nav loc ${TempSpawnPull_Loc}
+				/delay 7
+				/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}
+				|----------------------------------------------
 			}
 			|--------------------------------------------------------------
-			/e3bca /nav loc ${TempSpawnPull_Loc}
-			/delay 5
 			/while (${Navigation.Active}) {
 				/call SetLoc
 				/call CheckStuck
@@ -1473,10 +1467,11 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/message ==================================================================
 	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \atRETURNING TO CAMP !!!\ax
 	/message ==================================================================
+	|-- MOVE TO CAMP
 	/squelch /e3bca /nav loc ${CampReturnLoc}
 	/delay 1s
 	/call NavToLoc2 ${CampReturnLoc}
-	/delay 5
+	/delay 5	
 	
 	|------------------------------------------
 	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
