@@ -911,7 +911,7 @@ Sub DoSinglePull(string Enemy)
 		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 			/pet attack
 			}
-		/if (${Spawn[id ${Target.ID}].Distance} < 30) /killthis
+		/if (${Spawn[id ${Target.ID}].Distance} < 30 && ${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 		}
 		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
