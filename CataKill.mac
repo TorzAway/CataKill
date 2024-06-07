@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 02:40:13 PM
+June 7th, 2024 - 06:22:23 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1517,7 +1517,11 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/call GroupManaChk
 		/call GroupEndChk
 	}		
-	|------------------------------------------		
+	|------------------------------------------	
+
+	|------------------
+	/call ReclaimAltDC
+	|------------------	
 	
 	/message ==================================================================
 	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \agLets do it again !!!\ax
@@ -3065,6 +3069,216 @@ Sub CheckMesh
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+|SUB: AutoSell_Loot_SupplyAgent
+| --------------------------------------------------------------------------------------------
+  Sub AutoSell_Loot_SupplyAgent
+  /if (${Debugging}) /echo Sub AutoSell_Loot_SupplyAgent Entry
+  
+	/declare MerchName	string	local Merchant
+	
+	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to lacate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw> 
+	/target clear
+	/delay 2s !${Target.ID}
+	
+	/squelch /target ${MerchName}
+	/delay 2s ${Target.ID}
+	
+	|-------------------------------------
+	/if (${Target.ID}) {
+		/squelch /nav id ${Target.ID} 
+		/delay 5
+		/while (${Navigation.Active}) {
+			/call SetLoc
+			/call CheckStuck
+			/delay 5
+		}	
+	}
+	/delay 5
+	|-------------------------------------
+	
+	|------------------
+	/call ReclaimAltDC
+	|------------------
+	
+	|-------------------------------------
+	/if (${Target.ID} && ${Target.Distance}<=20) {
+		/nomodkey /click right target
+		/delay 5s ${Window[MerchantWnd].Open}
+		/echo \ay Attempting to \amAutoSell\ax now.
+		/delay 1s
+		/call OpenPacks
+		/delay 1s
+		/autosell
+		|-----------------
+		/while (${Window[MerchantWnd].Open}) {		
+			/delay 5
+		}
+		|-----------------
+		/call ClosePacks
+		/delay 1s
+	}
+	|-------------------------------------
+		
+	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw> 
+
+	/if (${Debugging}) /echo Sub AutoSell_Loot_SupplyAgent Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: AutoSell_Loot_PoK
+| --------------------------------------------------------------------------------------------
+  Sub AutoSell_Loot
+  /if (${Debugging}) /echo Sub AutoSell_Loot Entry
+  
+  	|--------------------------
+	/echo \am<***> Sending the rest of my group to Magus as I sell <***>
+  	/squelch /e3bca /tar Magus Alaria
+	/delay 5
+	/squelch /e3bca /nav target
+	/delay 5
+	|--------------------------
+	
+	/declare MerchName	string	local Merabo
+	
+	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to lacate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw> 
+	/target clear
+	/delay 2s !${Target.ID}
+	
+	/squelch /target ${MerchName}
+	/delay 2s ${Target.ID}
+	
+	|-------------------------------------
+	/if (${Target.ID}) {
+		/squelch /nav id ${Target.ID} 
+		/delay 5
+		/while (${Navigation.Active}) {
+			/call SetLoc
+			/call CheckStuck
+			/delay 5
+		}	
+	}
+	/delay 5
+	|-------------------------------------
+	
+	|------------------
+	/call ReclaimAltDC
+	|------------------
+	
+	|-------------------------------------
+	/if (${Target.ID} && ${Target.Distance}<=20) {
+		/nomodkey /click right target
+		/delay 5s ${Window[MerchantWnd].Open}
+		/echo \ay Attempting to \amAutoSell\ax now.
+		/delay 1s
+		/call OpenPacks
+		/delay 1s
+		/autosell
+		|-----------------
+		/while (${Window[MerchantWnd].Open}) {		
+			/delay 5
+		}
+		|-----------------
+		/call ClosePacks
+		/delay 1s
+	}
+	|-------------------------------------
+		
+	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw> 
+
+	/if (${Debugging}) /echo Sub AutoSell_Loot Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: ReclaimAltDC
+| --------------------------------------------------------------------------------------------
+Sub ReclaimAltDC
+ /if (${Debugging}) /echo Sub ReclaimAltDC Entry
+
+	/varset CurrentDC ${FindItemCount[=Diamond Coin]}
+	/varset CurrentDCAC ${Me.AltCurrency[20]} 
+	/echo \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
+
+	|-----------------------------------------------
+	/if (${CurrentDC}>0) {	
+		; --- If I have DC in inventory, RECLAIM it to Alternate Currency !!!  
+		/echo \ag$$$\ay I have [\atDiamond Coin\ay]  to reclaim!\ax
+	
+		; Open the Inventory Window if it is closed
+		|----------------------------------------------
+		/if (!${Window[InventoryWindow].Open}) /call OpenInvWindow
+		|----------------------------------------------	
+	
+		; Select Alt Currency Tab
+		/if (${Debugging}) /echo Selecting Alt Currency Tab
+		/if (!${Window[InventoryWindow].Child[IW_AltCurrPage].Open})  /notify InventoryWindow IW_Subwindows tabselect 5
+		/delay 5
+	
+		; Select Diamond Coin off the Alternate Currecy tab in Inventory window ..  YOU NEED TO OPEN INVENTORY WINDOW FOR THIS ! 
+		/if (${Debugging}) /echo Selecting Diamond Coins
+		/notify InventoryWindow IW_AltCurr_PointList listselect 2
+		/delay 5
+
+		; Click the RECLAIM BUTTON after selecting Diamond Coin previously
+		/nomodkey /notify InventoryWindow AltCurr_ReclaimButton LeftMouseUp
+		/delay 5
+	} else {
+	    ; --- If I have NO DC in inventory to RECLAIM
+		/echo \ag$$$\ay I have \arNO\ay [\atDiamond Coin\ay] to reclaim!\ax
+	}
+	|-----------------------------------------------
+	; Update the DC and Alternate DC Currency ammount.
+	/varset CurrentDC ${FindItemCount[=Diamond Coin]}
+	/varset CurrentDCAC ${Me.AltCurrency[20]} 
+	/echo \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
+	; Close the Inventory Window if it is open
+	|----------------------------------------------
+	/if (${Window[InventoryWindow].Open}) /call CloseInvWindow
+	|----------------------------------------------	
+
+	/if (${CurrentDC}==0) /echo \ag$$$ \ayAll available DC was converted to Alternate Currency !
+
+/if (${Debugging}) /echo Sub ReclaimAltDC Exit
+
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: OpenInvWindow
+| --------------------------------------------------------------------------------------------
+  Sub OpenInvWindow
+ /if (${Debugging}) /echo Sub OpenInvWindow Entry
+	/if (!${Window[InventoryWindow].Open}) {
+	:OpenInventoryWindow
+		/nomodkey /keypress inventory
+		/delay 5
+		/if (${Window[InventoryWindow].Open}) /echo Inventory Window (Open).
+		/if (!${Window[InventoryWindow].Open}) /goto :OpenInventoryWindow
+	}
+ /if (${Debugging}) /echo Sub OpenInvWindow Exit
+  /return
+| --------------------------------------------------------------------------------------------		
+
+| --------------------------------------------------------------------------------------------
+|SUB: CloseInvWindow
+| --------------------------------------------------------------------------------------------
+  Sub CloseInvWindow
+  /if (${Debugging}) /echo Sub CloseInvWindow Entry
+
+	/if (${Window[InventoryWindow].Open}) {
+	:CloseInventoryWindow
+		/nomodkey /keypress inventory
+		/delay 5
+		/if (!${Window[InventoryWindow].Open}) /echo Inventory Window (Closed).
+		/if (${Window[InventoryWindow].Open}) /goto :CloseInventoryWindow
+	}
+	
+  /if (${Debugging}) /echo Sub CloseInvWindow Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
 | SECTION: -- Events   --   START
 | --------------------------------------------------------------------------------------------
 |--------------------------------------------------------
@@ -3138,13 +3352,21 @@ Sub Event_Too_Far
 |--------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_BagsFull
-
-/echo BAGS FULL
-/echo BAGS FULL
-/echo BAGS FULL
-/echo BAGS FULL
-/echo BAGS FULL
-
+	/if (${Me.AltAbilityReady[Summon Resupply Agent]}) {
+		message ==================================================================
+		/message \ar +++ Your bags are full summoning a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
+		/message ==================================================================	
+		/alt act ${Me.AltAbility[Summon Agent].ID}
+		/delay 2s
+		/call AutoSell_Loot_SupplyAgent
+		/delay 1s
+	} else {
+		message ==================================================================
+		/message \ar +++ Your bags are full and you can not summon a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
+		/message \ar --- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
+		/message ==================================================================
+		/squelch /lootoff
+	}
 	/doevents flush BagsFull
 /return
 |--------------------------------------------------------
