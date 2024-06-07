@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 09:36:13 PM
+June 7th, 2024 - 09:43:13 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -14,6 +14,9 @@ This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be 
 #Event CantSee "You cannot see your target."
 #Event TooFar  "Your target is #*#, get closer!"
 #Event CantHit "You can't hit them from here."
+
+#Event BagsFull "#*#There was no place to put that!#*#"
+#Event BagsFull "#*#There are no open slots for the held item in your inventory.#*#"
 
 #define /message "/echo \ay[\atCataKill\ay]\aw "
 
@@ -206,7 +209,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.0.0
+	/declare version			string	outer	1.3.0
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2053,7 +2056,7 @@ Sub WaitNav(NavTargetID)
 		} else {
 			/if (${Me.XTarget[1].ID}) {
 				/if (${Navigation.Active}) /nav stop
-				/e3bcaa /target id ${Me.XTarget[1].ID}
+				/e3bcga /target id ${Me.XTarget[1].ID}
 				/varset NavTargetID ${Me.XTarget[1].ID}
 				/if (${Debugging}) /echo CALL DoSinglePull WaitNav II
 				/call DoSinglePull
@@ -3085,6 +3088,18 @@ Sub Event_Too_Far
 	/delay 5
 	/stick
 	/doevents flush Too_Far
+/return
+|--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_BagsFull
+
+/echo BAGS FULL
+/echo BAGS FULL
+/echo BAGS FULL
+/echo BAGS FULL
+/echo BAGS FULL
+
+	/doevents flush BagsFull
 /return
 |--------------------------------------------------------
 | --------------------------------------------------------------------------------------------
