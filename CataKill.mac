@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 6th, 2024 - 04:52:12 PM
+June 6th, 2024 - 08:12:11 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -89,6 +89,8 @@ Sub Main
 	|------------------------------------------------------------------------------
 	/if (${startZone}==${RuinedCityofDranik}) {
 		/call GetExpeditionData
+		/call Group2Me
+		/call GroupWait
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
