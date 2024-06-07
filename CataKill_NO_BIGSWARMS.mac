@@ -629,7 +629,7 @@ Sub GotoRecruiter
 				/call CheckInvis
 				/squelch /e3bca /nav loc ${RecruiterLoc}
 				/delay 1s
-				/call NavToLoc2 ${RecruiterLoc}
+				/call NavToLoc3 ${RecruiterLoc}
 				/delay 5
 				|-------------
 				|-------------
