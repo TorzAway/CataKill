@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 10:19:13 PM
+June 7th, 2024 - 02:40:13 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -53,13 +53,15 @@ Sub Main
 		/message \ar***\at \agSwarmPull \arHigh Risk PULLING: \ayis set to \at[\ag${SwarmPull}}\at] 
 	}
 	|---------------------------------------------------------------------------------------------
-	/if (${SwarmPull} && ${BiggerSwarms}) /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ar${SwarmPull}}\at]
-	/if (${SwarmPull} && !${BiggerSwarms}) /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ag${SwarmPull}}\at] 
+	/if (${SwarmPull} && ${BiggerSwarms})  /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ar${BiggerSwarms}\at]\ar.
+	/if (${SwarmPull} && !${BiggerSwarms}) /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ag${BiggerSwarms}\at]\ar. 
 	|------------------------------------------------------------------------------------------------------
+	
 	/message ==================================================================	
 	/echo \at/E3LDoN \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
 	/echo \at/E3LDoN \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
 	/echo \at/E3LDoN \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
+	/echo \at/E3LDoN \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
 	/echo \at/E3LDoN \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
 	/echo \at/E3LDoN \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
 	/echo \at/E3LDoN \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
@@ -99,10 +101,12 @@ Sub Main
 		|-------------------
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
+			/call GroupWait
 			/call GoToExpedition
 		} else {
 			/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !			
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/call GroupWait
 			/call GotoRecruiter
 		}
 		|-------------------
@@ -760,7 +764,9 @@ Sub GoToExpedition
 	/squelch /click left door
 	/call Zoning
 	
-	/if (${Zone.ID} == ${CataCombC}) /call ResetBard
+	/if (${Zone.ID} == ${CataCombC}) {
+		/call ResetBard
+	}
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
 /return
@@ -1370,6 +1376,10 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/declare x 						int 	local 	${SpawnPull_Step}
 	/declare TempSpawnPull_Loc		string 	local	NULL
+	/declare mStrLoc				string	local	NULL
+	/declare mNavLocY				int		local	NULL
+	/declare mNavLocX				int		local	NULL
+	/declare SpawnsAtStep			int		local	NULL
 	/declare CampReturnLoc			string	local	1905.66 336.42 -134.67
 	
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_2 Entry
@@ -1389,10 +1399,25 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
 			/call DoSwarmPull_MainLoop
-			/delay 10
+			/delay 1s
 		}
 		|-----------------------------
-		
+
+		|------------------------------------------		
+		/varset mNavLocY ${TempSpawnPull_Loc.Arg[1, ]}
+		/varset mNavLocX ${TempSpawnPull_Loc.Arg[2, ]}
+		|-------------------------
+		/if (${mNavLocY}>=0) {
+            /varset mStrLoc ${mNavLocX} ${mNavLocY}
+        } else {
+            /varset mStrLoc (${mNavLocX} ${mNavLocY})
+        }
+		 |-------------------------
+		/varset SpawnsAtStep ${SpawnCount[npc loc ${mNavLocX} ${mNavLocY} radius 100]}		
+		|/echo SpawnsAtStep=(${SpawnsAtStep})
+		|/echo  mStrLoc=(${mStrLoc}) | mNavLocY=(${mNavLocY}) | mNavLocYX(${mNavLocX})
+		|------------------------------------------		
+				
 		|------------------------------------------
 		/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
 			/call GroupDeathChk
@@ -1417,36 +1442,49 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		|/echo \arSwarmPullStepMove: \ayTempSpawnPull_Loc=(${TempSpawnPull_Loc})
 		|-----------------------------------------------
 		/if (${TempSpawnPull_Loc.Length}>0) {
-			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
-			|--------------------------------------------------------------
-			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
-			|--------------------------------------------------------------
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
-				|----------------------------------------------
-				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
-				|----------------------------------------------
-				/squelch /nav loc ${TempSpawnPull_Loc}
-				/delay 7
-				/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}
-				|----------------------------------------------
-			}
-			|--------------------------------------------------------------
-			/while (${Navigation.Active}) {
-				/call SetLoc
-				/call CheckStuck
+			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]			
+			|-----------------------------------------------------------------------------------------------------------------------------
+			/if (${SpawnsAtStep}>=1) {				
+				/echo  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \agKILL THEM ALL\ax \ao!!!\ax
+				|--------------------------------------------------------------
+				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
+				|--------------------------------------------------------------
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {				
+					|----------------------------------------------
+					|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
+					|----------------------------------------------
+					/squelch /nav loc ${TempSpawnPull_Loc}
+					/delay 7
+					/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}
+					|----------------------------------------------
+				}
+				|------------------------------
+				/while (${Navigation.Active}) {
+					/call SetLoc
+					/call CheckStuck
+					/delay 5
+				}
+				|------------------------------
+				/squelch /e3bca /nav id ${Me.ID}
 				/delay 5
+				|----------------------------------------------------------		
+	
+				|-------------------------------------------------------------------------------------------------------
+				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+				|-------------------------------------------------------------------------------------------------------
+				/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+				/call IniChange "Theme" "LastSwarmed_Step" ${x}
+				|-------------------------------------------------------------------------------------------------------				
+			} else {
+				/echo  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \arSKIPPING\ax \ao!!!\ax
+				|-------------------------------------------------------------------------------------------------------
+				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+				|-------------------------------------------------------------------------------------------------------
+				/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+				/call IniChange "Theme" "LastSwarmed_Step" ${x}
+				|-------------------------------------------------------------------------------------------------------					
 			}
-			/squelch /e3bca /nav id ${Me.ID}
-			/delay 5
-			|----------------------------------------------------------		
-
-			|-------------------------------------------------------------------------------------------------------
-			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
-			|-------------------------------------------------------------------------------------------------------
-			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
-			/call IniChange "Theme" "LastSwarmed_Step" ${x}
-			|-------------------------------------------------------------------------------------------------------
-
+			|-----------------------------------------------------------------------------------------------------------------------------
 			|---------------------------------------------------------------
 			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
 			|---------------------------------------------------------------
@@ -2376,7 +2414,8 @@ Sub GroupWait
 :WaitForGroup
 /if (${Me.XTarget[1].ID}) {
 	/if (${Navigation.Active}) /nav stop
-	/call DoSinglePull
+	/call Group2Me
+	/call DoClearTargets
 	/goto :WaitForGroup
 }
 /echo \ayWaiting for the group. . .
@@ -2473,14 +2512,22 @@ Sub ResetBard
 	
 	/declare x 					int 	local	1
 	
-		/for x 1 to ${Group.Members} 
-			/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {
-				/echo \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
-				|------------------------				
-				/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3
+	/for x 1 to ${Group.Members} 
+		/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {			
+		|-----------------------------------------
+		/while (${Group.Member[${x}].OtherZone}) {
+			:WaitForBardToZoneIn
+				/echo \ay - [\am${Group.Member[${x}].CleanName}\ay] is \arNOT IN ZONE\ax yet, waiting.
 				/delay 3s
-			}		
-		/next x
+				/if (${Group.Member[${x}].OtherZone}) /goto :WaitForBardToZoneIn
+		}
+		|-----------------------------------------
+		/echo \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
+		|------------------------				
+		/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3
+		/delay 3s
+	}		
+	/next x
 
 	/if (${Debugging}) /echo Sub ResetBard Exit
 /return
@@ -2494,6 +2541,10 @@ Sub CheckInvis
 	/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call Group2Me
 	
 	/declare x 					int 	local	0
+	
+	|------------
+	/call Group2Me
+	|------------
 	
 	|----------------------------------------------------------------------------
 	|--- REFERENCE ----
