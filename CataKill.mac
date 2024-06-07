@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 09:12:13 PM
+June 7th, 2024 - 09:36:13 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -614,7 +614,6 @@ Sub GoToDranikFromPoK
 /return
 | --------------------------------------------------------------------------------------------
 
-
 | --------------------------------------------------------------------------------------------
 | SUB: GotoRecruiter
 | --------------------------------------------------------------------------------------------
@@ -640,9 +639,10 @@ Sub GotoRecruiter
 			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
 				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
 				/call CheckInvis
-				/squelch /e3bca /nav loc ${RecruiterLoc}
 				/delay 1s
+				|---------------------- INVIS VNAV !
 				/call NavToLoc3 ${RecruiterLoc}
+				|---------------------- INVIS VNAV !				
 				/delay 5
 				|-------------
 				|-------------
@@ -652,6 +652,7 @@ Sub GotoRecruiter
 					/delay 20
 				}
 				|-------------	
+				/call Group2Me
 				/call GroupWait
 				/if (${Me.XTarget[1].ID}) /call DoClearTargets
 				/doevents	
@@ -729,11 +730,11 @@ Sub GoToExpedition
 	/call CheckInvis
 	|--- RESET INVIS !!!
 	
+	/delay 1s
 	|---------------------- INVIS VNAV !
 	/call NavToLoc3 1019.45 -290.80 -75.26
-	/delay 5
-	/squelch /e3bca /nav loc 1019.45 -290.80 -75.26
 	|---------------------- INVIS VNAV !
+	/delay 5
 	
 	|-------------
 	/while (${Navigation.Active}) {
@@ -1860,7 +1861,7 @@ Sub NavToLoc(int Y,int X,int Z)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call Group2Me
-			/if (!${Me.Moving}) /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving}) /squelch /e3bcga /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}			
 		}
@@ -1925,7 +1926,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcga /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
 		}
@@ -1992,7 +1993,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckInvis
-			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcaa /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcga /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
 		}
