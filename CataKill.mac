@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 8th, 2024 - 08:04:23 PM
+June 8th, 2024 - 08:48:23 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1351,6 +1351,19 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		/call CheckExpeditionStatus
     /next x
 	|----------------------------------------------------------------------------------------------
+
+	|------------------------------------------
+	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
+		/call GroupDeathChk
+		/call GroupManaChk
+		/call GroupEndChk
+	}		
+	|------------------------------------------	
+
+	|------------------
+	/call ReclaimAltDC
+	|------------------	
+	
 	/message ==================================================================
 	/echo /atCompleted all SwarmPull "PathTo" steps./ax
 	/echo /atUpdating (\ay${Settings})\ax INI file with PathTo completion./ax
