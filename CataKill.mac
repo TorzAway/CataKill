@@ -2988,6 +2988,11 @@ Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
 Sub CheckThings
 	/if (${Debugging}) /echo Sub CheckThings Entry
 	
+	/grouproles set ${Me.CleanName} 1
+	/delay 5
+	/grouproles set ${Me.CleanName} 2 
+	/delay 5
+	
 	/call CheckPlugin MQ2Nav
 	/call CheckMesh
 	/call CheckPlugin MQ2Events
