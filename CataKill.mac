@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 06:22:23 PM
+June 7th, 2024 - 10:41:23 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -292,6 +292,7 @@ Sub Declares
 	
 	/declare BRDTravelSong string  outer "Selo's Song of Travel"
 	/call CheckINI ${IniFileName} BardSong BRDTravelSongSlot string 11	
+	/call CheckINI ${IniFileName} BardSong BRDMelodyName string base	
 	
 	/call CheckINI ${IniFileName} Pull PullAbility string ReplaceMeWithYourSkill
 	/call CheckINI ${IniFileName} Pull PullAbilityRange int 30
@@ -765,7 +766,7 @@ Sub GoToExpedition
 	/call Zoning
 	
 	/if (${Zone.ID} == ${CataCombC}) {
-		/call ResetBard
+		/call ResetBard	
 	}
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
@@ -2515,6 +2516,8 @@ Sub ResetBard
 	
 	/declare x 					int 	local	1
 	
+	|--- BRDMelodyName	
+	
 	/for x 1 to ${Group.Members} 
 		/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {			
 		|-----------------------------------------
@@ -2527,7 +2530,8 @@ Sub ResetBard
 		|-----------------------------------------
 		/echo \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
 		|------------------------				
-		/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3
+		|/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3		
+		/squelch /e3bct ${Group.Member[${x}].CleanName} /playmelody ${BRDMelodyName}
 		/delay 3s
 	}		
 	/next x
@@ -3352,7 +3356,7 @@ Sub Event_Too_Far
 |--------------------------------------------------------
 Sub Event_BagsFull
 	/if (${Me.AltAbilityReady[Summon Resupply Agent]}) {
-		message ==================================================================
+		/message ==================================================================
 		/message \ar +++ Your bags are full summoning a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
 		/message ==================================================================	
 		/alt act ${Me.AltAbility[Summon Agent].ID}
