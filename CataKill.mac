@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 7th, 2024 - 10:41:23 PM
+June 8th, 2024 - 08:04:23 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -233,6 +233,7 @@ Sub Declares
 	/declare DebugRepeatTimer 	timer 	outer 1s
 	/declare SitDelay 			timer 	outer 5s
 	/declare Endmac 			bool 	outer FALSE
+	/declare BagsAreFull		bool 	outer FALSE
 	
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 	|----------------------------------------------------------
@@ -3287,6 +3288,40 @@ Sub ReclaimAltDC
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+|SUB: HandleBagsFull
+| --------------------------------------------------------------------------------------------
+  Sub HandleBagsFull
+  /if (${Debugging}) /echo Sub HandleBagsFull Entry
+  
+  |--------------------------------------------
+  /if (${BagsAreFull}) {
+		|--------------------------------------------
+		/if (${Me.AltAbilityReady[Summon Resupply Agent]}) {	
+			/message ==================================================================
+			/message \ar +++ Your bags are full summoning a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
+			/message ==================================================================	
+			/alt act ${Me.AltAbility[Summon Agent].ID}
+			/delay 2s
+			/call AutoSell_Loot_SupplyAgent
+			/delay 1s
+		} else {
+			message ==================================================================
+			/message \ar +++ Your bags are full and you can not summon a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
+			/message \ar --- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
+			/message ==================================================================
+			/squelch /lootoff
+		}
+		|--------------------------------------------
+		/varset BagsAreFull FALSE
+		|--------------------------------------------
+  }
+  |--------------------------------------------
+  
+  /if (${Debugging}) /echo Sub HandleBagsFull Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
 | SECTION: -- Events   --   START
 | --------------------------------------------------------------------------------------------
 |--------------------------------------------------------
@@ -3360,21 +3395,7 @@ Sub Event_Too_Far
 |--------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_BagsFull
-	/if (${Me.AltAbilityReady[Summon Resupply Agent]}) {
-		/message ==================================================================
-		/message \ar +++ Your bags are full summoning a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
-		/message ==================================================================	
-		/alt act ${Me.AltAbility[Summon Agent].ID}
-		/delay 2s
-		/call AutoSell_Loot_SupplyAgent
-		/delay 1s
-	} else {
-		message ==================================================================
-		/message \ar +++ Your bags are full and you can not summon a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
-		/message \ar --- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
-		/message ==================================================================
-		/squelch /lootoff
-	}
+	/varset BagsAreFull TRUE
 	/doevents flush BagsFull
 /return
 |--------------------------------------------------------
