@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 09:03:00 AM
+June 9th, 2024 - 09:56:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -931,15 +931,11 @@ Sub DoSinglePull(string Enemy)
 		/varset reportTarget ${reportTarget.OriginalValue}
 		/if (${myTargetID} && !${Target.Type.Equal[corpse]}) {
 		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-		/if (!${UseCWTNHunterTankMode}) {
-		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
-			/pet attack
-			}
-		}
 		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
+				/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) /pet attack
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
 			}
