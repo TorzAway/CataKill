@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 10:11:00 AM
+June 9th, 2024 - 10:36:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -796,7 +796,7 @@ Sub CheckExpeditionStatus
 	|-----------------------------------------------------------------
 	
 	|-----------------------------------------------------------------------
-	|--- Expedition Over, but i havenbet been booted out to Dranik yet !!!!
+	|--- Expedition Over, but I haven't been booted out to Dranik yet !!!!
 	|-----------------------------------------------------------------------
 	/if (${DranikCExpedition}==0 && ${InADungeon}==1) {
 		:WaitTillIGetBooted
@@ -1047,7 +1047,7 @@ Sub TargetShortest
 		/varset MobID ${NearestSpawn[${MobCounter},npc targetable radius ${CampRadius} zradius ${ZRadius} alert 10 noalert 1].ID}
 
 		/if (${Select[${Spawn[ID ${MobID}].Type},AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
-		/if (${Spawn[ID ${MobID}].Surname.Length}) /continue
+		/if (${Spawn[ID ${MobID}].Surname.Length}) /continue	
 		
 		|------- HARD CODED EXCEPTIONS
 		|/if (${Spawn[ID ${MobID}].CleanName.Equal[a hatchling]} || ${Spawn[ID ${MobID}].CleanName.Equal[a creaking crate]} || ${Spawn[ID ${MobID}].CleanName.Equal[a hollow tree]} || ${Spawn[ID ${MobID}].CleanName.Equal[a petrified colossal tree]}) {
