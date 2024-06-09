@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 9th, 2024 - 5:49:00 AM
+June 9th, 2024 - 7:39:20 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2539,17 +2539,10 @@ Sub GMMode
 /if (${Debugging}) /echo Sub GMMode Entry
 		/if (${UseBeep}) /beep
 		/popcustom 13 5 Warning! GMMode: GM is Present!
-
-		/if (${Navigation.Active}) /nav stop
-		/e3bcg /useitem "Bulwark of Many Portals"
-		|-- GATE
-		/e3bcg /alt act 1217
-		/e3bcg /useitem "Philter of Major Translocation"		
-		|-- Marr's Calling
-		/e3bcg /alt act 511
-		/delay 30s
-		/e3bcg /afk
-		/end
+		/message ==================================================================
+		/message \ar***** GM IN ZONE, PAUUSING MACRO *****\ax
+		/message ==================================================================
+		/mqp
 		
 /if (${Debugging}) /echo Sub GMMode Exit
 /return
