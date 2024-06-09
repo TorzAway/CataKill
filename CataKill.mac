@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 10:43:00 AM
+June 9th, 2024 - 11:35:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1351,17 +1351,17 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
     /next x
 	|----------------------------------------------------------------------------------------------
 
+	|------------------
+	/call ReclaimAltDC
+	|------------------
+	
 	|------------------------------------------
 	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
 		/call GroupDeathChk
 		/call GroupManaChk
 		/call GroupEndChk
 	}		
-	|------------------------------------------	
-
-	|------------------
-	/call ReclaimAltDC
-	|------------------	
+	|------------------------------------------
 	
 	/message ==================================================================
 	/echo /atCompleted all SwarmPull "PathTo" steps./ax
@@ -1524,6 +1524,10 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/delay 1s
 	/call NavToLoc2 ${CampReturnLoc}
 	/delay 5	
+
+	|------------------
+	/call ReclaimAltDC
+	|------------------
 	
 	|------------------------------------------
 	/if (!${Me.XTarget[1].ID} && ${CheckBots}) {
@@ -1532,10 +1536,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/call GroupEndChk
 	}		
 	|------------------------------------------	
-
-	|------------------
-	/call ReclaimAltDC
-	|------------------	
 	
 	/message ==================================================================
 	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \agLets do it again !!!\ax
