@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 8th, 2024 - 08:48:23 PM
+June 8th, 2024 - 09:19:23 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -978,16 +978,20 @@ Sub DoSinglePull(string Enemy)
 	/if (!${Spawn[id ${myTargetID}].ID} || ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} && !${Me.XTarget[1].ID} && !${Me.Casting.ID}) {
 		/echo \ay"Looking for a target!"
 		/varset myTargetID 0
+		|-------------------
 		/call TargetShortest
+		|-------------------
 		/delay 1s
 		/echo \atMy Target: \ay[\ap${Spawn[id ${myTargetID}].Name}\ay]
 	} else {
 		/if (${Debugging}) /echo \ayI have an XTarget so I'm going to set that as my target.
 		/if (${Me.XTarget[1].ID}) {
 		/varset myTargetID ${Me.XTarget[1].ID}
+		|---------------------------------------
 		/if (${Debugging}) /echo CALL COMBAT
-		/call Combat
+		/if (${Spawn[id ${Target.ID}].Distance} < 30) /call combat
 		/if (${Debugging}) /echo END CALL COMBAT
+		|---------------------------------------
 		}
 	}
 	:navto
