@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 11:35:00 AM
+June 9th, 2024 - 1:44:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -931,7 +931,7 @@ Sub DoSinglePull(string Enemy)
 		/varset reportTarget ${reportTarget.OriginalValue}
 		/if (${myTargetID} && !${Target.Type.Equal[corpse]}) {
 		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+		/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -984,7 +984,7 @@ Sub DoSinglePull(string Enemy)
 		/varset myTargetID ${Me.XTarget[1].ID}
 		|---------------------------------------
 		/if (${Debugging}) /echo CALL COMBAT
-		/if (${Spawn[id ${Target.ID}].Distance} < 30) /call combat
+		/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) /call combat
 		/if (${Debugging}) /echo END CALL COMBAT
 		|---------------------------------------
 		}
@@ -1024,6 +1024,7 @@ Sub DoSinglePull(string Enemy)
 | --------------------------------------------------------------------------------------------
 Sub TargetShortest
 	/if (${Debugging}) /echo Sub TargetShortest Entry
+	
 	/if (${UseClickBuffs}) /call Clickies_Buffs
 	/declare MobsInRadius 	int 	local 	${SpawnCount[npc noalert 1 targetable radius ${CampRadius} zradius ${ZRadius} alert 10]}
 	
@@ -1121,7 +1122,7 @@ Sub Combat
 			/pet attack
 			}
 		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+		/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1136,7 +1137,7 @@ Sub Combat
 			/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 			/pet attack
 			}
-			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+			/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1164,7 +1165,7 @@ Sub Combat
 			}
 			
 			/delay 10
-			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+			/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1189,7 +1190,7 @@ Sub Combat
 				/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 					/pet attack
 					}
-				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1240,7 +1241,7 @@ Sub Combat
 		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 			/pet attack
 			}
-		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+		/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1945,7 +1946,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -1968,7 +1969,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -2009,7 +2010,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -2033,7 +2034,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
 				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -2324,13 +2325,13 @@ Sub CheckStuck
 		/if (${StuckCountOut}>6) /echo \arStuck ${StuckCountOut}
 		/if (${Me.ActiveDisc.Name.Equal[Frenzied Resolve Discipline]}) /stopdisc
 		/if (${StuckCountOut}>6) {
-			/call doorclick 
+			|/call doorclick
 			/if (${UseBeep}) {
 			/beep
 			/delay 1
 			/beep
 			}
-			/call doorclick 
+			|/call doorclick 
 			}
 		/varset StuckSpamTrigger 1
 	} else { 
@@ -2358,7 +2359,7 @@ sub Stuck
 	/varset StuckSwitch 0
 	/varset StuckCountOut 0
 	} else {
-		/call DoorClick
+		|/call DoorClick
 		/varset StuckSwitch 1
 		/varset StuckCountOut 0
 		/varset courseCorrection 0
