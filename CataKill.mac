@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 09:56:00 AM
+June 9th, 2024 - 10:11:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -154,7 +154,7 @@ Sub Main
 					|------------------------------------------------------
 				}					
 				|------------------------------------------
-				/Call DoClearTargets
+				/if (${Me.XTarget[1].ID}) /call DoClearTargets
 				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 				/call GMCheck
 				/doevents
@@ -178,7 +178,7 @@ Sub Main
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/call DoSinglePull
-				/Call DoClearTargets
+				/if (${Me.XTarget[1].ID}) /call DoClearTargets
 				/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 				/call GMCheck
 				/doevents
@@ -1338,7 +1338,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			|---------------------------------------------------------------
 			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
 			|---------------------------------------------------------------
-			/call DoClearTargets
+			/if (${Me.XTarget[1].ID}) /call DoClearTargets
 			/doevents
 			/delay 10
 		}
@@ -1502,7 +1502,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			|---------------------------------------------------------------
 			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
 			|---------------------------------------------------------------
-			/call DoClearTargets
+			/if (${Me.XTarget[1].ID}) /call DoClearTargets
 			/doevents
 			/delay 10
 		}
@@ -1691,7 +1691,7 @@ Sub DoSwarmPull_PathTo
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
 	/delay 5
-	/Call DoClearTargets
+	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10
 	|--------------- SET CompletedPathTo
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
@@ -1792,7 +1792,7 @@ Sub DoSwarmPull_MainLoop
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
 	/delay 5
-	/Call DoClearTargets
+	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10	
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call Go2LastSwarmLoc
@@ -1868,7 +1868,7 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
 	/delay 5
-	/Call DoClearTargets
+	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10	
 	|- Call Go2LastSwarmLoc after Defining Array
 	/call Go2LastSwarmLoc
