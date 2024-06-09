@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 8th, 2024 - 09:19:23 PM
+June 9th, 2024 - 09:03:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -935,11 +935,10 @@ Sub DoSinglePull(string Enemy)
 		/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) {
 			/pet attack
 			}
-		/if (${Spawn[id ${Target.ID}].Distance} < 30 && ${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 		}
 		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1128,7 +1127,7 @@ Sub Combat
 		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1143,7 +1142,7 @@ Sub Combat
 			}
 			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1171,7 +1170,7 @@ Sub Combat
 			/delay 10
 			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1196,7 +1195,7 @@ Sub Combat
 					}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1247,7 +1246,7 @@ Sub Combat
 			}
 		/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
@@ -1952,7 +1951,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/call DoClearTargets
 				/doevents
@@ -1975,7 +1974,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/call DoClearTargets
 				/doevents
@@ -2016,7 +2015,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/call Group2Me
 				/call DoClearTargets
@@ -2040,7 +2039,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
-				/squelch /killthis
+				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
 				/call Group2Me
 				/call DoClearTargets
@@ -2242,6 +2241,10 @@ Sub Zoning
 	| -- Let E3 Looting System handle this !
 	|---------------------------------------
 	/delay 1s
+	/doevents
+	|-------------------------------------------------------------------------------------
+	/if (!${Me.XTarget[1].ID} && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
+	|-------------------------------------------------------------------------------------
 	/doevents
 	
 	/if (${Debugging}) /echo Sub LootMob_E3 Exit  
@@ -3305,10 +3308,10 @@ Sub ReclaimAltDC
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-|SUB: HandleBagsFull
+|SUB: CheckIfBagsFull
 | --------------------------------------------------------------------------------------------
-  Sub HandleBagsFull
-  /if (${Debugging}) /echo Sub HandleBagsFull Entry
+  Sub CheckIfBagsFull
+  /if (${Debugging}) /echo Sub CheckIfBagsFull Entry
   
   |--------------------------------------------
   /if (${BagsAreFull}) {
@@ -3317,7 +3320,7 @@ Sub ReclaimAltDC
 			/message ==================================================================
 			/message \ar +++ Your bags are full summoning a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax		
 			/message ==================================================================	
-			/alt act ${Me.AltAbility[Summon Agent].ID}
+			/alt act ${Me.AltAbility[Summon Resupply Agent].ID}
 			/delay 2s
 			/call AutoSell_Loot_SupplyAgent
 			/delay 1s
@@ -3334,7 +3337,7 @@ Sub ReclaimAltDC
   }
   |--------------------------------------------
   
-  /if (${Debugging}) /echo Sub HandleBagsFull Exit
+  /if (${Debugging}) /echo Sub CheckIfBagsFull Exit
   /return
 | --------------------------------------------------------------------------------------------
 
