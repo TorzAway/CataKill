@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac v1.0 by Kroaking
-June 9th, 2024 - 1:44:00 AM
+June 9th, 2024 - 2:05:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1047,7 +1047,16 @@ Sub TargetShortest
 		/for MobCounter 1 to ${MobsInRadius}
 		/varset MobID ${NearestSpawn[${MobCounter},npc targetable radius ${CampRadius} zradius ${ZRadius} alert 10 noalert 1].ID}
 
-		/if (${Select[${Spawn[ID ${MobID}].Type},PET,AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
+		|-- ORIGINAL LIST TO FILTER
+		|/if (${Select[${Spawn[ID ${MobID}].Type},PET,AURA,BANNER,CAMPFIRE,CORPSE,CHEST,ITEM,TRIGGER,TRAP,TIMER,MOUNT,MERCENARY,OBJECT]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue
+		
+		|-- REVISED LIST TO FILTER
+		/if (${Select[${Spawn[ID ${MobID}].Type},PC,Untargetable,Mount,Pet,Corpse,Chest,Trigger,Trap,Timer,Item,Mercenary,Aura,Object,Banner,Campfire,Flyer]} && !${Ini[${MobIgnore},${Zone.ShortName},Ignored].Find[ID ${MobID}]}) /continue	
+		
+		|-- Filter out anything without an actual CleanName ( DOORS )
+		/if (!${Spawn[ID ${MobID}].CleanName.Length}) /continue
+		
+		|-- Filter out anything with an actual Surname   ( Named )
 		/if (${Spawn[ID ${MobID}].Surname.Length}) /continue	
 		
 		|------- HARD CODED EXCEPTIONS
@@ -2325,18 +2334,18 @@ Sub CheckStuck
 		/if (${StuckCountOut}>6) /echo \arStuck ${StuckCountOut}
 		/if (${Me.ActiveDisc.Name.Equal[Frenzied Resolve Discipline]}) /stopdisc
 		/if (${StuckCountOut}>6) {
-			|/call doorclick
-			/if (${UseBeep}) {
-			/beep
-			/delay 1
-			/beep
-			}
-			|/call doorclick 
-			}
+				|/call doorclick
+				/if (${UseBeep}) {
+					/beep
+					/delay 1
+					/beep
+				}
+				|/call doorclick 
+		}
 		/varset StuckSpamTrigger 1
 	} else { 
 		/varset StuckCountOut 0
-		}
+	}
 	/if (${StuckCountOut}>=8) {
 				/echo \ayThink I'm stuck... \agAttempting to get unstuck...
 				/call Stuck
