@@ -30,13 +30,13 @@ BiggerSwarms=FALSE  (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALS
 -
 RepeatMission=TRUE  (Turn to TRUE for REGET the expedition when it ends / FALSE to gate to Temple of Marrs and CAMP when it ends)
 -
-GroupNavToMe=TRUE
+GroupNavToMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 -
-UseClickBuffs=FALSE
+UseClickBuffs=FALSE  (Turn to TRUE/FALSE to Enable/Disable to use advanced high end ClickyBuff items)
 -
-UseClickDamage=FALSE
+UseClickDamage=FALSE (Turn to TRUE/FALSE to Enable/Disable to use advanced high end ClickyDamage items)
 -
-UseMq2Melee=FALSE    (Turn to TRUE to Enable Mq2Melee plugin / FALSE to Disable Mq2Melee plugin)
+UseMq2Melee=FALSE    (Turn to TRUE to Enable MQ2Melee plugin / FALSE to Disable MQ2Melee plugin)
 -
 LootCorpse=TRUE    (Turn to TRUE to Loot corpses)
 -
