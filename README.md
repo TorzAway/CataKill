@@ -16,7 +16,7 @@ InI Setings Explained:
 
 [General]
 - 
-Debugging=FALSE  (Turn Debugging On/Off)
+Debugging=FALSE  (Turn Debugging On/Off) - [DO NOT ALTER OR EDIT THIS]
 -
 AssistMe=TRUE
 -
@@ -56,7 +56,7 @@ PullAbility=ReplaceMeWithYourSkill
 ---
 PullAbilityRange=30
 ---
-PullRequiresLineOfSight=TRUE [DO NOT ALTER OR EDIT THIS]
+PullRequiresLineOfSight=TRUE - [DO NOT ALTER OR EDIT THIS]
 ---
 UseCastSpells=FALSE  ( HardForce your driver to cast his detrimental memorized spells in combat )
 ---
