@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 10th, 2024 - 05:27:01 PM
+June 10th, 2024 - 01:01:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2321,10 +2321,9 @@ Sub Zoning
 			/delay 2s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
 			/delay 5
-			|--------------------------------------------------------
-			|---- ALL VALUABLE STACKABLE LOOT THAT DROPS IN THIS ZONE
-			|--------------------------------------------------------			
-			/if (${Select[${Cursor.Name},Black Pearl,Blue Diamond,Broken Ukun Leash,Cracked Stone Eye,Congealed Bat Blood,Curled Rat Foot,Diamond,Diamond Coin,Dragorn Eye,Dragorn Fang,Emerald,Fire Emerald,Gnarled Rat Tail,Murkglider Stomach,Noc Heart,Ruby,Saphire,Sleek Bat Fur,Torn Rat Ear,Shattered Bat Fang,Shattered Visage,Shimmering Ukun Hide,Sparse Rat Fur,Splintered Bone Necklace,Stone Shard,Tattered Ikaav Braid,Torn Rat Ear,Ukun Guts,Wiry Rat Whiskers]}>=1) {
+			|---------------------------------------
+			/if (${Select[${Cursor.Name},Amber,Black Pearl,Blue Diamond,Carnelian,Diamond,Diamond Coin,Emerald,Emerald,Fire Emerald,Flame Agate,Ivory,Jasper,Lambent Stone,Onyx,Pearl,Peridot,Ruby,Saphire,Star Rose Quartz,Topaz,Torn Rat Ear,Shattered Visage]}>=1) {
+			|/if (${Cursor.Name.Find[Diamond Coin]}) {			
 				/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay)\ag ... WOOT!\ax
 				/autoinventory
 				/delay 1s !${Cursor.ID}
