@@ -22,7 +22,7 @@ AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 ---
 CheckBots=TRUE -  (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance checking)
 ---
-DoBurns=FALSE
+DoBurns=FALSE - (Turn to TRUE/FALSE to Enable/Disable all BURN function calls)
 ---
 SwarmPull=FALSE    (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
 ---
