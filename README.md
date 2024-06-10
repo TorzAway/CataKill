@@ -41,17 +41,13 @@ UseMq2Melee=FALSE    (Turn to TRUE to Enable Mq2Melee plugin / FALSE to Disable 
 LootCorpse=TRUE    (Turn to TRUE to Loot corpses)
 -
 LootMethod=DCONLY  (OPTIONS: DCONLY to loot Diamond COin and HIGH VALUE stackable items / E3 to have E# system handle all looting)
-
 ---
 ---
-
 [Camp]
 -
 CampRadius=2500
-
 ---
 ---
-
 [Pull]
 -
 ZRadius=500
@@ -63,10 +59,8 @@ PullAbilityRange=30
 PullRequiresLineOfSight=TRUE
 ---
 UseCastSpells=FALSE  ( HardForce your driver to cast his detrimental memorized spells in combat )
-
 ---
 ---
-
 [BardSong]
 -
 BRDTravelSongSlot=11  ( BEEP if a GM is detected ?)
