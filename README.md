@@ -56,7 +56,7 @@ PullAbility=ReplaceMeWithYourSkill
 ---
 PullAbilityRange=30
 ---
-PullRequiresLineOfSight=TRUE
+PullRequiresLineOfSight=TRUE [DO NOT ALTER OR EDIT THIS]
 ---
 UseCastSpells=FALSE  ( HardForce your driver to cast his detrimental memorized spells in combat )
 ---
@@ -86,9 +86,9 @@ BardMed=TRUE  ( BEEP if a GM is detected ?)
 ---
 [Alerts]
 -
-AFKGM=TRUE		( Go AFK if a GM is detected ?)
+AFKGM=TRUE    ( Go AFK if a GM is detected ?)
 ---
-UseBeep=TRUE	( BEEP if a GM is detected ?)
+UseBeep=TRUE  ( BEEP if a GM is detected ?)
 ---
 ---
 [Theme]
