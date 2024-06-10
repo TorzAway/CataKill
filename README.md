@@ -1,7 +1,7 @@
 # CataKill
 A MacroQuest macro to automate killing (Single or SpawnPull system) in Catacombs of Dranik (Caza) Expeditions.
 
-This macro will keep track and be able to pick up where you left off at any point if you /END and restart the macro.
+This macro will keep track and be able to pick up where you left off at any point if you /END and restart the macro. 
 
 Valid Starting Zones:
 Temple of Marrs
