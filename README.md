@@ -15,6 +15,7 @@ MQ\Config\CataKill_[ToonName].ini
 InI Setings Explained:
 
 [General]
+---
 Debugging=FALSE  (Turn Debugging On/Off)
 ---
 AssistMe=TRUE
@@ -26,12 +27,19 @@ DoBurns=FALSE
 SwarmPull=FALSE    (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
 ---
 BiggerSwarms=FALSE  (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALSE for standard room pulls)
+---
 RepeatMission=TRUE  (Turn to TRUE for REGET the expedition when it ends / FALSE to gate to Temple of Marrs and CAMP when it ends)
+---
 GroupNavToMe=TRUE
+---
 UseClickBuffs=FALSE
+---
 UseClickDamage=FALSE
+---
 UseMq2Melee=FALSE    (Turn to TRUE to Enable Mq2Melee plugin / FALSE to Disable Mq2Melee plugin)
+---
 LootCorpse=TRUE    (Turn to TRUE to Loot corpses)
+---
 LootMethod=DCONLY  (OPTIONS: DCONLY to loot Diamond COin and HIGH VALUE stackable items / E3 to have E# system handle all looting)
 
 [Camp]
