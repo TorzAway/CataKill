@@ -46,40 +46,58 @@ LootMethod=DCONLY  (OPTIONS: DCONLY to loot Diamond COin and HIGH VALUE stackabl
 ---
 
 [Camp]
+-
 CampRadius=2500
 
 ---
 ---
 
 [Pull]
+-
 ZRadius=500
+---
 PullAbility=ReplaceMeWithYourSkill 
+---
 PullAbilityRange=30
+---
 PullRequiresLineOfSight=TRUE
+---
 UseCastSpells=FALSE  ( HardForce your driver to cast his detrimental memorized spells in combat )
+
 ---
 ---
+
 [BardSong]
+-
 BRDTravelSongSlot=11  ( BEEP if a GM is detected ?)
+---
 BRDMelodyName=base  ( BEEP if a GM is detected ?)
 ---
 ---
 [Endurance]
+-
 MedEndAt=30
+---
 MedEndTill=95
 ---
 ---
 [Mana]
+-
 MedAt=30
+---
 MedTill=95
+---
 BardMed=TRUE  ( BEEP if a GM is detected ?)
 ---
 ---
 [Alerts]
+-
 AFKGM=TRUE		( Go AFK if a GM is detected ?)
+---
 UseBeep=TRUE	( BEEP if a GM is detected ?)
 ---
 ---
 [Theme]
+-
 [DO NOT ALTER OR EDIT THESE]
 
