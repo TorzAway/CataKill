@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 9th, 2024 - 7:39:20 PM
+June 10th, 2024 - 5:02:01 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -138,7 +138,7 @@ Sub Main
 			| -- Call check mission zone.
 			|-----------------------------------
 			/call CheckExpeditionStatus
-			|-------------------------
+			|-------------------------While
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				|------------------------------------------
@@ -159,7 +159,8 @@ Sub Main
 				/call GMCheck
 				/doevents
 			}
-			|-------------------------
+			|-------------------------While
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 		} else {
 		|----------------------------
 		|---- SinglePull ---- 
@@ -174,7 +175,7 @@ Sub Main
 			| -- Call check mission zone.
 			|-----------------------------------
 			/call CheckExpeditionStatus
-			|-------------------------
+			|-------------------------While
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
 				/call DoSinglePull
@@ -183,7 +184,8 @@ Sub Main
 				/call GMCheck
 				/doevents
 			}
-			|-------------------------
+			|-------------------------While
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 		}
 		|----------------------------
 		| ENGINE SELECT -- END
@@ -784,11 +786,11 @@ Sub CheckExpeditionStatus
 	|--- GRAB THE CURRENT EXPEDITIOn DATA
 	|--------------------------------------------
 	/call CheckInADungeon
-	/call CheckHaveDranikCExp
+	/call CheckHaveDranikCExpedition
 	/varset CompletedPathTo ${Ini[${Settings},Theme,CompletedPathTo]}
 	|/echo InADungeon=(${InADungeon}) | CurrentExpedition=(${CurrentExpedition}) | DranikCExpedition=(${DranikCExpedition}) | CompletedPathTo=(${CompletedPathTo}) 
 	|--------------------------------------------
-	
+
 	|-----------------------------------------------------------------
 	| We are still in an ative expedition and in the expedition zone !
 	|-----------------------------------------------------------------
@@ -798,15 +800,21 @@ Sub CheckExpeditionStatus
 	|-----------------------------------------------------------------------
 	|--- Expedition Over, but I haven't been booted out to Dranik yet !!!!
 	|-----------------------------------------------------------------------
+	:WaitTillIGetBooted
 	/if (${DranikCExpedition}==0 && ${InADungeon}==1) {
-		:WaitTillIGetBooted
-		/echo \ay - Looks like our expedition is over, but we havent been booted yet, waiting !\ax
-		/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /delay 60s
-		/goto :WaitTillIGetBooted
+		/message ==================================================================
+		/echo \ay - Looks like our expedition is over, but we havent been booted yet.\ax
+		/echo \ay - Waiting \am20\ay seconds until booted !\ax
+		/message ==================================================================
+		/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /delay 20s
+		/call CheckInADungeon
+		/if (${DranikCExpedition}==0 && ${InADungeon}==1) /goto :WaitTillIGetBooted
 	}
 	|-----------------------------------------------------------------------
 	
 	|-----------------------------------------------------------------------
+	|--- Expedition Over, Already Booted out ... Get a new Expedition !
+	|-----------------------------------------------------------------------	
 	/if (${DranikCExpedition}==0 && ${InADungeon}==0) {
 		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
@@ -816,15 +824,17 @@ Sub CheckExpeditionStatus
 			|------------------------
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
 			/call ForceSpawnStepReset
-			|------------------------		
+			|------------------------	
+			/message ==================================================================			
 			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
+			/message ==================================================================
 			/call GotoRecruiter
 		}
 		|-------------------		
 		/if (!${RepeatMission}) /call CampInMarrs
 	}
-	|-----------------------------------------------------------------------
-		
+	|-----------------------------------------------------------------------	
+			
 	/if (${Debugging}) /echo Sub CheckExpeditionStatus Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -2987,10 +2997,10 @@ Sub CheckInADungeon
 | --------------------------------------------------------------------------------------------	
 
 | --------------------------------------------------------------------------------------------
-| SUB: CheckHaveDranikCExp
+| SUB: CheckHaveDranikCExpedition
 | --------------------------------------------------------------------------------------------
-Sub CheckHaveDranikCExp
-	/if (${Debugging}) /echo Sub CheckHaveDranikCExp Entry
+Sub CheckHaveDranikCExpedition
+	/if (${Debugging}) /echo Sub CheckHaveDranikCExpedition Entry
 	
 	|--------------------------------------------------------------
 	|-- Determine if I have a Dranik Catacombs Expedition Assigned.
@@ -3004,7 +3014,7 @@ Sub CheckHaveDranikCExp
 	}	
 	|--------------------------
 		
-	/if (${Debugging}) /echo Sub CheckHaveDranikCExp Exit
+	/if (${Debugging}) /echo Sub CheckHaveDranikCExpedition Exit
 /return
 | --------------------------------------------------------------------------------------------	
 
