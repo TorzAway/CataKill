@@ -1,9 +1,6 @@
 # CataKill
 A MacroQuest macro to automate killing (Single or SpawnPull system) in Catacombs of Dranik (Caza) Expeditions.
 
-<<<<<<< HEAD
-DOCUMENTATION TO COME:
-=======
 This macro will keep track and be able to pick up where you left off at any point if you /END and restart the macro. 
 
 Valid Starting Zones:
@@ -99,4 +96,3 @@ UseBeep=TRUE  ( BEEP if a GM is detected ?)
 -
 [DO NOT ALTER OR EDIT THESE]
 
->>>>>>> 5e5e1445763b32c0828009bc3cacdc896f6bec25
