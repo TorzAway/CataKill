@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 10th, 2024 - 11:47:01 AM
+June 10th, 2024 - 12:02:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1296,7 +1296,6 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	|----------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_1.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_1[1,${x}]}
-
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
@@ -1334,7 +1333,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			|--------------------------------------------------------------
 			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 			|--------------------------------------------------------------
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
 				|----------------------------------------------
 				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
 				|----------------------------------------------
@@ -1434,7 +1433,6 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|-------------------------------------------------------------------------------------------------------
     /for x ${SpawnPull_Step} to ${LocalStepArray_${Zone.ShortName}_2.Size}
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
-
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
 			/echo \ar The Catacomb steps did not load correctly, reloading !
@@ -1490,7 +1488,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 				|--------------------------------------------------------------
 				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 				|--------------------------------------------------------------
-				/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID}) {
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
 					|----------------------------------------------
 					|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
 					|----------------------------------------------
