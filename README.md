@@ -45,43 +45,44 @@ LootMethod=DCONLY  (OPTIONS: DCONLY to loot Diamond COin and HIGH VALUE stackabl
 ---
 [Camp]
 -
-CampRadius=2500
+CampRadius=2500 - [DO NOT ALTER OR EDIT THIS]
 ---
 ---
 [Pull]
 -
-ZRadius=500
+ZRadius=500 - [DO NOT ALTER OR EDIT THIS]
 ---
 PullAbility=ReplaceMeWithYourSkill 
 ---
-PullAbilityRange=30
+PullAbilityRange=30  (What is the MAXimum range of your pull Ability - 30 is a good value)
+---
 ---
 PullRequiresLineOfSight=TRUE - [DO NOT ALTER OR EDIT THIS]
 ---
-UseCastSpells=FALSE  ( HardForce your driver to cast his detrimental memorized spells in combat )
+UseCastSpells=FALSE  (HardForce your driver to cast his detrimental memorized spells in combat )
 ---
 ---
 [BardSong]
 -
-BRDTravelSongSlot=11  ( BEEP if a GM is detected ?)
+BRDTravelSongSlot=11  (What SongSLot should the bard use for their TRAVEL/INVIS song? -- "Selo's Song of Travel" )
 ---
-BRDMelodyName=base  ( BEEP if a GM is detected ?)
+BRDMelodyName=base  (What is the name of the Bard's MAIN/BASE melody ?)
 ---
 ---
 [Endurance]
 -
-MedEndAt=30
+MedEndAt=30    (Value to start medding for Endurance)
 ---
-MedEndTill=95
+MedEndTill=95  (Value to stop medding for Endurance)
 ---
 ---
 [Mana]
 -
-MedAt=30
+MedAt=30  (Value to start medding for Mana)
 ---
-MedTill=95
+MedTill=95  (Value to stop medding for Mana)
 ---
-BardMed=TRUE  ( BEEP if a GM is detected ?)
+BardMed=TRUE  (Shoulkd your Bard be considered when checking for Mana medding ?)
 ---
 ---
 [Alerts]
