@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 10th, 2024 - 12:53:01 PM
+June 10th, 2024 - 01:01:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -280,7 +280,7 @@ Sub Declares
 	|** E3LDON.mac/PullFarm.mac type declares INIThings **|
 
 	|** SPECIFIC of CataKill.mac/PullFarm.mac type declares **|
-	/call CheckINI ${IniFileName} General Debugging bool TRUE
+	/call CheckINI ${IniFileName} General Debugging bool FALSE
 	/call CheckINI ${IniFileName} Camp CampRadius int 2500
 	/call CheckINI ${IniFileName} Pull ZRadius int 500
 	|** SPECIFIC of CataKill.mac/PullFarm.mac type declares **|
