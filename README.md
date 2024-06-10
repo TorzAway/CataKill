@@ -52,8 +52,8 @@ MedTill=95
 BardMed=TRUE
 
 [Alerts]
-AFKGM=TRUE
-UseBeep=TRUE
+AFKGM=TRUE      ( Go AFK if a GM is detected ?)
+UseBeep=TRUE    ( BEEP if a GM is detected ?)
 
 [Theme]
 
