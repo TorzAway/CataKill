@@ -16,10 +16,15 @@ InI Setings Explained:
 
 [General]
 Debugging=FALSE  (Turn Debugging On/Off)
+---
 AssistMe=TRUE
+---
 CheckBots=TRUE
+---
 DoBurns=FALSE
+---
 SwarmPull=FALSE    (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
+---
 BiggerSwarms=FALSE  (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALSE for standard room pulls)
 RepeatMission=TRUE  (Turn to TRUE for REGET the expedition when it ends / FALSE to gate to Temple of Marrs and CAMP when it ends)
 GroupNavToMe=TRUE
