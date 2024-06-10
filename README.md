@@ -15,13 +15,13 @@ MQ\Config\CataKill_[ToonName].ini
 InI Setings Explained:
 
 [General]
----
+--
 Debugging=FALSE  (Turn Debugging On/Off)
----
+--
 AssistMe=TRUE
----
+--
 CheckBots=TRUE
----
+--
 DoBurns=FALSE
 ---
 SwarmPull=FALSE    (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
