@@ -18,9 +18,9 @@ InI Setings Explained:
 - 
 Debugging=FALSE  (Turn Debugging On/Off) - [DO NOT ALTER OR EDIT THIS]
 -
-AssistMe=TRUE
+AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 -
-CheckBots=TRUE
+CheckBots=TRUE -  (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance checking)
 -
 DoBurns=FALSE
 -
