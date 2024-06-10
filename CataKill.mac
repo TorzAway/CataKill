@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 10th, 2024 - 5:02:01 AM
+June 10th, 2024 - 5:21:01 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -61,10 +61,12 @@ Sub Main
 	/echo \at/E3LDoN \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
 	/echo \at/E3LDoN \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
 	/echo \at/E3LDoN \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
-	/echo \at/E3LDoN \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
 	/echo \at/E3LDoN \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
+	/echo \at/E3LDoN \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
 	/echo \at/E3LDoN \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
 	/echo \at/E3LDoN \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
+	/echo \at/E3LDoN \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
+	/echo \at/E3LDoN \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
 	/message ==================================================================	
 
 	/echo \agGetting things ready, sit back...
@@ -99,7 +101,7 @@ Sub Main
 	/if (${startZone}==${RuinedCityofDranik}) {
 		/call GetExpeditionData
 		|-------------------
-		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
+		/if (${DranikCExpedition}==1) {
 			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
 			/call GroupWait
 			/call GoToExpedition
