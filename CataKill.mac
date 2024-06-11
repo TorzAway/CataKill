@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 11th, 2024 - 11:30:01 AM
+June 11th, 2024 - 06:28:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -219,7 +219,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.3.2
+	/declare version			string	outer	1.3.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -256,26 +256,26 @@ Sub Declares
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 
 	|** Declare colors their escape code for read-ability **|
-	/declare Black 		string outer \ab
-	/declare Blue   	string outer \au
-	/declare Brown      string outer \a-o
-	/declare Cyan   	string outer \at
-	/declare Gray		string outer \a-w
-	/declare Green		string outer \ag
-	/declare Pink   	string outer \am
-	/declare Orange   	string outer \ao
-	/declare Purple   	string outer \ap
-	/declare Red   		string outer \ar
-	/declare Teal   	string outer \at
-	/declare White   	string outer \aw
-	/declare Yellow  	string outer \ay
-	/declare DarkGreen 	string outer \a-g
+	/declare Black 			string outer \ab
+	/declare Blue   		string outer \au
+	/declare Brown      	string outer \a-o
+	/declare Cyan   		string outer \at
+	/declare Gray			string outer \a-w
+	/declare Green			string outer \ag
+	/declare Pink   		string outer \am
+	/declare Orange   		string outer \ao
+	/declare Purple   		string outer \ap
+	/declare Red   			string outer \ar
+	/declare Teal   		string outer \at
+	/declare White   		string outer \aw
+	/declare Yellow  		string outer \ay
+	/declare DarkGreen 		string outer \a-g
 	/declare DarkMarroon	string outer \a-m
-	/declare DarkPurple	string outer \a-p
-	/declare DarkRed	string outer \a-r
-	/declare DarkCyan	string outer \a-t
-	/declare DarkBlue	string outer \a-u
-	/declare DarkYellow	string outer \a-y
+	/declare DarkPurple		string outer \a-p
+	/declare DarkRed		string outer \a-r
+	/declare DarkCyan		string outer \a-t
+	/declare DarkBlue		string outer \a-u
+	/declare DarkYellow		string outer \a-y
 	|** End color declarations **|
 
 	|** E3LDON.mac/PullFarm.mac type declares INIThings **|
@@ -2311,7 +2311,7 @@ Sub Zoning
 	/varset DranikCLootArray[1,23] Shimmering Ukun Hide
 	/varset DranikCLootArray[1,24] Sleek Bat Fur
 	/varset DranikCLootArray[1,25] Sparse Rat Fur
-	/varset DranikCLootArray[1,26] plintered Bone Necklace
+	/varset DranikCLootArray[1,26] Splintered Bone Necklace
 	/varset DranikCLootArray[1,27] Starflow Stone
 	/varset DranikCLootArray[1,28] Stone Shard
 	/varset DranikCLootArray[1,29] Tattered Ikaav Braid
