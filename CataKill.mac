@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 11th, 2024 - 09:08:01 AM
+June 11th, 2024 - 11:15:01 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -251,6 +251,7 @@ Sub Declares
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
 	/declare DranikCExpedition		int		outer	0
+	/declare DranikCLootArray[1,32]	string	outer
 	|----------------------------------------------------------
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 
@@ -2280,11 +2281,55 @@ Sub Zoning
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+|SUB: DranikCLootArraySetup
+| --------------------------------------------------------------------------------------------
+  Sub DranikCLootArraySetup
+    /if (${Debugging}) /echo Sub DranikCLootArraySetup Entry
+	
+	/varset DranikCLootArray[1,1] Black Pearl
+	/varset DranikCLootArray[1,2] Blue Diamond
+	/varset DranikCLootArray[1,3] Broken Ukun Leash
+	/varset DranikCLootArray[1,4] Cobalt Ore
+	/varset DranikCLootArray[1,5] Congealed Bat Blood
+	/varset DranikCLootArray[1,6] Cracked Stone Eye
+	/varset DranikCLootArray[1,7] Curled Rat Foot
+	/varset DranikCLootArray[1,8] Diamond
+	/varset DranikCLootArray[1,9] Diamond Coin
+	/varset DranikCLootArray[1,10] Dragorn Eye
+	/varset DranikCLootArray[1,11] Dragorn Fang
+	/varset DranikCLootArray[1,12] Dragorn Wing Bones
+	/varset DranikCLootArray[1,13] Emerald
+	/varset DranikCLootArray[1,14] Fire Emerald
+	/varset DranikCLootArray[1,15] Gnarled Rat Tail
+	/varset DranikCLootArray[1,16] Murkglider Stomach
+	/varset DranikCLootArray[1,17] Noc Heart
+	/varset DranikCLootArray[1,18] Opal
+	/varset DranikCLootArray[1,19] Ruby
+	/varset DranikCLootArray[1,20] Sapphire
+	/varset DranikCLootArray[1,21] Shattered Bat Fang
+	/varset DranikCLootArray[1,22] Shattered Visage
+	/varset DranikCLootArray[1,23] Shimmering Ukun Hide
+	/varset DranikCLootArray[1,24] Sleek Bat Fur
+	/varset DranikCLootArray[1,25] Sparse Rat Fur
+	/varset DranikCLootArray[1,26] plintered Bone Necklace
+	/varset DranikCLootArray[1,27] Starflow Stone
+	/varset DranikCLootArray[1,28] Stone Shard
+	/varset DranikCLootArray[1,29] Tattered Ikaav Braid
+	/varset DranikCLootArray[1,30] Torn Rat Ear
+	/varset DranikCLootArray[1,31] Ukun Guts
+	/varset DranikCLootArray[1,32] Wiry Rat Whiskers
+
+	/if (${Debugging}) /echo Sub DranikCLootArraySetup Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
 |SUB: LootMob_DC_Only: Standard coin and Diamond Coin
 | --------------------------------------------------------------------------------------------
   Sub LootMob_DC_Only
     /if (${Debugging}) /echo Sub LootMob_DC_Only Entry
 	
+	/declare x  		 int inner	1
 	/declare LootSlot    int inner  0
     /declare LootCheck   int inner  0
     /declare LootTotal   int inner  0
@@ -2298,7 +2343,7 @@ Sub Zoning
 
 	|---------------------------------------
 	| -- HANDLE CONDITIONALY !
-	|--------------------------------------'\;k -/,9hmgfnjhdzac sFXDB0b!az
+	|---------------------------------------
 	/loot
 	|---------------------------------------
 	| -- HANDLE CONDITIONALY !
@@ -2321,24 +2366,29 @@ Sub Zoning
 			/delay 2s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
 			/delay 5
+						
+			|----------------------------------------------------------------------------------------------
+			|/echo Starting: LOOT
+			|----------------------------------------------------------------------------------------------
+			/for x 1 to ${DranikCLootArray.Size}
+			
+				|/echo \ayChecking (\am${Cursor.Name}\ay) against (\am${DranikCLootArray[1,${x}]}\ay)
+			
 			|--------------------------------------------------------
-			|---- DESTROY THE CRAP ITEMS THAT MIGHT GET LOOTED.
-			|--------------------------------------------------------							
-			/if (${Select[${Cursor.Name},Filthy Tapestry,Torn Tapesty,Tattered Tapestry,Dragorn Greatblade,Dragorn Feet Statue Piece,Dragorn Torso Statue Piece,Dragorn Leg Statue Piece,Dragorn Head Statue Piece]}>=1) {
-				/echo \ar-\ax \arDestroying a\ax \ay(\at${Cursor.Name}\ay)\ar ...\ax
-				/destroy
-				/delay 1s !${Cursor.ID}
-			}
-			|--------------------------------------------------------							
-			|--------------------------------------------------------
-			|---- ALL VALUABLE STACKABLE LOOT THAT DROPS IN THIS ZONE
-			|--------------------------------------------------------			
-			/if (${Select[${Cursor.Name},Black Pearl,Blue Diamond,Broken Ukun Leash,Cracked Stone Eye,Congealed Bat Blood,Curled Rat Foot,Diamond,Diamond Coin,Dragorn Eye,Dragorn Fang,Emerald,Fire Emerald,Gnarled Rat Tail,Murkglider Stomach,Noc Heart,Ruby,Sapphire,Sleek Bat Fur,Torn Rat Ear,Shattered Bat Fang,Shattered Visage,Shimmering Ukun Hide,Sparse Rat Fur,Splintered Bone Necklace,Stone Shard,Tattered Ikaav Braid,Torn Rat Ear,Ukun Guts,Wiry Rat Whiskers]}>=1) {
-				/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay)\ag ... WOOT!\ax
-				/autoinventory
-				/delay 1s !${Cursor.ID}
-			}
-			|--------------------------------------------------------							
+				|---- ALL VALUABLE STACKABLE LOOT THAT DROPS IN THIS ZONE
+				|--------------------------------------------------------			
+				/if ( ${Cursor.ID} && ${Cursor.Name.Equal[${DranikCLootArray[1,${x}]}]} ) {
+					/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay)\ag ... WOOT!\ax
+					/autoinventory
+					/delay 1s !${Cursor.ID}
+					/varset x ${DranikCLootArray.Size}
+				}
+				|--------------------------------------------------------							
+			/next x
+			|----------------------------------------------------------------------------------------------
+			|/echo Endiung: LOOT
+			|----------------------------------------------------------------------------------------------
+			
 			|--------------------------------------------------------
 			|---- DESTROY ANYTHING REMAINING
 			|--------------------------------------------------------
@@ -2346,9 +2396,10 @@ Sub Zoning
 				/echo \ar-\ax \arDestroying a\ax \ay(\at${Cursor.Name}\ay)\ar ...\ax
 				/destroy
 				/delay 1s !${Cursor.ID}
+				/varset x ${DranikCLootArray.Size}
 			}
 			|--------------------------------------------------------
-			/doevents
+		/doevents
 		/next LootSlot
 		|---------------------------------------
     }
@@ -3170,6 +3221,11 @@ Sub CheckThings
 		/if (${LootMethod.Equal[DCONLY]}) {
 			/squelch /lootoff
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot [\atDiamond Coin\ay]
+			|------------------------------------------------
+			|--- LOAD THE ARRAY DATA FOR LOOTING UNDER DCONLY
+			|------------------------------------------------
+			/call DranikCLootArraySetup
+			|------------------------------------------------
 		}  
 		/if (${LootMethod.Equal[E3]}) {
 			/squelch /looton
