@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 11th, 2024 - 11:15:01 AM
+June 11th, 2024 - 11:22:01 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2289,12 +2289,12 @@ Sub Zoning
 	/varset DranikCLootArray[1,1] Black Pearl
 	/varset DranikCLootArray[1,2] Blue Diamond
 	/varset DranikCLootArray[1,3] Broken Ukun Leash
-	/varset DranikCLootArray[1,4] Cobalt Ore
-	/varset DranikCLootArray[1,5] Congealed Bat Blood
-	/varset DranikCLootArray[1,6] Cracked Stone Eye
-	/varset DranikCLootArray[1,7] Curled Rat Foot
-	/varset DranikCLootArray[1,8] Diamond
-	/varset DranikCLootArray[1,9] Diamond Coin
+	/varset DranikCLootArray[1,4] Congealed Bat Blood
+	/varset DranikCLootArray[1,5] Cracked Stone Eye
+	/varset DranikCLootArray[1,6] Curled Rat Foot
+	/varset DranikCLootArray[1,7] Diamond
+	/varset DranikCLootArray[1,8] Diamond Coin
+	/varset DranikCLootArray[1,9] Dragorn Claw
 	/varset DranikCLootArray[1,10] Dragorn Eye
 	/varset DranikCLootArray[1,11] Dragorn Fang
 	/varset DranikCLootArray[1,12] Dragorn Wing Bones
