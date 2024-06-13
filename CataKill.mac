@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 11th, 2024 - 06:28:01 PM
+June 13th, 2024 - 03:28:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -59,16 +59,16 @@ Sub Main
 	|------------------------------------------------------------------------------------------------------
 
 	/message ==================================================================
-	/echo \at/E3LDoN \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
-	/echo \at/E3LDoN \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
-	/echo \at/E3LDoN \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
-	/echo \at/E3LDoN \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
-	/echo \at/E3LDoN \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
-	/echo \at/E3LDoN \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
-	/echo \at/E3LDoN \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
-	/echo \at/E3LDoN \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]
-	/echo \at/E3LDoN \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
-	/echo \at/E3LDoN \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
+	/echo \at/CataKill \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
+	/echo \at/CataKill \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
+	/echo \at/CataKill \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
+	/echo \at/CataKill \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
+	/echo \at/CataKill \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
+	/echo \at/CataKill \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
+	/echo \at/CataKill \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
+	/echo \at/CataKill \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]
+	/echo \at/CataKill \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
+	/echo \at/CataKill \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
 	/message ==================================================================
 
 	/echo \agGetting things ready, sit back...
@@ -3346,7 +3346,7 @@ Sub CheckMesh
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
-|SUB: AutoSell_Loot_PoK
+|SUB: AutoSell_Loot
 | --------------------------------------------------------------------------------------------
   Sub AutoSell_Loot
   /if (${Debugging}) /echo Sub AutoSell_Loot Entry
