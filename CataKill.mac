@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 13th, 2024 - 03:28:01 PM
+June 14th, 2024 - 03:16:01 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -59,16 +59,16 @@ Sub Main
 	|------------------------------------------------------------------------------------------------------
 
 	/message ==================================================================
-	/echo \at/CataKill \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
-	/echo \at/CataKill \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
-	/echo \at/CataKill \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
-	/echo \at/CataKill \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
-	/echo \at/CataKill \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
-	/echo \at/CataKill \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
-	/echo \at/CataKill \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
-	/echo \at/CataKill \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]
-	/echo \at/CataKill \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
-	/echo \at/CataKill \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
+	/message \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
+	/message \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
+	/message \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
+	/message \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
+	/message \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
+	/message \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
+	/message \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
+	/message \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]
+	/message \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
+	/message \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
 	/message ==================================================================
 
 	/echo \agGetting things ready, sit back...
@@ -1546,12 +1546,20 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	/message ==================================================================
 	/message \ag+++\ax \aoCompleted \arSpawnPull \atMainLoop \agCycle:\ax \ao...\ax \atRETURNING TO CAMP !!!\ax
 	/message ==================================================================
-		
+
+	|---------------		
 	|-- MOVE TO CAMP
+	|---------------		
 	/squelch /e3bca /nav loc ${CampReturnLoc}
 	/delay 1s
 	/call NavToLoc2 ${CampReturnLoc}
 	/delay 5
+	
+	|----------------------------------------------------------------
+	|-- Clear the camp location of any corpses before the next cycle.
+	|----------------------------------------------------------------
+	/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
+	|----------------------------------------------------------------
 
 	|------------------
 	/call ReclaimAltDC
@@ -2946,6 +2954,7 @@ Sub GroupManaChk
 		|--- If Me LowMana
 		/if ((${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && !${Select[${Me.Class.ShortName},WAR,BER,ROG,MNK,BRD]}) || (${BardMed} && ${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
 			/echo \arYOU are low on mana!
+			/call Group2Me
 			|------   If No Target ID
 			/if (!${Me.XTarget[1].ID}) {
 				|--------------------------------------
@@ -2968,6 +2977,7 @@ Sub GroupManaChk
 				|------   If Valid GroupMemeber
 				/if ((${Group.Member[${i}].PctMana} < ${MedAt} && ${Group.Member[${i}].Class.CanCast} && !${Group.Member[${i}].State.Equal[DEAD]} && !${Select[${Group.Member[${i}].Class.ShortName},BRD,WAR,MNK,BER,ROG]}) || (${BardMed} && (${Group.Member[${i}].PctMana} < ${MedAt}) && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
 					/echo \ar${Group.Member[${i}].Name} is low on mana!
+					/call Group2Me
 					|--------------
 					| Make Them Sit
 					|--------------
@@ -3018,6 +3028,7 @@ Sub GroupEndChk
 		|--- If Me LowEnd
 		/if ((${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
 			/echo \arYOU are low on Endurance!
+			/call Group2Me
 			|------   If No Target ID
 			/if (!${Me.XTarget[1].ID}) {
 				|--------------------------------------
@@ -3042,6 +3053,7 @@ Sub GroupEndChk
 					|------   If GroupMember LowEnd
 					/if ((${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
 						/echo \ar${Group.Member[${i}].Name} is low on Endurance!
+						/call Group2Me
 						|--------------
 						| Make Them Sit
 						|--------------
