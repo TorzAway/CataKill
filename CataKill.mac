@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 15th, 2024 - 06:31:01 AM
+June 19th, 2024 - 10:08:03 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -42,10 +42,13 @@ Sub Main
 	/message ==================================================================
  	/call Declares
 	/message ==================================================================
-	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking
-		
-	/delay 1s
+	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking	
+	/message ==================================================================	
+	/delay 3s
+	
+	|----------------
 	/call CheckThings
+	|----------------
 
 	|------------------------------------------------------------------------------------------------------
 	/if (${SwarmPull}) {
@@ -59,25 +62,26 @@ Sub Main
 	|------------------------------------------------------------------------------------------------------
 
 	/message ==================================================================
-	/message \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]
-	/message \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]
-	/message \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]
-	/message \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]
-	/message \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]
-	/message \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]
-	/message \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]
-	/message \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]
-	/message \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]
-	/message \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]
+	/message \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]\ax
+	/message \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]\ax
+	/message \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]\ax
+	/message \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]\ax
+	/message \ag- UseMq2Melee \ayis set to \at[\ag${UseMq2Melee}\at]\ax
+	/message \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]\ax
+	/message \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]\ax
+	/message \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]\ax
+	/message \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]\ax
+	/message \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]\ax
 	/message ==================================================================
-
+	/message \am- LastSwarmed_Step \ayis set to \at[\ag${LastSwarmed_Step}\at]\ax
+	/message \am- CompletedPathTo \ayis set to \at[\ag${CompletedPathTo}\at]\ax
+	/message ==================================================================
 	/echo \agGetting things ready, sit back...
-	/delay 5s
+	/delay 3s
 
 	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
 	|--------------
 	/call GroupWait
-	/delay 2s
 	|--------------
 
 	|----------------------
@@ -219,7 +223,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.3.4
+	/declare version			string	outer	1.3.5
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -251,7 +255,7 @@ Sub Declares
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
 	/declare DranikCExpedition		int		outer	0
-	/declare DranikCLootArray[1,32]	string	outer
+	/declare DranikCLootArray[1,33]	string	outer
 	|----------------------------------------------------------
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 
@@ -2309,23 +2313,24 @@ Sub Zoning
 	/varset DranikCLootArray[1,13] Emerald
 	/varset DranikCLootArray[1,14] Fire Emerald
 	/varset DranikCLootArray[1,15] Gnarled Rat Tail
-	/varset DranikCLootArray[1,16] Murkglider Stomach
-	/varset DranikCLootArray[1,17] Noc Heart
-	/varset DranikCLootArray[1,18] Opal
-	/varset DranikCLootArray[1,19] Ruby
-	/varset DranikCLootArray[1,20] Sapphire
-	/varset DranikCLootArray[1,21] Shattered Bat Fang
-	/varset DranikCLootArray[1,22] Shattered Visage
-	/varset DranikCLootArray[1,23] Shimmering Ukun Hide
-	/varset DranikCLootArray[1,24] Sleek Bat Fur
-	/varset DranikCLootArray[1,25] Sparse Rat Fur
-	/varset DranikCLootArray[1,26] Splintered Bone Necklace
-	/varset DranikCLootArray[1,27] Starflow Stone
-	/varset DranikCLootArray[1,28] Stone Shard
-	/varset DranikCLootArray[1,29] Tattered Ikaav Braid
-	/varset DranikCLootArray[1,30] Torn Rat Ear
-	/varset DranikCLootArray[1,31] Ukun Guts
-	/varset DranikCLootArray[1,32] Wiry Rat Whiskers
+	/varset DranikCLootArray[1,16] Murkglider Sinew
+	/varset DranikCLootArray[1,17] Murkglider Stomach
+	/varset DranikCLootArray[1,18] Noc Heart
+	/varset DranikCLootArray[1,19] Opal
+	/varset DranikCLootArray[1,20] Ruby
+	/varset DranikCLootArray[1,21] Sapphire
+	/varset DranikCLootArray[1,22] Shattered Bat Fang
+	/varset DranikCLootArray[1,23] Shattered Visage
+	/varset DranikCLootArray[1,24] Shimmering Ukun Hide
+	/varset DranikCLootArray[1,25] Sleek Bat Fur
+	/varset DranikCLootArray[1,26] Sparse Rat Fur
+	/varset DranikCLootArray[1,27] Splintered Bone Necklace
+	/varset DranikCLootArray[1,28] Starflow Stone
+	/varset DranikCLootArray[1,29] Stone Shard
+	/varset DranikCLootArray[1,30] Tattered Ikaav Braid
+	/varset DranikCLootArray[1,31] Torn Rat Ear
+	/varset DranikCLootArray[1,32] Ukun Guts
+	/varset DranikCLootArray[1,33] Wiry Rat Whiskers
 
 	/if (${Debugging}) /echo Sub DranikCLootArraySetup Exit
   /return
