@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 19th, 2024 - 10:08:03 AM
+June 21th, 2024 - 07:55:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -223,7 +223,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.3.5
+	/declare version			string	outer	1.3.5a
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1339,7 +1339,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			|--------------------------------------------------------------
 			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 			|--------------------------------------------------------------
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
 				|----------------------------------------------
 				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
 				|----------------------------------------------
@@ -1494,7 +1494,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 				|--------------------------------------------------------------
 				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 				|--------------------------------------------------------------
-				/if (!${Me.Combat} && !${Me.XTarget[1].ID} && !${Target.ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
+				/if (!${Me.Combat} && !${Me.XTarget[1].ID} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
 					|----------------------------------------------
 					|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
 					|----------------------------------------------
