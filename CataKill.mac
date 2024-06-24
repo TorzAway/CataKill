@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 21th, 2024 - 07:55:00 AM
+June 24th, 2024 - 07:05:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -223,7 +223,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.3.5a
+	/declare version			string	outer	1.3.6
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -301,6 +301,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
 	/call CheckINI ${IniFileName} General UseMq2Melee bool FALSE
 	/call CheckINI ${IniFileName} General LootCorpse bool FALSE
+	/call CheckINI ${IniFileName} General ReclaimDC bool FALSE
 	/call CheckINI ${IniFileName} General LootMethod string DCONLY
 
 	/declare BRDTravelSong string  outer "Selo's Song of Travel"
@@ -1382,7 +1383,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	|----------------------------------------------------------------------------------------------
 
 	|------------------
-	/call ReclaimAltDC
+	/if (${ReclaimDC}) /call ReclaimAltDC
 	|------------------
 
 	|------------------------------------------
@@ -1566,7 +1567,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|----------------------------------------------------------------
 
 	|------------------
-	/call ReclaimAltDC
+	/if (${ReclaimDC}) /call ReclaimAltDC
 	|------------------
 
 	|------------------------------------------
@@ -3334,7 +3335,7 @@ Sub CheckMesh
 	|-------------------------------------
 
 	|------------------
-	/call ReclaimAltDC
+	/if (${ReclaimDC}) /call ReclaimAltDC
 	|------------------
 
 	|-------------------------------------
@@ -3399,7 +3400,7 @@ Sub CheckMesh
 	|-------------------------------------
 
 	|------------------
-	/call ReclaimAltDC
+	/if (${ReclaimDC}) /call ReclaimAltDC
 	|------------------
 
 	|-------------------------------------
