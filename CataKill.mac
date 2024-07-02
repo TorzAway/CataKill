@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-June 30th, 2024 - 12:19:00 PM
+July 2nd, 2024 - 05:20:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2365,7 +2365,7 @@ Sub Zoning
 	| -- HANDLE CONDITIONALY !
 	|---------------------------------------
 
-    /delay 2s ${Window[LootWnd].Open}
+    /delay 1s ${Window[LootWnd].Open}
     /doevents
 
 	|--------------------------------------
@@ -2379,7 +2379,7 @@ Sub Zoning
 		/for LootSlot 1 to ${LootTotal}
 			/echo \ay-- Grabbing corpse item (\am${LootSlot}\ax) of (\am${LootTotal}\ax).
 			/nomodkey /shift /itemnotify Loot${LootSlot} leftmouseup
-			/delay 2s ${Cursor.ID}
+			/delay 1s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
 			/delay 5
 						
@@ -2422,7 +2422,7 @@ Sub Zoning
     |--------------------------------------
 
   /notify LootWnd DoneButton leftmouseup
-  /delay 2s !${Window[LootWnd].Open}
+  /delay 1s !${Window[LootWnd].Open}
   /doevents
   |-------------------------------------------------------------------------------------
   /if (!${Me.XTarget[1].ID} && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
