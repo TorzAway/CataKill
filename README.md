@@ -24,6 +24,8 @@ CheckBots=TRUE - (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance 
 ---
 DoBurns=FALSE - (Turn to TRUE/FALSE to Enable/Disable calls for burns if overwhelmed)
 ---
+DoInvis=TRUE - (Turn to TRUE/FALSE to Enable/Disable calls for CheckInvis in Dranik)
+---
 SwarmPull=FALSE - (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
 ---
 BiggerSwarms=FALSE - (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALSE for standard room pulls)
