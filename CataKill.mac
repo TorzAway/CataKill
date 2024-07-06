@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 2nd, 2024 - 05:20:00 PM
+July 5th, 2024 - 09:52:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -222,7 +222,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.3.9
+	/declare version			string	outer	1.4.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -292,6 +292,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General AssistMe bool TRUE
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
+	/call CheckINI ${IniFileName} General DoInvis bool TRUE
 	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
@@ -659,7 +660,7 @@ Sub GotoRecruiter
 			|-------------
 			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
 				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
-				/call CheckInvis
+				/if (${DoInvis}) /call CheckInvis
 				/delay 1s
 				|---------------------- INVIS VNAV !
 				/call NavToLoc3 ${RecruiterLoc}
@@ -748,7 +749,7 @@ Sub GoToExpedition
 	|--- RESET INVIS !!!
 	/if (${Me.Invis}) /dropinvis
 	/delay 2s
-	/call CheckInvis
+	/if (${DoInvis}) /call CheckInvis
 	|--- RESET INVIS !!!
 
 	/delay 1s
@@ -1778,8 +1779,8 @@ Sub DoSwarmPull_MainLoop
 	|------------------------------------------------------
 	/echo \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,18]\am]\ax
-		/declare LocalStepArray_${Zone.ShortName}_2[1,18]	string	outer
+		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,19]\am]\ax
+		/declare LocalStepArray_${Zone.ShortName}_2[1,19]	string	outer
 		/delay 10
 	}
 	|------------------------------------------------------
@@ -1816,6 +1817,10 @@ Sub DoSwarmPull_MainLoop
 	/varset LocalStepArray_${Zone.ShortName}_2[1,18] 2007.83 -32.97 -133.30
 	|---------------------------------- RIGHT BOTTOM
 	|---------------------------------- MAIN CYCLE ABOVE
+	
+	|---------------------------------- PrCamp
+	/varset LocalStepArray_${Zone.ShortName}_2[1,19] 1707.48 270.58 -132.80
+	|---------------------------------- PrCamp
 
 	|------------------------------------------------------
 	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
@@ -1836,6 +1841,7 @@ Sub DoSwarmPull_MainLoop
 	/echo \ayStep \am[\ag16\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,16]}\am]\ay
 	/echo \ayStep \am[\ag17\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,17]}\am]\ay
 	/echo \ayStep \am[\ag18\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,18]}\am]\ay
+	/echo \ayStep \am[\ag19\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,19]}\am]\ay
 	/message ==================================================================
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
@@ -1878,8 +1884,8 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|------------------------------------------------------
 	/echo \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,6]\am]\ax
-		/declare LocalStepArray_${Zone.ShortName}_2[1,6]	string	outer
+		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,7]\am]\ax
+		/declare LocalStepArray_${Zone.ShortName}_2[1,7]	string	outer
 		/delay 10
 	}
 	|------------------------------------------------------
@@ -1904,6 +1910,10 @@ Sub DoSwarmPull_MainLoop_Bigger
 	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2007.83 -32.97 -133.30
 	|---------------------------------- RIGHT BOTTOM
 	|---------------------------------- MAIN CYCLE ABOVE
+	
+	|---------------------------------- PrCamp
+	/varset LocalStepArray_${Zone.ShortName}_2[1,7] 1707.48 270.58 -132.80
+	|---------------------------------- PrCamp	
 
 	|------------------------------------------------------
 	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
@@ -2094,7 +2104,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckInvis
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && ${DoInvis}) /call CheckInvis
 			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcga /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
@@ -2772,25 +2782,25 @@ Sub CheckInvis
 	|----------------------------------------------------------------------------
 	|--- REFERENCE ----
 	|----------------------------------------------------------------------------
-	|/squelch /e3bcg /alt act 280 	; -- Group Perfected Invisibility to Undead
-	|/squelch /e3bcg /alt act 8301 	; -- Improved Natural Invisibility
-	|/squelch /e3bcg /alt act 1212 	; -- Group Perfected Invisibility to Undead
-	|/squelch /e3bcg /alt act 630 	; -- Group Silent Presence
-	|/squelch /e3bcg /alt act 531 	; -- Cloak of Shadows
-	|/squelch /e3bcg /alt act 518 	; -- Shared Camouflage
-	|/squelch /e3bcg /alt act 1210 	; -- Group Perfect Invisibility
-	|/squelch /e3bcg /alt act 231 	; -- Shauri's Sonorious Clouding
+	|/squelch /e3bcg /alt act 8301 	; -- Improved Natural Invisibility -- Beastlord
+	|/squelch /e3bcg /alt act 630 	; -- Group Silent Presence -- Shaman
+	|/squelch /e3bcg /alt act 531 	; -- Cloak of Shadows -- Necromancer / Shadow Knight
+	|/squelch /e3bcg /alt act 518 	; -- Shared Camouflage -- Druid / Ranger
+	|/squelch /e3bcg /alt act 1210 	; -- Group Perfect Invisibility -- Magician / Enchanter / Wizard
+	|/squelch /e3bcg /alt act 231 	; -- Shauri's Sonorious Clouding -- Bard AA
+	|/squelch /e3bcg /alt act 1212 	; -- Group Perfected Invisibility to Undead  -- Cleric / Necromancer / Paladin / Shadowknight
+	|/squelch /e3bcg /alt act 280 	; -- Group Perfected Invisibility to Undead -- Magician / Enchanter / Wizard
 	|----------------------------------------------------------------------------
 
 	/if (!${Me.Invis}) {
-		/squelch /e3bcg /alt act 280
 		/squelch /e3bcg /alt act 8301
-		/squelch /e3bcg /alt act 1212
 		/squelch /e3bcg /alt act 630
 		/squelch /e3bcg /alt act 531
 		/squelch /e3bcg /alt act 518
 		/squelch /e3bcg /alt act 1210
 		/squelch /e3bcg /alt act 231
+		|/squelch /e3bcg /alt act 1212
+		|/squelch /e3bcg /alt act 280
 		/delay 5s
 	}
 
