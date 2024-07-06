@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 5th, 2024 - 09:52:00 PM
+July 6th, 2024 - 07:05:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1555,10 +1555,10 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|---------------		
 	|-- MOVE TO CAMP
 	|---------------		
-	/squelch /e3bca /nav loc ${CampReturnLoc}
-	/delay 1s
+	|-------------------------------
 	/call NavToLoc2 ${CampReturnLoc}
-
+	|-------------------------------
+	
 	:WaitTillAtCamp
 	/if (${Me.Moving}) /delay 5
 	/if (${Me.Moving}) /goto :WaitTillAtCamp
