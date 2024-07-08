@@ -1,0 +1,144 @@
+#turbo
+
+|---------------------------------------------------------------------------------
+| SUB: Main
+|---------------------------------------------------------------------------------
+Sub Main
+
+|----------------------------------------
+/declare COH_LOC 		string 	outer NULL
+
+/declare RunToLoc		string	outer	${Param0}
+/declare RunRequestor	string	outer	${Param1}
+/declare FollowupMac	string	outer	${Param2}
+  
+|---------- Setup the variables by Param or by Zone Default 
+/if (${Defined[RunToLoc]} && ${Defined[RunRequestor]} && ${Defined[FollowupMac]}) {
+	|/echo {RunToLoc}=(${RunToLoc})
+	|/echo {RunRequestor}=(${RunRequestor})
+	|/echo {FollowupMac}=(${FollowupMac})
+	/varset COH_LOC ${RunToLoc}
+} 
+|----------------------------------------
+
+|------------------------------
+/if (${COH_LOC.NotEqual[NULL]}) {
+	:AmISOS
+	|------------------------
+	/if (!${Me.Invis[SOS]}) {
+		/echo \ayI am \arNOT\ax currenty in \atShroud of Stealth\ay mode.
+
+		:AmISneaking
+		/if (!${Me.Sneaking}) {
+			/echo \ayI am \arNOT\ax currenty \atSNEAKING\ax.
+			/doability Sneak 
+			/delay 5
+			/goto :AmISneaking
+		}
+		/if (${Me.Sneaking} && !${Me.Invis[SOS]}) {
+			/echo \ayI am \arNOT\ax currenty \atHIDING\ax.
+			/doability Hide 
+			/delay 5
+			/goto :AmISOS
+		}		
+	} else {
+		/echo \ay+ I am \agNOW\ax in \atShroud of Stealth\ax mode.
+		/echo \ay++ Headed to location for COH: \ay[\am${COH_LOC}\ay]
+		/g + Headed to location [${COH_LOC}] for [COH].
+		|-------------------------------
+		/if (${Me.Invis[SOS]}) /nav loc ${COH_LOC}
+		/delay 5
+			
+		/while (${Navigation.Active}) {
+			/delay 5
+		}
+			
+		/echo \agArrived at COH spot.\ax
+		/delay 1s		
+		
+		/call COH_Group
+		|-------------------------------
+	}
+	|------------------------	
+} else {
+	/echo \arNo valid location is defined for the current zone\ao: \am(\at${Zone.Name}\am)
+	/end
+}
+|------------------------------
+
+/return
+|---------------------------------------------------------------------------------
+
+|---------------------------------------------------------------------------------
+| SUB: COH_Group
+|---------------------------------------------------------------------------------
+Sub COH_Group
+
+/declare x int local 0
+
+	|-------------------------------------
+	/for x 1 to ${Group.Members}
+		/if (${Group.Member[${x}].Distance}>=120) {
+			/echo  \ar* \ay[\am${Group.Member[${x}].CleanName}\ay] is in need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
+			|------------------------
+			/squelch /target id ${Group.Member[${x}].ID}
+			/delay 1s ${Target.ID}==${Group.Member[${x}].ID}
+			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
+			:COH_Member
+			|-------------------------------------
+			/if (${Group.Member[${x}].Distance}>25) {
+				|-------------------------------------
+				/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
+					/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
+					/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
+					/useitem "Wayfarers Brotherhood Emblem"
+					/delay 5
+					/call CheckCasting
+				} else {
+					/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
+					/end
+				}
+				|-------------------------------------
+				/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=120) /goto :COH_Member
+			}
+			|-------------------------------------
+		} else {
+			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
+		}
+	/next x
+	|-------------------------------------	
+	
+	/echo \at++ All group members are with me now !\ax
+	/g ++ All group members are with me now !
+	/delay 1s	
+	
+	|------------------------------------
+	/if (${FollowupMac.NotEqual[NULL]}) {
+		/echo \atStarting ${FollowupMac} on ${RunRequestor}.
+		/g +++ Starting ${FollowupMac} on ${RunRequestor}.
+		/delay 1s
+		/e3bct ${RunRequestor} /macro ${FollowupMac}
+	}
+	|------------------------------------
+
+/return
+|---------------------------------------------------------------------------------
+
+|---------------------------------------------------------------------------------
+| SUB: CheckCasting
+|---------------------------------------------------------------------------------
+Sub CheckCasting
+	/if (${Debugging}) /echo Sub CheckCasting Entry
+
+	|-------------------------
+	:CheckCastingNow
+	/if (${Me.Casting.ID}) {
+		/delay 5 !${Me.Casting.ID}
+		/goto :CheckCastingNow
+		/echo \ag-- I am done casting.
+	}
+	|-------------------------
+
+	/if (${Debugging}) /echo Sub CheckCasting Exit
+/return
+|---------------------------------------------------------------------------------
