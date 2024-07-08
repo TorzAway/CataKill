@@ -293,7 +293,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
-	/call CheckINI ${IniFileName} General DoRogueSosCoh bool TRUE	
+	/call CheckINI ${IniFileName} General DoRogueSosCoh bool FALSE	
 	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE

@@ -5,6 +5,7 @@ Debugging=FALSE - (Turn Debugging On/Off) - [DO NOT ALTER OR EDIT THIS]
 AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 CheckBots=TRUE - (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance checking)
 DoBurns=FALSE - (Turn to TRUE/FALSE to Enable/Disable all BURN function calls)
+DoRogueSosCoh=TRUE - (Turn to TRUE/FALSE to Enable/Disable having your rogue SOS and COH you to top of zone.)
 DoInvis=TRUE - (Turn to TRUE/FALSE to Enable/Disable calls for CheckInvis in Dranik)
 SwarmPull=FALSE (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
 BiggerSwarms=FALSE - (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALSE for standard room pulls)

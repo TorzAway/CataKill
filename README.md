@@ -24,6 +24,8 @@ CheckBots=TRUE - (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance 
 ---
 DoBurns=FALSE - (Turn to TRUE/FALSE to Enable/Disable calls for burns if overwhelmed)
 ---
+DoRogueSosCoh=TRUE - (Turn to TRUE/FALSE to Enable/Disable having your rogue SOS and COH you to top of zone.)
+---
 DoInvis=TRUE - (Turn to TRUE/FALSE to Enable/Disable calls for CheckInvis in Dranik)
 ---
 SwarmPull=FALSE - (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
