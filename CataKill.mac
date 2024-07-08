@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 6th, 2024 - 07:05:00 AM
+July 8th, 2024 - 07:27:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -222,7 +222,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.1
+	/declare version			string	outer	1.4.2
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -293,6 +293,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
+	/call CheckINI ${IniFileName} General DoRogueSosCoh bool TRUE	
 	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
@@ -781,6 +782,9 @@ Sub GoToExpedition
 
 	/if (${Zone.ID} == ${CataCombC}) {
 		/call ResetBard
+		/delay 2s
+		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
+		/delay 5
 	}
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
@@ -3560,6 +3564,39 @@ Sub ReclaimAltDC
 
   /if (${Debugging}) /echo Sub CheckIfBagsFull Exit
   /return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+|SUB: Rogue_SOS_COH
+| --------------------------------------------------------------------------------------------
+  Sub Rogue_SOS_COH
+  /if (${Debugging}) /echo Sub Rogue_SOS_COH Entry
+  
+	/declare x  		 int inner	1
+
+	|-----------------------------
+	/for x 1 to ${Group.Members}
+		/if (${Group.Member[${x}].Class.ShortName.Equal[ROG]}) {
+			/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atROG\ay], making them run to safespot and COH us!
+			|---------------------------
+			/squelch /e3bct ${Group.Member[${x}].CleanName} /macro GoSOS.mac "2098.09 274.34 -135.09" ${Me.CleanName} ${Macro.Name}
+			/delay 1s
+			/echo \arPAUSING ${Macro.Name} UNTIL ROGUE SOS COH COMPLETE !\ax
+			|---------------------------
+	
+			|---------------------------
+			|--- SET the Cycle Loop TRUE
+			|---------------------------
+			/call IniChange "Theme" "CompletedPathTo" "TRUE"
+			/call ForceSpawnStepReset
+			/mqp
+			|------------------------
+		}
+	/next x
+	|-----------------------------
+
+  /if (${Debugging}) /echo Sub Rogue_SOS_COH Exit
+ /return
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
