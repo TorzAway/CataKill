@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 8th, 2024 - 07:27:00 PM
+July 8th, 2024 - 09:13:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -222,7 +222,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.2
+	/declare version			string	outer	1.4.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -747,13 +747,12 @@ Sub GoToExpedition
 	/if (${Debugging}) /echo Sub GoToExpedition Entry
 
 	/echo \ayI am headed to: \am[\atCatacombs of Dranik (Caza)\am]\ag
-	|--- RESET INVIS !!!
-	/if (${Me.Invis}) /dropinvis
-	/delay 2s
+	
+	|--- CHECK INVIS !!!
 	/if (${DoInvis}) /call CheckInvis
-	|--- RESET INVIS !!!
-
+	|--- CHECK INVIS !!!
 	/delay 1s
+	
 	|---------------------- INVIS VNAV !
 	/call NavToLoc3 1019.45 -290.80 -75.26
 	|---------------------- INVIS VNAV !
@@ -783,8 +782,11 @@ Sub GoToExpedition
 	/if (${Zone.ID} == ${CataCombC}) {
 		/call ResetBard
 		/delay 2s
-		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
+		/squelch /e3bcg /multiline ; /afollow off ; /nav stop ; /stand
 		/delay 5
+		/squelch /followoff
+		/delay 5
+		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
 	}
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
