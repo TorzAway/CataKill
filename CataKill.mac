@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 8th, 2024 - 09:13:00 PM
+July 10th, 2024 - 11:36:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -222,7 +222,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.3
+	/declare version			string	outer	1.4.4
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1799,7 +1799,7 @@ Sub DoSwarmPull_MainLoop
 	|---------------------------------- LEFT BOTTOM
 	|---------------------------------- LEFT MIDDLE
 	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2247.83 451.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2247.83 571.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2212.21 580.65 -135.43
 	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2247.83 711.16 -135.32
 	|---------------------------------- LEFT MIDDLE
 	|---------------------------------- LEFT TOP

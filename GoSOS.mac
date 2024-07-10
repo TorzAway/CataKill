@@ -78,7 +78,7 @@ Sub COH_Group
 
 	|-------------------------------------
 	/for x 1 to ${Group.Members}
-		/if (${Group.Member[${x}].Distance}>=120) {
+		/if (${Group.Member[${x}].Distance}>=100) {
 			/echo  \ar* \ay[\am${Group.Member[${x}].CleanName}\ay] is in need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 			|------------------------
 			/squelch /target id ${Group.Member[${x}].ID}
@@ -99,7 +99,7 @@ Sub COH_Group
 					/end
 				}
 				|-------------------------------------
-				/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=120) /goto :COH_Member
+				/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=100) /goto :COH_Member
 			}
 			|-------------------------------------
 		} else {
