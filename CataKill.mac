@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 10th, 2024 - 11:36:00 AM
+July 12th, 2024 - 10:42:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -182,7 +182,7 @@ Sub Main
 			|-----------------------------------
 			| -- Call check mission zone.
 			|-----------------------------------
-			/call CheckExpeditionStatus
+			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${LootCorpse} && !${Me.XTarget[1].ID}) /call CheckForCorpses
@@ -202,6 +202,7 @@ Sub Main
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
+	/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 	/doevents
 	|/delay 1s
 	/goto :mainloop
@@ -222,7 +223,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.4
+	/declare version			string	outer	1.4.5
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
