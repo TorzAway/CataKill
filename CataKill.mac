@@ -2399,7 +2399,7 @@ Sub Zoning
 			/nomodkey /shift /itemnotify Loot${LootSlot} leftmouseup
 			/delay 1s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
-			/delay 5
+			/delay 1s
 						
 			|----------------------------------------------------------------------------------------------
 			|/echo Starting: LOOT
@@ -2414,7 +2414,7 @@ Sub Zoning
 				/if ( ${Cursor.ID} && ${Cursor.Name.Equal[${DranikCLootArray[1,${x}]}]} ) {
 					/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay)\ag ... WOOT!\ax
 					/autoinventory
-					/delay 5 !${Cursor.ID}
+					/delay 1s !${Cursor.ID}
 					/varset x ${DranikCLootArray.Size}
 				}
 				|--------------------------------------------------------							
@@ -2429,7 +2429,7 @@ Sub Zoning
 			/if (${Cursor.ID}) {
 				/echo \ar-\ax \arDestroying a\ax \ay(\at${Cursor.Name}\ay)\ar ...\ax
 				/destroy
-				/delay 5 !${Cursor.ID}
+				/delay 1s !${Cursor.ID}
 				/varset x ${DranikCLootArray.Size}
 			}
 			|--------------------------------------------------------
