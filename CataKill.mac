@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 14th, 2024 - 05:53:00 AM
+July 17th, 2024 - 06:44:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -225,7 +225,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.7
+	/declare version			string	outer	1.4.8
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2801,6 +2801,7 @@ Sub CheckInvis
 	|----------------------------------------------------------------------------
 
 	/if (!${Me.Invis}) {
+		/echo \ayAttempting to invis group using alternate abilities !
 		/squelch /e3bcg /alt act 8301
 		/squelch /e3bcg /alt act 630
 		/squelch /e3bcg /alt act 531
