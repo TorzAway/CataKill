@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 19th, 2024 - 07:34:00 AM
+July 19th, 2024 - 10:16:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -92,7 +92,7 @@ Sub Main
 		/call GoToMarrs
 	}
 	|----------------------
-
+	
 	|----------------------
  	/if (${startZone}==${Nexus}) /call GoToDranikFromNexus
 	|----------------------
@@ -225,7 +225,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.9
+	/declare version			string	outer	1.5.0
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2781,139 +2781,214 @@ Sub CheckInvis
 	/if (${Debugging}) /echo Sub CheckInvis Entry
 	/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call Group2Me
 
-	/declare x 					int 	local	0
+	/declare y 					int 	local	0
 
 	|------------
 	/call Group2Me
+	| -- DELAY TO MAKE SURE GROUP STOPPED BEFORE ATTEMPTING TO CAST INVIS !
+	/delay 3s !${Me.Moving}
+	| -- DELAY TO MAKE SURE GROUP STOPPED BEFORE ATTEMPTING TO CAST INVIS !
 	|------------
 
 	|----------------------------------------------------------------------------
 	|--- REFERENCE ----
 	|----------------------------------------------------------------------------
-	|/squelch /e3bcg /alt act 8301 	; -- Improved Natural Invisibility -- Beastlord
-	|/squelch /e3bcg /alt act 630 	; -- Group Silent Presence -- Shaman
-	|/squelch /e3bcg /alt act 531 	; -- Cloak of Shadows -- Necromancer / Shadow Knight
-	|/squelch /e3bcg /alt act 518 	; -- Shared Camouflage -- Druid / Ranger
-	|/squelch /e3bcg /alt act 1210 	; -- Group Perfect Invisibility -- Magician / Enchanter / Wizard
-	|/squelch /e3bcg /alt act 231 	; -- Shauri's Sonorious Clouding -- Bard AA
+	|------------- INDIVIDUAL OR UNDEAD ---------------
 	|/squelch /e3bcg /alt act 1212 	; -- Group Perfected Invisibility to Undead  -- Cleric / Necromancer / Paladin / Shadowknight
 	|/squelch /e3bcg /alt act 280 	; -- Group Perfected Invisibility to Undead -- Magician / Enchanter / Wizard
+	|/squelch /e3bcg /alt act 231 	; -- Shauri's Sonorious Clouding -- Bard AA
+	|/squelch /e3bcg /alt act 531 	; -- Cloak of Shadows -- Necromancer / Shadow Knight
+	|/squelch /e3bcg /alt act 8301 	; -- Improved Natural Invisibility -- Beastlord
+	|------------- GROUP ---------------
+	|/squelch /e3bcg /alt act 630 	; -- Group Silent Presence -- Shaman
+	|/squelch /e3bcg /alt act 518 	; -- Shared Camouflage -- Druid / Ranger
+	|/squelch /e3bcg /alt act 1210 	; -- Group Perfect Invisibility -- Magician / Enchanter / Wizard
 	|----------------------------------------------------------------------------
 
-	/if (!${Me.Invis}) {
-		/echo \ayAttempting to invis group using alternate abilities !
-		/squelch /e3bcg /alt act 8301
-		/squelch /e3bcg /alt act 630
-		/squelch /e3bcg /alt act 531
-		/squelch /e3bcg /alt act 518
-		/squelch /e3bcg /alt act 1210
-		/squelch /e3bcg /alt act 231
-		|/squelch /e3bcg /alt act 1212
-		|/squelch /e3bcg /alt act 280
-		/delay 5s
-	}
-
-	|:CheckBrdInvisNow
+	|----------------------- IF ME !INVIS
 	/if (!${Me.Invis}) {
 		/echo \arNeed to make myself invisible!
+		/echo \ayAttempting to invis group using alternate abilities !
+		|------------------------------------
+		|------------- UNDEAD ---------------
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass CLR 1212
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass PAL 1212
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass NEC 1212
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass SHD 1212
+		|------------- UNDEAD ---------------
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 280
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 280
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 280
+		|------------- INDIVIDUAL ---------------
+		/if (!${Me.Invis}) /call DoGrpInvisByClass BRD 231
+		/if (!${Me.Invis}) /call DoGrpInvisByClass SHD 531
+		/if (!${Me.Invis}) /call DoGrpInvisByClass NEC 531
+		/if (!${Me.Invis}) /call DoGrpInvisByClass BST 8301
+		|------------- GROUP ---------------
+		/if (!${Me.Invis}) /call DoGrpInvisByClass SHM 630
+		|------------- GROUP ---------------
+		/if (!${Me.Invis}) /call DoGrpInvisByClass DRU 518
+		/if (!${Me.Invis}) /call DoGrpInvisByClass RNG 518
+		|------------- GROUP ---------------
+		/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 1210
+		/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 1210
+		/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 1210
+		|------------------------------------
+	}
+	|----------------------- IF ME !INVIS
+				
+	|----------------------- IF ME !INVIS
+	/if (!${Me.Invis}) {
+		/echo \arNeed to make myself invisible!
+		/echo \ayI am \arSTILL NOT\ay invised, checking for a \am[\atBRD\am]\ay in group to invis.
 		|-----------------------------
-		/for x 1 to ${Group.Members}
-			/if (${Group.Member[${x}].Class.ShortName.Equal[BRD]}) {
-				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !
+		/for y 1 to ${Group.Members}
+			/if (${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {
+				/echo \ay[\am${Group.Member[${y}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !
 				|------------------------
-				/squelch /e3bct ${Group.Member[${x}].CleanName} /playmelody stop
+				/squelch /e3bct ${Group.Member[${y}].CleanName} /playmelody stop
 				/delay 1s
-				/squelch /e3bct ${Group.Member[${x}].CleanName} /memspell ${BRDTravelSongSlot} ${BRDTravelSong}
+				/squelch /e3bct ${Group.Member[${y}].CleanName} /memspell ${BRDTravelSongSlot} ${BRDTravelSong}
 				/delay 3s
 				:CheckBrdInvisNow
 				/if (!${Me.Invis}) {
-					/squelch /e3bct ${Group.Member[${x}].CleanName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
+					/squelch /e3bct ${Group.Member[${y}].CleanName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
 					/delay 3s
 					/echo \agWaiting for invis to kick in .....
 					/delay 5s ${Me.Invis}
 					/goto :CheckBrdInvisNow
+				} else {
+					/varset y ${Group.Members}
 				}
 				|------------------------
 			}
-		/next x
+		/next y
 		|-----------------------------
-		/if (${Me.Class.ShortName.Equal[NEC]} || ${Me.Class.ShortName.Equal[SHD]}) {
-			/if (${Me.AltAbility[Cloak of Shadows]}) {
-				/alt act ${Me.AltAbility[Cloak of Shadows]}
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else /if (${Me.ItemReady[Circlet of Shadows]} && !${Me.Buff[Gather Shadows].ID}) {
-            	/useitem Circlet of Shadows
-            	/delay 1s
-            	/echo \agActivating \ay[\apCirclet of Shadows\ay]
-            	/delay 1s !${Me.ItemReady[Circlet of Shadows]}
-        	} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doens't have invis!
-			}
-		} else /if (${Me.Class.ShortName.Equal[BRD]}) {
-			/if (${Me.AltAbility[Shauri's Sonorous Clouding]}) {
-				/alt act ${Me.AltAbility[Shauri's Sonorous Clouding]}
-				/delay 5
-				/removelev
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-			}
-		} else /if (${Me.Class.ShortName.Equal[MAG]} || ${Me.Class.ShortName.Equal[WIZ]} || ${Me.Class.ShortName.Equal[ENC]}) {
-			/if (${Me.AltAbility[Perfected Invisibility]}) {
-				/alt act ${Me.AltAbility[Perfected Invisibility]}
-			} else /if (${Me.AltAbility[Group Perfected Invisibility]}) {
-				/alt act ${Me.AltAbility[Group Perfected Invisibility]}
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-			}
-		} else /if (${Me.Class.ShortName.Equal[SHM]}) {
-			/if (${Me.AltAbility[Spirit Walk]}) {
-				/alt act ${Me.AltAbility[Spirit Walk]}
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-			}
-		} else /if (${Me.Class.ShortName.Equal[BST]}) {
-			/if (${Me.AltAbility[Natural Invisibility]}) {
-				/alt act ${Me.AltAbility[Natural Invisibility]}
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-			}
-		} else /if (${Me.Class.ShortName.Equal[RNG]} || ${Me.Class.ShortName.Equal[DRU]}) {
-			/if (${Me.AltAbility[Camouflage]}) {
-				/alt act ${Me.AltAbility[Camouflage]}
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-
-			}
-		} else /if (${Me.Class.ShortName.Equal[ROG]}) {
-			/if (${Me.AbilityReady[Hide]}) {
-			/doability "Hide"
-			/delay 1s
-			}
-			/if (${Me.AbilityReady[Sneak]}) {
-			/doability "Sneak"
-			} else /if (${FindItemCount[Cloudy Potion]}) {
-				/casting "Cloudy Potion|Item"
-			} else {
-				/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
-
-			}
-		} else /if (${FindItemCount[Cloudy Potion]}) {
-			/casting "Cloudy Potion|Item"
-		}
-		/if (${Debugging}) /echo Sub CheckInvis Exit
 	}
+	|----------------------- IF ME !INVIS				
+		
+	|----------------------- IF ME !INVIS
+	/if (!${Me.Invis}) {
+			/echo \arNeed to make myself invisible!
+			/echo \ayI am \arSTILL NOT\ay invised, attempting \atlast resort\ay !
+			|-----------------------------
+			/if (${Me.Class.ShortName.Equal[NEC]} || ${Me.Class.ShortName.Equal[SHD]}) {
+				/if (${Me.AltAbility[Cloak of Shadows]}) {
+					/alt act ${Me.AltAbility[Cloak of Shadows]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else /if (${Me.ItemReady[Circlet of Shadows]} && !${Me.Buff[Gather Shadows].ID}) {
+					/useitem Circlet of Shadows
+					/delay 1s
+					/echo \agActivating \ay[\apCirclet of Shadows\ay]
+					/delay 1s !${Me.ItemReady[Circlet of Shadows]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[BRD]}) {
+				/if (${Me.AltAbility[Shauri's Sonorous Clouding]}) {
+					/alt act ${Me.AltAbility[Shauri's Sonorous Clouding]}
+					/delay 5
+					/removelev
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[MAG]} || ${Me.Class.ShortName.Equal[WIZ]} || ${Me.Class.ShortName.Equal[ENC]}) {
+				/if (${Me.AltAbility[Perfected Invisibility]}) {
+					/alt act ${Me.AltAbility[Perfected Invisibility]}
+				} else /if (${Me.AltAbility[Group Perfected Invisibility]}) {
+					/alt act ${Me.AltAbility[Group Perfected Invisibility]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[SHM]}) {
+				/if (${Me.AltAbility[Spirit Walk]}) {
+					/alt act ${Me.AltAbility[Spirit Walk]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[BST]}) {
+				/if (${Me.AltAbility[Natural Invisibility]}) {
+					/alt act ${Me.AltAbility[Natural Invisibility]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[RNG]} || ${Me.Class.ShortName.Equal[DRU]}) {
+				/if (${Me.AltAbility[Camouflage]}) {
+					/alt act ${Me.AltAbility[Camouflage]}
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${Me.Class.ShortName.Equal[ROG]}) {
+				/if (${Me.AbilityReady[Hide]}) {
+				/doability "Hide"
+				/delay 1s
+				}
+				/if (${Me.AbilityReady[Sneak]}) {
+				/doability "Sneak"
+				/delay 1s
+				} else /if (${FindItemCount[Cloudy Potion]}) {
+					/casting "Cloudy Potion|Item"
+				} else {
+					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+				}
+			} else /if (${FindItemCount[Cloudy Potion]}) {
+				/casting "Cloudy Potion|Item"
+			}
+	}
+	|----------------------- IF ME !INVIS
+	
 	/if (${Debugging}) /echo Sub CheckInvis Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: DoGrpInvisByClass
+| --------------------------------------------------------------------------------------------
+Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
+	/if (${Debugging}) /echo Sub DoGrpInvisByClass Entry
+	
+	/declare x 					int 	local	0
+
+	|/echo Checking for class (${InvisClassShortName}) in group.
+	|/echo If Found, use ability (${GrpInvisAltAbilityID}).
+			
+	|-----------------------------
+	/for x 1 to ${Group.Members}
+		|/echo Checking for class (${InvisClassShortName}): (${Group.Member[${x}].CleanName}) - ${Group.Member[${x}].Class.ShortName.Equal[${InvisClassShortName}]} - to use ability: (${GrpInvisAltAbilityID})
+		/if (${Group.Member[${x}].Class.ShortName.Equal[${InvisClassShortName}]}) {
+			/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], attempting to making them cast invis (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) !
+			|------------------------			
+			/if ((${GrpInvisAltAbilityID}==231) && (${Group.Member[1].Level}<91)) {
+				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], but can \arNOT\ay use (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) yet due to their level !
+			} else {
+				/squelch /e3bct ${Group.Member[${x}].CleanName} /alt act ${GrpInvisAltAbilityID}
+			}						
+			/delay 3s ${Me.Invis}			
+			/if (${Me.Invis}) {
+				/varset x ${Group.Members}
+			}
+			|------------------------
+		} else {
+			|/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is NOT a [\at${InvisClassShortName}\ay].
+		}
+		|/delay 5
+	/next x
+	|-----------------------------
+
+	/if (${Debugging}) /echo Sub DoGrpInvisByClass Exit
 /return
 | --------------------------------------------------------------------------------------------
 
