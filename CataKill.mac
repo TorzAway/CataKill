@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 17th, 2024 - 06:44:00 AM
+July 19th, 2024 - 07:34:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -225,7 +225,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.4.8
+	/declare version			string	outer	1.4.9
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -662,7 +662,7 @@ Sub GotoRecruiter
 			/call GetExpedition
 		} else {
 			|-------------
-			/if (${Spawn[${Recruiter}].Distance3D} > 50) {
+			/if (${Spawn[${Recruiter}].Distance3D} > 20) {
 				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
 				/if (${DoInvis}) /call CheckInvis
 				/delay 1s
