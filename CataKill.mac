@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 19th, 2024 - 10:16:00 AM
+July 20th, 2024 - 07:40:00 AM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -225,7 +225,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.5.0
+	/declare version			string	outer	1.5.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2783,6 +2783,7 @@ Sub CheckInvis
 
 	/declare y 					int 	local	0
 
+	:CheckInvisNow
 	|------------
 	/call Group2Me
 	| -- DELAY TO MAKE SURE GROUP STOPPED BEFORE ATTEMPTING TO CAST INVIS !
@@ -2834,6 +2835,7 @@ Sub CheckInvis
 		/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 1210
 		/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 1210
 		|------------------------------------
+		/delay 3s ${Me.Invis}
 	}
 	|----------------------- IF ME !INVIS
 				
@@ -2864,6 +2866,7 @@ Sub CheckInvis
 			}
 		/next y
 		|-----------------------------
+		/delay 3s ${Me.Invis}
 	}
 	|----------------------- IF ME !INVIS				
 		
@@ -2947,8 +2950,11 @@ Sub CheckInvis
 			} else /if (${FindItemCount[Cloudy Potion]}) {
 				/casting "Cloudy Potion|Item"
 			}
+			/delay 3s ${Me.Invis}
 	}
 	|----------------------- IF ME !INVIS
+	
+	/if (!${Me.Invis}) /goto CheckInvisNow
 	
 	/if (${Debugging}) /echo Sub CheckInvis Exit
 /return
