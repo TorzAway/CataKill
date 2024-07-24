@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-July 24th, 2024 - 01:36:00 PM
+July 24th, 2024 - 02:02:00 PM
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -41,7 +41,7 @@ Sub Main
 
 	/message ==================================================================
  	/call Declares
-	/message ==================================================================
+	/message ==================================================================	
 	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking	
 	/message ==================================================================	
 	/delay 3s
@@ -225,7 +225,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.5.2
+	/declare version			string	outer	1.5.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2786,6 +2786,22 @@ Sub CheckInvis
 	:CheckInvisNow
 	|------------
 	/call Group2Me
+	|------------
+		
+	|-----------------------------	
+	/for y 1 to ${Group.Members}
+		|/echo Checking if ${Group.Member[${y}].CleanName} is close.
+		/if (${Group.Member[${y}].Distance}>20) {			
+			:MemberDistanceInvisCheck
+			/echo \ay- \am[\ag${Group.Member[${y}].CleanName}\am]\ay is \am[\ao${Group.Member[${y}].Distance}\am]\ay paces away still.
+			|------------------------
+			/delay 5 ${Group.Member[${y}].Distance}<20
+			/if (${Group.Member[${y}].Distance}>20) /goto :MemberDistanceInvisCheck
+			|------------------------
+		}
+	/next y
+	|-----------------------------		
+	
 	|-----------------------------	
 	| -- DELAY TO MAKE SURE GROUP STOPPED BEFORE ATTEMPTING TO CAST INVIS !
 	|-----------------------------
@@ -2834,11 +2850,6 @@ Sub CheckInvis
 		|/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 280
 		|/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 280
 		|/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 280
-		|------------- INDIVIDUAL ---------------
-		|/if (!${Me.Invis}) /call DoGrpInvisByClass BRD 231
-		/if (!${Me.Invis}) /call DoGrpInvisByClass SHD 531
-		/if (!${Me.Invis}) /call DoGrpInvisByClass NEC 531
-		/if (!${Me.Invis}) /call DoGrpInvisByClass BST 8301
 		|------------- GROUP ---------------
 		/if (!${Me.Invis}) /call DoGrpInvisByClass SHM 630
 		|------------- GROUP ---------------
@@ -2848,6 +2859,11 @@ Sub CheckInvis
 		/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 1210
 		/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 1210
 		/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 1210
+		|------------- INDIVIDUAL ---------------
+		|/if (!${Me.Invis}) /call DoGrpInvisByClass BRD 231
+		/if (!${Me.Invis}) /call DoGrpInvisByClass SHD 531
+		/if (!${Me.Invis}) /call DoGrpInvisByClass NEC 531
+		/if (!${Me.Invis}) /call DoGrpInvisByClass BST 8301
 		|------------------------------------
 		/delay 3s ${Me.Invis}
 	}
@@ -2982,8 +2998,8 @@ Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
 	
 	/declare x 					int 	local	0
 
-	/echo Checking for class (${InvisClassShortName}) in group.
-	/echo If Found, use ability (${GrpInvisAltAbilityID}).
+	|/echo Checking for class (${InvisClassShortName}) in group.
+	|/echo If Found, use ability (${GrpInvisAltAbilityID}).
 			
 	|-----------------------------
 	/for x 1 to ${Group.Members}
@@ -3004,7 +3020,6 @@ Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
 		} else {
 			|/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is NOT a [\at${InvisClassShortName}\ay].
 		}
-		/delay 5
 	/next x
 	|-----------------------------
 
