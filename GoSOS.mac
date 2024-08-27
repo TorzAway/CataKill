@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: August 7th, 2024 - 01:02:00 PM
+Last Updated: August 27th, 2024 - 12:10:00 PM
 
-V1.5
+v1.6
 
 ****************************************************************************************************************|
 
@@ -89,12 +89,11 @@ Sub COH_Group
 	/for x 1 to ${Group.Members}
 		/if (${Group.Member[${x}].Distance}>=${CoHDistance}) {
 			/echo  \ar* \ay[\am${Group.Member[${x}].CleanName}\ay] is in need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
-			|------------------------
 			
+			|------------------------			
 			:GetMyCOHTarget
 			/squelch /target ${Group.Member[${x}].CleanName}
-			/delay 5
-			/squelch /target id ${Group.Member[${x}].ID}
+			/delay 5			
 			/delay 2s ${Target.ID}==${Group.Member[${x}].ID}
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
 			
@@ -102,25 +101,28 @@ Sub COH_Group
 			/g Current target is ${Group.Member[${x}].CleanName}.
 			:COH_Member
 			|-------------------------------------
-			/if (${Group.Member[${x}].Distance}>=${CoHDistance}) {
-				|-------------------------------------
-				/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
-					/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
-					/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
-					/useitem "Wayfarers Brotherhood Emblem"
-					/delay 1s
-					/call CheckCasting
-				} else {
-					/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
-					/end
-				}
-				|-------------------------------------
-				/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=${CoHDistance}) /goto :COH_Member
+			
+			|-------------------------------------
+			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
+				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
+				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
+				/useitem "Wayfarers Brotherhood Emblem"
+				/delay 1s
+				/call CheckCasting
+				/delay 5
+				/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
+			} else {
+				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
+				/end
 			}
+			|-------------------------------------
+			/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=${CoHDistance}) /goto :COH_Member
+			
 			|-------------------------------------
 		} else {
 			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 		}
+		/target clear
 		/delay 5
 	/next x
 	|-------------------------------------	
