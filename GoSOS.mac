@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: August 27th, 2024 - 12:10:00 PM
+Last Updated: August 28th, 2024 - 10:38:00 AM
 
-v1.6
+v1.7
 
 ****************************************************************************************************************|
 
@@ -92,6 +92,7 @@ Sub COH_Group
 			
 			|------------------------			
 			:GetMyCOHTarget
+			/squelch /target id ${Group.Member[${x}].ID}
 			/squelch /target ${Group.Member[${x}].CleanName}
 			/delay 5			
 			/delay 2s ${Target.ID}==${Group.Member[${x}].ID}
@@ -111,6 +112,7 @@ Sub COH_Group
 				/call CheckCasting
 				/delay 5
 				/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
+				/delay 2s
 			} else {
 				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
 				/end
@@ -122,9 +124,9 @@ Sub COH_Group
 		} else {
 			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 		}
-		/target clear
+		/if (${Group.Member[${x}].Distance}<=${CoHDistance}) /target clear
 		/delay 5
-	/next x
+	/if (${Group.Member[${x}].Distance}<=${CoHDistance}) /next x
 	|-------------------------------------	
 	
 	/echo \at++ All group members are with me now !\ax
