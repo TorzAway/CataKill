@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: September 4th, 2024 - 10:48:00 AM
+Last Updated: September 5th, 2024 - 03:13:00 PM
 
-v1.8
+v1.9
 ****************************************************************************************************************|
 
 #turbo
@@ -19,7 +19,7 @@ Sub Main
 /declare RunRequestor	string	outer	${Param1}
 /declare FollowupMac	string	outer	${Param2}
 /declare CoHDistance	int		outer	25
-  
+
 |---------- Setup the variables by Param or by Zone Default 
 /if (${Defined[RunToLoc]} && ${Defined[RunRequestor]} && ${Defined[FollowupMac]}) {
 	|/echo {RunToLoc}=(${RunToLoc})
@@ -28,6 +28,9 @@ Sub Main
 	/varset COH_LOC ${RunToLoc}
 } 
 |----------------------------------------
+
+/target clear
+/delay 1s !${Target.ID}
 
 |------------------------------
 /if (${COH_LOC.NotEqual[NULL]}) {
@@ -94,13 +97,13 @@ Sub COH_Group
 			|------------------------			
 			:GetMyCOHTarget
 			/squelch /target id ${Group.Member[${x}].ID}
-			/squelch /target ${Group.Member[${x}].CleanName}
-			/delay 5			
+			|/squelch /target ${Group.Member[${x}].CleanName}
 			/delay 2s ${Target.ID}==${Group.Member[${x}].ID}
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
 			
 			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
-			/g Current target is ${Group.Member[${x}].CleanName}.			
+			/g Current target is ${Group.Member[${x}].CleanName}.
+			/delay 1s
 			|-------------------------------------
 			
 			:COH_Member
@@ -109,6 +112,7 @@ Sub COH_Group
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
 				/useitem "Wayfarers Brotherhood Emblem"
+				/delay 1s
 				/call CheckCasting
 				/delay 5
 				/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
@@ -127,13 +131,11 @@ Sub COH_Group
 		|-------------------------------------		
 		|-------------------------------------
 		/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
-			:ClearCOHTarget
 			/target clear
-			/delay 1s !${Target.ID}
-			/goto :ClearCOHTarget
+			/delay 2s !${Target.ID}			
 		}
 		|-------------------------------------		
-	/if (${Group.Member[${x}].Distance}<=${CoHDistance}) /next x
+	/next x
 	|-------------------------------------	
 	
 	/echo \at++ All group members are with me now !\ax
