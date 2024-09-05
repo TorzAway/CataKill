@@ -1,9 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: August 28th, 2024 - 10:38:00 AM
+Last Updated: September 4th, 2024 - 10:48:00 AM
 
-v1.7
-
+v1.8
 ****************************************************************************************************************|
 
 #turbo
@@ -63,6 +62,7 @@ Sub Main
 		}
 			
 		/echo \agArrived at COH spot.\ax
+		/g + Arrived at location [${COH_LOC}] for [COH].
 		/delay 1s		
 		
 		/call COH_Group
@@ -87,6 +87,7 @@ Sub COH_Group
 
 	|-------------------------------------
 	/for x 1 to ${Group.Members}
+		|-------------------------------------
 		/if (${Group.Member[${x}].Distance}>=${CoHDistance}) {
 			/echo  \ar* \ay[\am${Group.Member[${x}].CleanName}\ay] is in need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 			
@@ -99,20 +100,19 @@ Sub COH_Group
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
 			
 			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
-			/g Current target is ${Group.Member[${x}].CleanName}.
-			:COH_Member
+			/g Current target is ${Group.Member[${x}].CleanName}.			
 			|-------------------------------------
 			
-			|-------------------------------------
+			:COH_Member
+			|-------------------------------------			
 			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
 				/useitem "Wayfarers Brotherhood Emblem"
-				/delay 1s
 				/call CheckCasting
 				/delay 5
 				/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
-				/delay 2s
+				/delay 5
 			} else {
 				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
 				/end
@@ -124,19 +124,26 @@ Sub COH_Group
 		} else {
 			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 		}
-		/if (${Group.Member[${x}].Distance}<=${CoHDistance}) /target clear
-		/delay 5
+		|-------------------------------------		
+		|-------------------------------------
+		/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
+			:ClearCOHTarget
+			/target clear
+			/delay 1s !${Target.ID}
+			/goto :ClearCOHTarget
+		}
+		|-------------------------------------		
 	/if (${Group.Member[${x}].Distance}<=${CoHDistance}) /next x
 	|-------------------------------------	
 	
 	/echo \at++ All group members are with me now !\ax
 	/g ++ All group members are with me now !
-	/delay 1s	
+	/delay 1s
 	
 	|------------------------------------
 	/if (${FollowupMac.NotEqual[NULL]}) {
-		/echo \atStarting ${FollowupMac} on ${RunRequestor}.
-		/g +++ Starting ${FollowupMac} on ${RunRequestor}.
+		/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
+		/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
 		/delay 1s
 		/e3bct ${RunRequestor} /macro ${FollowupMac}
 	}
