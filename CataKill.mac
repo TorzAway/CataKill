@@ -1,6 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-August 7th, 2024 - 01:02:00 PM
+September 6th, 2024 - 05:36:00 PM
+
+v1.5.5
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -225,7 +227,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.5.4
+	/declare version			string	outer	1.5.5
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1931,6 +1933,7 @@ Sub DoSwarmPull_MainLoop_Bigger
 	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,4]}\am]\ay
 	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
 	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
+	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay	
 	/message ==================================================================
 	|----------------------------------------------------
 	/echo \agGet ready, the fun is starting soon !
