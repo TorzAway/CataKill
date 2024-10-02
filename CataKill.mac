@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-September 6th, 2024 - 05:36:00 PM
+October 2nd, 2024 - 12:58:00 AM
 
-v1.5.5
+v1.5.6
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1194,7 +1194,7 @@ Sub Combat
 					/for i 1 to ${Me.NumGems}
 						/if (!${Me.XTarget}) /break
 						/if (${Me.Gem[${i}].ID}) {
-							/if (${Me.Gem[${i}].TargetType.Equal[Single]} && ${Me.Gem[${i}].SpellType.Equal[Detrimental]} !${Target.Buff[${Me.Gem[${i}].Name}].ID}) {
+							/if (${Me.Gem[${i}].TargetType.Equal[Single]} && ${Me.Gem[${i}].SpellType.Equal[Detrimental]} && !${Target.Buff[${Me.Gem[${i}].Name}].ID}) {
 								/cast ${i}
 								/delay 3s ${Me.Casting.ID}
 								/echo \agCasting \am${Me.Gem[${i}]} \aw--> \ar${Target.CleanName}
