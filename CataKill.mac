@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-October 2nd, 2024 - 01:57:00 PM
+October 2nd, 2024 - 02:18:00 PM
 
-v1.5.8
+v1.5.9
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1027,7 +1027,7 @@ Sub DoSinglePull(string Enemy)
 	}
 	:navto
 	/if (${Debugging}) /echo DoSinglePull NAVTO
-	|/if (${Target.ID}) /squelch /target clear
+	/if (${Target.ID}) /squelch /target clear
 	/if (${Spawn[${myTargetID}].Distance} > ${If[${PullAbilityRange},${PullAbilityRange},1]} && !${Target.Type.Equal[corpse]} && !${Me.XTarget[1].ID} && ${PullRequiresLineOfSight} || ${Spawn[${myTargetID}].Distance} > ${If[${PullAbilityRange},${PullAbilityRange},1]} && !${Target.Type.Equal[corpse]} && !${Me.XTarget[1].ID} && !${Spawn[${myTargetID}].LineOfSight}) {
 		/if (!${Spawn[${myTargetID}].ID}) {
 			/squelch /target clear
