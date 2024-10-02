@@ -2,7 +2,7 @@
 CataKill.mac - by Kroaking
 October 2nd, 2024 - 12:58:00 AM
 
-v1.5.6
+v1.5.7
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -961,9 +961,11 @@ Sub DoSinglePull(string Enemy)
 	} else /if (!${reportTarget}) {
 		/echo \arAttacking \ay[\apAnything I can get my grubby paws on\ay]\ar.
 		/varset reportTarget ${reportTarget.OriginalValue}
-		/if (${myTargetID} && !${Target.Type.Equal[corpse]}) {
-		/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-		/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
+		|--------------------
+		/if (${myTargetID} && !${Target.Type.Equal[Corpse]} && !${Target.Type.Equal[Pet]} && !${Target.Type.Equal[PC]}) {
+			/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
+			|--------------------
+			/if (${Me.XTarget[1].ID} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/if (${Bool[${Plugin[MQ2Melee]}]}) /squelch /killthis
 				/squelch /attack on
@@ -971,13 +973,15 @@ Sub DoSinglePull(string Enemy)
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
 			}
-		/varcalc BackUpTimer (${BackUpTimer})+1
+			|--------------------
+			/varcalc BackUpTimer (${BackUpTimer})+1
 				/if (${BackUpTimer}>7) {
 					/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
 					/if (${Debugging}) /echo Setting BackUpTimer Plus 1
 					/call BackUp
 					/varset BackUpTimer 0
-				}
+		}
+		|--------------------
 		/if (${AssistMe}) {
 			/if (${Debugging}) /e3bcg (Line: ${Macro.CurLine}) killthis
 			/squelch /e3bcg /nav id ${Me.ID}
@@ -3022,6 +3026,8 @@ Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
 			/if ((${GrpInvisAltAbilityID}==231) && (${Group.Member[1].Level}<91)) {
 				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], but can \arNOT\ay use (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) yet due to their level !
 			} else {
+				/squelch /target clear
+				/delay 10
 				/squelch /e3bct ${Group.Member[${x}].CleanName} /alt act ${GrpInvisAltAbilityID}
 			}						
 			/delay 3s ${Me.Invis}			
