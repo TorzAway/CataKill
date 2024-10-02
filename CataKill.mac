@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-October 2nd, 2024 - 12:58:00 AM
+October 2nd, 2024 - 01:57:00 PM
 
-v1.5.7
+v1.5.8
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -3000,7 +3000,7 @@ Sub CheckInvis
 	}
 	|----------------------- IF ME !INVIS
 	
-	/if (!${Me.Invis}) /goto CheckInvisNow
+	/if (!${Me.Invis}) /goto :CheckInvisNow
 	
 	/if (${Debugging}) /echo Sub CheckInvis Exit
 /return
