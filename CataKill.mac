@@ -2,7 +2,7 @@
 CataKill.mac - by Kroaking
 October 2nd, 2024 - 02:18:00 PM
 
-v1.5.9
+v1.6.0
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -2872,8 +2872,8 @@ Sub CheckInvis
 		/if (!${Me.Invis}) /call DoGrpInvisByClass DRU 518
 		/if (!${Me.Invis}) /call DoGrpInvisByClass RNG 518
 		|------------- GROUP ---------------
-		/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 1210
 		/if (!${Me.Invis}) /call DoGrpInvisByClass ENC 1210
+		/if (!${Me.Invis}) /call DoGrpInvisByClass MAG 1210
 		/if (!${Me.Invis}) /call DoGrpInvisByClass WIZ 1210
 		|------------- INDIVIDUAL ---------------
 		|/if (!${Me.Invis}) /call DoGrpInvisByClass BRD 231
@@ -3026,8 +3026,8 @@ Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
 			/if ((${GrpInvisAltAbilityID}==231) && (${Group.Member[1].Level}<91)) {
 				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], but can \arNOT\ay use (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) yet due to their level !
 			} else {
-				/squelch /target clear
-				/delay 10
+				/squelch /e3bct ${Group.Member[${x}].CleanName} /target clear
+				/delay 1s
 				/squelch /e3bct ${Group.Member[${x}].CleanName} /alt act ${GrpInvisAltAbilityID}
 			}						
 			/delay 3s ${Me.Invis}			
