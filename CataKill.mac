@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-October 2nd, 2024 - 02:18:00 PM
+Last Updated: October 9th, 2024 - 03:03:00 PM
 
-v1.6.0
+v1.6.1
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -659,12 +659,12 @@ Sub GotoRecruiter
 		|----------------------------------------------
 		|/echo {Spawn[${Recruiter}].Distance3D}=(${Spawn[${Recruiter}].Distance3D})
 		:RecruiterDistanceCheck
-		/if (${Spawn[${Recruiter}].Distance3D} <= 20) {
+		/if (${Spawn[${Recruiter}].Distance3D} <= 15) {
 			/echo \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...
 			/call GetExpedition
 		} else {
 			|-------------
-			/if (${Spawn[${Recruiter}].Distance3D} > 20) {
+			/if (${Spawn[${Recruiter}].Distance3D} > 10) {
 				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
 				/if (${DoInvis}) /call CheckInvis
 				/delay 1s
@@ -785,11 +785,14 @@ Sub GoToExpedition
 	/call Zoning
 
 	/if (${Zone.ID} == ${CataCombC}) {
+		
 		/call ResetBard
 		/delay 2s
-		/squelch /e3bcg /multiline ; /afollow off ; /nav stop ; /stand
+		/squelch /e3bcg /multiline ; /followoff ; /nav stop ; /stand
 		/delay 5
-		/squelch /followoff
+		/squelch /dropinvis 
+		/delay 5
+		/squelch /droplev
 		/delay 5
 		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
 	}

@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: September 5th, 2024 - 03:13:00 PM
+Last Updated: October 9th, 2024 - 03:03:00 PM
 
-v1.9
+v2.1
 ****************************************************************************************************************|
 
 #turbo
@@ -18,6 +18,7 @@ Sub Main
 /declare RunToLoc		string	outer	${Param0}
 /declare RunRequestor	string	outer	${Param1}
 /declare FollowupMac	string	outer	${Param2}
+/declare GrpMembersHere	int		outer	0
 /declare CoHDistance	int		outer	25
 
 |---------- Setup the variables by Param or by Zone Default 
@@ -68,7 +69,10 @@ Sub Main
 		/g + Arrived at location [${COH_LOC}] for [COH].
 		/delay 1s		
 		
+		|--------------
 		/call COH_Group
+		|--------------
+		
 		|-------------------------------
 	}
 	|------------------------	
@@ -81,25 +85,26 @@ Sub Main
 /return
 |---------------------------------------------------------------------------------
 
+
 |---------------------------------------------------------------------------------
 | SUB: COH_Group
 |---------------------------------------------------------------------------------
 Sub COH_Group
 
-/declare x int local 0
+/declare x int local 1
 
 	|-------------------------------------
 	/for x 1 to ${Group.Members}
 		|-------------------------------------
-		/if (${Group.Member[${x}].Distance}>=${CoHDistance}) {
+		/if (${Group.Member[${x}].Distance}>${CoHDistance}) {
 			/echo  \ar* \ay[\am${Group.Member[${x}].CleanName}\ay] is in need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
 			
-			|------------------------			
+			|-------------------------
 			:GetMyCOHTarget
 			/squelch /target id ${Group.Member[${x}].ID}
-			|/squelch /target ${Group.Member[${x}].CleanName}
 			/delay 2s ${Target.ID}==${Group.Member[${x}].ID}
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
+			|-------------------------
 			
 			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
 			/g Current target is ${Group.Member[${x}].CleanName}.
@@ -111,7 +116,11 @@ Sub COH_Group
 			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
-				/useitem "Wayfarers Brotherhood Emblem"
+				/if (${Target.ID}==${Group.Member[${x}].ID}) {
+					/useitem "Wayfarers Brotherhood Emblem"
+				} else {
+					/call TargetGrpMember
+				}
 				/delay 1s
 				/call CheckCasting
 				/delay 5
@@ -122,7 +131,7 @@ Sub COH_Group
 				/end
 			}
 			|-------------------------------------
-			/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>=${CoHDistance}) /goto :COH_Member
+			/if (!${Me.Casting.ID} && ${Group.Member[${x}].Distance}>${CoHDistance}) /goto :COH_Member
 			
 			|-------------------------------------
 		} else {
@@ -130,7 +139,7 @@ Sub COH_Group
 		}
 		|-------------------------------------		
 		|-------------------------------------
-		/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
+		/if (${Group.Member[${x}].Distance}<${CoHDistance}) {
 			/target clear
 			/delay 2s !${Target.ID}			
 		}
@@ -140,14 +149,19 @@ Sub COH_Group
 	
 	/echo \at++ All group members are with me now !\ax
 	/g ++ All group members are with me now !
+	/varset GrpMembersHere 1
 	/delay 1s
 	
+	|---------------------
+	/call CheckGrpDistance
+	|---------------------
+	
 	|------------------------------------
-	/if (${FollowupMac.NotEqual[NULL]}) {
+	/if (${GrpMembersHere}==1 && ${FollowupMac.NotEqual[NULL]}) {
 		/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
 		/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
 		/delay 1s
-		/e3bct ${RunRequestor} /macro ${FollowupMac}
+		|-- /e3bct ${RunRequestor} /macro ${FollowupMac}
 	}
 	|------------------------------------
 
@@ -170,5 +184,30 @@ Sub CheckCasting
 	|-------------------------
 
 	/if (${Debugging}) /echo Sub CheckCasting Exit
+/return
+|---------------------------------------------------------------------------------
+
+|---------------------------------------------------------------------------------
+| SUB: CheckGrpDistance
+|---------------------------------------------------------------------------------
+Sub CheckGrpDistance
+	/if (${Debugging}) /echo Sub CheckGrpDistance Entry
+	
+	/declare y int local 1
+
+	|-------------------------
+	/for y 1 to ${Group.Members}
+		|-------------------------
+		/if (${Group.Member[${y}].Distance}<${CoHDistance}) {
+			/next y
+		} else {
+			/varset GrpMembersHere 0
+			/return
+		}
+		|-------------------------
+	/if (${y}<${Group.Members}) /next y
+	|-------------------------
+
+	/if (${Debugging}) /echo Sub CheckGrpDistance Exit
 /return
 |---------------------------------------------------------------------------------
