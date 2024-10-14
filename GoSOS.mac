@@ -2,7 +2,7 @@
 GoSOS.mac - by Kroaking
 Last Updated: October 9th, 2024 - 03:03:00 PM
 
-v2.1
+v2.2
 ****************************************************************************************************************|
 
 #turbo
@@ -119,7 +119,7 @@ Sub COH_Group
 				/if (${Target.ID}==${Group.Member[${x}].ID}) {
 					/useitem "Wayfarers Brotherhood Emblem"
 				} else {
-					/call TargetGrpMember
+					/goto :GetMyCOHTarget
 				}
 				/delay 1s
 				/call CheckCasting
@@ -161,7 +161,7 @@ Sub COH_Group
 		/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
 		/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
 		/delay 1s
-		|-- /e3bct ${RunRequestor} /macro ${FollowupMac}
+		/e3bct ${RunRequestor} /macro ${FollowupMac}
 	}
 	|------------------------------------
 
