@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: October 21st, 2024 - 09:38:00 AM
+Last Updated: October 24th, 2024 - 05:24:00 PM
 
-v1.6.2
+v1.6.3
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -227,7 +227,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.6.2
+	/declare version			string	outer	1.6.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -2231,10 +2231,11 @@ Sub Zoning
   Sub LootMob_DC_Only
     /if (${Debugging}) /echo Sub LootMob_DC_Only Entry
 	
-	/declare x  		 int inner	1
-	/declare LootSlot    int inner  0
-    /declare LootCheck   int inner  0
-    /declare LootTotal   int inner  0
+	/declare x  		 			int inner	1
+	/declare LootSlot    			int inner	0
+    /declare LootCheck  			int inner	0
+    /declare LootTotal   			int inner	0
+	/declare CursorItemValueInPlat	int inner	0
 
 	/if (${Target.ID}) /face nolook
     /keypress forward
@@ -2268,6 +2269,12 @@ Sub Zoning
 			/delay 1s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
 			/delay 1s
+
+			|----------------------------------------------------------------------------------------------
+			/varset CursorItemValueInPlat ${Math.Calc[${FindItem[=${Cursor.Name}].Value}/1000]}
+			|----------------------------------------------------------------------------------------------
+			
+			|/echo (${Cursor.Name}) -- CursorItemValueInPlat=(${CursorItemValueInPlat}) | {MinItemValue})=${MinItemValue})			
 						
 			|----------------------------------------------------------------------------------------------
 			|/echo Starting: LOOT
@@ -2276,14 +2283,20 @@ Sub Zoning
 			
 				|/echo \ayChecking (\am${Cursor.Name}\ay) against (\am${DranikCLootArray[1,${x}]}\ay)
 			
-			|--------------------------------------------------------
+				|--------------------------------------------------------
 				|---- ALL VALUABLE STACKABLE LOOT THAT DROPS IN THIS ZONE
 				|--------------------------------------------------------			
-				/if ( ${Cursor.ID} && ${Cursor.Name.Equal[${DranikCLootArray[1,${x}]}]} ) {
-					/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay)\ag ... WOOT!\ax
-					/autoinventory
-					/delay 1s !${Cursor.ID}
-					/varset x ${DranikCLootArray.Size}
+				/if (${Cursor.ID}) {			
+					/if (${Cursor.Name.Equal[Diamond Coin]}) {
+						/echo \at+\ax \agKeeping a\ax \ay(\atDiamond Coin\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
+						/autoinventory 
+						/delay 1s !${Cursor.ID}
+					} else /if (${Cursor.Name.Equal[${DranikCLootArray[1,${x}]}]}) {
+						/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
+						/autoinventory 
+						/delay 1s !${Cursor.ID}
+						/varset x ${DranikCLootArray.Size}
+					}
 				}
 				|--------------------------------------------------------							
 			/next x
