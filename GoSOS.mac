@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: October 9th, 2024 - 03:03:00 PM
+Last Updated: October 25th, 2024 - 11:19:00 AM
 
-v2.2
+v2.3
 ****************************************************************************************************************|
 
 #turbo
@@ -85,7 +85,6 @@ Sub Main
 /return
 |---------------------------------------------------------------------------------
 
-
 |---------------------------------------------------------------------------------
 | SUB: COH_Group
 |---------------------------------------------------------------------------------
@@ -114,6 +113,14 @@ Sub COH_Group
 			:COH_Member
 			|-------------------------------------			
 			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
+				|------------------
+				:COH_ItemReadyCheck
+				/if (!${Cast.Ready[Wayfarers Brotherhood Emblem]}) {
+					/g - Once sec, Waiting for [Wayfarers Brotherhood Emblem] to be ready !
+					/delay 1s ${Cast.Ready[Wayfarers Brotherhood Emblem]}					
+					/if (!${Cast.Ready[Wayfarers Brotherhood Emblem]}) /goto :COH_ItemReadyCheck
+				}
+				|------------------				
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
 				/if (${Target.ID}==${Group.Member[${x}].ID}) {
@@ -124,8 +131,15 @@ Sub COH_Group
 				/delay 1s
 				/call CheckCasting
 				/delay 5
-				/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
-				/delay 5
+				|-------------------------------------
+				/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
+					/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
+					/delay 5				
+				} else {
+					/g - OOPS, re-casting [COH] on [${Group.Member[${x}].CleanName}].
+					/goto :COH_Member
+				}
+				|-------------------------------------				
 			} else {
 				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
 				/end
@@ -149,15 +163,15 @@ Sub COH_Group
 	
 	/echo \at++ All group members are with me now !\ax
 	/g ++ All group members are with me now !
-	/varset GrpMembersHere 1
-	/delay 1s
 	
 	|---------------------
+	/varset GrpMembersHere 1
+	/delay 1s
 	/call CheckGrpDistance
 	|---------------------
 	
 	|------------------------------------
-	/if (${GrpMembersHere}==1 && ${FollowupMac.NotEqual[NULL]}) {
+	/if (${GrpMembersHere}==1 && ${RunRequestor.NotEqual[NULL]} && ${FollowupMac.NotEqual[NULL]}) {
 		/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
 		/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
 		/delay 1s
@@ -198,7 +212,7 @@ Sub CheckGrpDistance
 	|-------------------------
 	/for y 1 to ${Group.Members}
 		|-------------------------
-		/if (${Group.Member[${y}].Distance}<${CoHDistance}) {
+		/if (${Group.Member[${y}].Distance}<=${CoHDistance}) {
 			/next y
 		} else {
 			/varset GrpMembersHere 0
