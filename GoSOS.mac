@@ -2,7 +2,7 @@
 GoSOS.mac - by Kroaking
 Last Updated: October 25th, 2024 - 11:19:00 AM
 
-v2.3
+v2.4
 ****************************************************************************************************************|
 
 #turbo
@@ -112,15 +112,7 @@ Sub COH_Group
 			
 			:COH_Member
 			|-------------------------------------			
-			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {
-				|------------------
-				:COH_ItemReadyCheck
-				/if (!${Cast.Ready[Wayfarers Brotherhood Emblem]}) {
-					/g - Once sec, Waiting for [Wayfarers Brotherhood Emblem] to be ready !
-					/delay 1s ${Cast.Ready[Wayfarers Brotherhood Emblem]}					
-					/if (!${Cast.Ready[Wayfarers Brotherhood Emblem]}) /goto :COH_ItemReadyCheck
-				}
-				|------------------				
+			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {			
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
 				/if (${Target.ID}==${Group.Member[${x}].ID}) {
