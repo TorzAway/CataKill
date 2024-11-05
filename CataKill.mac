@@ -1214,7 +1214,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 				|----------------------------------------------
 				/squelch /nav loc ${TempSpawnPull_Loc}
 				/delay 7
-				/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}
+				/squelch /e3bcga /nav loc ${TempSpawnPull_Loc}					
 				|----------------------------------------------
 			}
 			|--------------------------------------------------------------
