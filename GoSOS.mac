@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: October 25th, 2024 - 11:19:00 AM
+Last Updated: November 7, 2024 - 03:17:00 PM
 
-v2.4
+v2.5
 ****************************************************************************************************************|
 
 #turbo
@@ -91,7 +91,7 @@ Sub Main
 Sub COH_Group
 
 /declare x int local 1
-
+	:COH_Group
 	|-------------------------------------
 	/for x 1 to ${Group.Members}
 		|-------------------------------------
@@ -163,11 +163,18 @@ Sub COH_Group
 	|---------------------
 	
 	|------------------------------------
-	/if (${GrpMembersHere}==1 && ${RunRequestor.NotEqual[NULL]} && ${FollowupMac.NotEqual[NULL]}) {
-		/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
-		/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
-		/delay 1s
-		/e3bct ${RunRequestor} /macro ${FollowupMac}
+	/if (${GrpMembersHere}==1) {
+		/if (${RunRequestor.NotEqual[NULL]} && ${FollowupMac.NotEqual[NULL]}) {
+			/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
+			/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
+			/delay 1s
+			/e3bct ${RunRequestor} /macro ${FollowupMac}
+		}
+	} else {
+		/echo \atLooks like i missed someone!
+		/g +++ Looks like i missed someone!
+		/delay 1s	
+		/goto :COH_Group
 	}
 	|------------------------------------
 
