@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: November 7, 2024 - 03:17:00 PM
+Last Updated: November 12, 2024 - 11:45:00 AM
 
-v2.5
+v2.6
 ****************************************************************************************************************|
 
 #turbo
@@ -20,6 +20,13 @@ Sub Main
 /declare FollowupMac	string	outer	${Param2}
 /declare GrpMembersHere	int		outer	0
 /declare CoHDistance	int		outer	25
+
+/afollow off
+/delay 5
+/nav stop
+/delay 5
+/stand
+/delay 5
 
 |---------- Setup the variables by Param or by Zone Default 
 /if (${Defined[RunToLoc]} && ${Defined[RunRequestor]} && ${Defined[FollowupMac]}) {
