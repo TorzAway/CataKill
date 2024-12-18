@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: November 13th, 2024 - 10:59:00 AM
+Last Updated: December 18th, 2024 - 01:29:00 PM
 
-v1.7.0
+v1.7.1
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -227,7 +227,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.7.0
+	/declare version			string	outer	1.7.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1545,7 +1545,7 @@ Sub Go2LastSwarmLoc
 Sub ForceSpawnStepReset
 /if (${Debugging}) /echo Sub ForceSpawnStepReset Entry
 
-	/echo \arForcing LastSwarmed_Step reset to step \ay(\at1\ay)
+	/echo \arForcing \ayLastSwarmed_Step\ax \agto \ay(\at1\ay)\ar.
 
 	|----------------------------------------------------------
 	| -- Write STEP 1 to the ini file since we want to set our initial first step for that zone.
@@ -3646,6 +3646,7 @@ Sub ReclaimAltDC
 			|---------------------------
 			|--- SET the Cycle Loop TRUE
 			|---------------------------
+			/echo \arForcing \ayCompletedPathTo\ax \agUPPER ZONE\ax \ay(\atTRUE\ay)\ar.
 			/call IniChange "Theme" "CompletedPathTo" "TRUE"
 			/call ForceSpawnStepReset
 			/mqp
