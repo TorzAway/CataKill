@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: December 18th, 2024 - 01:29:00 PM
+Last Updated: December 19th, 2024 - 12:18:00 PM
 
-v1.7.1
+v1.7.3
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -76,21 +76,21 @@ Sub Main
 	/message \am- LastSwarmed_Step \ayis set to \at[\ag${LastSwarmed_Step}\at]\ax
 	/message \am- CompletedPathTo \ayis set to \at[\ag${CompletedPathTo}\at]\ax
 	/message ==================================================================
-	/echo \agGetting things ready, sit back...
+	/message \agGetting things ready, sit back...
 	/delay 3s
 	
 	|----------------
 	/call CheckThings
 	|----------------
 	
-	/echo \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
+	/message \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
 	|--------------
 	/call GroupWait
 	|--------------
 
 	|----------------------
 	/if (!${Select[${Zone.ID},152,202,386,336,330]}) {
-		/echo \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
+		/message \ayLooks like we are \am[\atnot in a valid starting zone\am]\ay for ${MacroName} zone routing.\ax
 		/call GoToMarrs
 	}
 	|----------------------
@@ -112,12 +112,12 @@ Sub Main
 		/call GetExpeditionData
 		|-------------------
 		/if (${DranikCExpedition}==1) {
-			/echo \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
+			/message \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
 			/call GroupWait
 			/call GoToExpedition
 		} else {
-			/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
-			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
+			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
 			/call GroupWait
 			/call GotoRecruiter
 		}
@@ -127,13 +127,12 @@ Sub Main
 
 	| --- MAIN ------------------------------------------------------------------------------
 	:mainloop
-	|/echo START MAINLOOP
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
 	/if (${Zone.ID}==${CataCombC}) {
 		/if (${Me.XTarget[1].ID}) /call DoClearTargets
-		/echo \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
+		/message \ayI am currently in \am[\atCatacombs of Dranik (Caza)\am]\ay.\ax
 
 		|----------------------------
 		| ENGINE SELECT -- START
@@ -142,7 +141,7 @@ Sub Main
 		|----------------------------
 		/if (${SwarmPull})  {
 			/message ==================================================================
-			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
+			/message \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
 			/popcustom 13 5 ---> ABOUT TO SWARM PULL . . . get ready! <---
 			/message ==================================================================
 			/delay 3s
@@ -178,7 +177,7 @@ Sub Main
 		|---- SinglePull ----
 		|----------------------------
 			/message ==================================================================
-			/echo \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
+			/message \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
 			/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
 			/message ==================================================================
 			/delay 3s
@@ -227,7 +226,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.7.1
+	/declare version			string	outer	1.7.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -235,7 +234,7 @@ Sub Declares
 	/if (!${Ini[${IniFileName}].Length}) /varset FirstRun 1
 	|--------------------------------------
 
-	/echo \ay${IniFileName} is the INI being used.
+	/message \ay${IniFileName} is the INI being used.
 	/declare Targets 			string 	outer
 	/declare myTargetID 		int 	outer 0
 	/declare reportTarget 		timer 	outer 5s
@@ -350,12 +349,12 @@ Sub Declares
 
 	|-------------------------------
 	/if (${FirstRun}) {
-		/echo \ayCreated INI file \am[\at${IniFileName}\am]\ay with default values.\ax
-		/echo \ayPlease edit the file and restart \at${MacroName}.mac\ay.\ax
-		/echo \arEnding Macro !\ax
+		/message \ayCreated INI file \am[\at${IniFileName}\am]\ay with default values.\ax
+		/message \ayPlease edit the file and restart \at${MacroName}.mac\ay.\ax
+		/message \arEnding Macro !\ax
 		/end
 	} else {
-		/echo \ayConfig loaded from \am[\at${IniFileName}\am]\ay.\ax
+		/message \ayConfig loaded from \am[\at${IniFileName}\am]\ay.\ax
 	}
 	|-------------------------------
 
@@ -369,8 +368,8 @@ Sub Declares
 | --------------------------------------------------------------------------------------------
 Sub CampInMarrs
 	/if (${Debugging}) /echo Sub CampInMarrs Entry
-	/echo \atWe are not set to repeat expeditions, Gating to Temple of Marr to camp !
-	/echo \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
+	/message \atWe are not set to repeat expeditions, Gating to Temple of Marr to camp !
+	/message \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
 	|--- Group - Start in Marrs
 	/delay 10
 	/squelch /e3bca /nav stop
@@ -420,14 +419,14 @@ Sub CampInMarrs
 	/call GroupWait
 	/delay 2s
 
-	/if (${Zone.ID} == ${TempleofMarr}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
+	/if (${Zone.ID} == ${TempleofMarr}) /message \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
 	/delay 3s
 	|------------------------
 	|--- Reset the Cycle Loop
 	/call IniChange "Theme" "CompletedPathTo" "FALSE"
 	/call ForceSpawnStepReset
 	|------------------------
-	/echo \arCAMPING TO DESKTOP !!!\ax
+	/message \arCAMPING TO DESKTOP !!!\ax
 	/squelch /e3bcaa /camp desktop
 	/delay 3s
 	/end
@@ -441,8 +440,8 @@ Sub CampInMarrs
 | --------------------------------------------------------------------------------------------
 Sub GoToMarrs
 	/if (${Debugging}) /echo Sub GoToMarrs Entry
-	/echo \arOoops..   your not in a valid starting zone for macro, Gating to Temple of Marr !
-	/echo \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
+	/message \arOoops..   your not in a valid starting zone for macro, Gating to Temple of Marr !
+	/message \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
 	|--- Group - Start in Marrs
 	/delay 10
 	/squelch /e3bca /nav stop
@@ -492,7 +491,7 @@ Sub GoToMarrs
 	/call GroupWait
 	/delay 2s
 
-	/if (${Zone.ID} == ${TempleofMarr}) /echo \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
+	/if (${Zone.ID} == ${TempleofMarr}) /message \ayI am currently in \am[\atTemple of Marr\am]\ay.\ax
 	/call GoToDranikFromMarr
 
 /if (${Debugging}) /echo Sub GoToMarrs Exit
@@ -507,7 +506,7 @@ Sub GoToDranikFromMarr
 
 |------------------------------
 /if (${Zone.ID} == ${TempleofMarr}) {
-	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/message \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
 	/delay 3s
 	|----------------------------
 	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
@@ -563,7 +562,7 @@ Sub GoToDranikFromMarr
 /call GroupWait
 /delay 2s
 
-/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+/if (${Zone.ID} == ${RuinedCityofDranik}) /message \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
 /call GotoRecruiter
 
 /if (${Debugging}) /echo Sub GoToDranik Exit
@@ -578,7 +577,7 @@ Sub GoToDranikFromNexus
 
 |------------------------------
 /if (${Zone.ID} == ${Nexus}) {
-	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/message \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
 	/delay 3s
 	/squelch /e3bcaa /tar Valium
 	/delay 5
@@ -611,7 +610,7 @@ Sub GoToDranikFromNexus
 /call GroupWait
 /delay 2s
 
-/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+/if (${Zone.ID} == ${RuinedCityofDranik}) /message \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
 /call GotoRecruiter
 
 /if (${Debugging}) /echo Sub GoToDranik Exit
@@ -626,7 +625,7 @@ Sub GoToDranikFromPoK
 
 |------------------------------
 /if (${Zone.ID} == ${PlaneofKnowledge}) {
-	/echo \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
+	/message \ayI am headed to \am[\atThe Ruined City of Dranik\am]\ay.\ax
 	/delay 3s
 	/squelch /e3bcaa /tar Valium
 	/delay 5
@@ -659,7 +658,7 @@ Sub GoToDranikFromPoK
 /call GroupWait
 /delay 2s
 
-/if (${Zone.ID} == ${RuinedCityofDranik}) /echo \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
+/if (${Zone.ID} == ${RuinedCityofDranik}) /message \ayI am currently in \am[\atThe Ruined City of Dranik\am]\ay.\ax
 /call GotoRecruiter
 
 /if (${Debugging}) /echo Sub GoToDranikFromPoK Exit
@@ -684,12 +683,12 @@ Sub GotoRecruiter
 		|/echo {Spawn[${Recruiter}].Distance3D}=(${Spawn[${Recruiter}].Distance3D})
 		:RecruiterDistanceCheck
 		/if (${Spawn[${Recruiter}].Distance3D} <= 15) {
-			/echo \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...
+			/message \agI am next to \am[\at${Recruiter}\am]\ay \ag getting an expedition...
 			/call GetExpedition
 		} else {
 			|-------------
 			/if (${Spawn[${Recruiter}].Distance3D} > 10) {
-				/echo \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
+				/message \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
 				/if (${DoInvis}) /call CheckInvis
 				/delay 1s
 				|---------------------- INVIS VNAV !
@@ -725,7 +724,7 @@ Sub GotoRecruiter
 Sub GetExpedition
 	/if (${Debugging}) /echo Sub GetExpedition Entry
 
-	/echo \agGettting an Expedition . . .
+	/message \agGettting an Expedition . . .
 
 	:RequestExpedition
 	/if (${Target.ID} != ${Spawn[${Recruiter}].ID}) /target id ${Spawn[${Recruiter}].ID}
@@ -752,7 +751,7 @@ Sub GetExpedition
 		/if (!${CurrentExpedition.Length}==0 && ${CurrentExpedition.Find[Catacombs of Dranik]}) {
 			/squelch /target clear
 			/squelch /e3bcaa /keypress alt+z
-			/echo \ayGoing to the expedition now . . . .
+			/message \ayGoing to the expedition now . . . .
 			|------------------------
 			|--- Reset the Cycle Loop
 			/call IniChange "Theme" "CompletedPathTo" "FALSE"
@@ -775,7 +774,7 @@ Sub GetExpedition
 Sub GoToExpedition
 	/if (${Debugging}) /echo Sub GoToExpedition Entry
 
-	/echo \ayI am headed to: \am[\atCatacombs of Dranik (Caza)\am]\ag
+	/message \ayI am headed to: \am[\atCatacombs of Dranik (Caza)\am]\ag
 	
 	|--- CHECK INVIS !!!
 	/if (${DoInvis}) /call CheckInvis
@@ -852,8 +851,8 @@ Sub CheckExpeditionStatus
 	:WaitTillIGetBooted
 	/if (${DranikCExpedition}==0 && ${InADungeon}==1) {
 		/message ==================================================================
-		/echo \ay - Looks like our expedition is over, but we havent been booted yet.\ax
-		/echo \ay - Waiting \am20\ay seconds until booted !\ax
+		/message \ay - Looks like our expedition is over, but we havent been booted yet.\ax
+		/message \ay - Waiting \am20\ay seconds until booted !\ax
 		/message ==================================================================
 		/if (!${Me.Combat} && !${Me.XTarget[1].ID})  /delay 20s
 		/call CheckInADungeon
@@ -865,7 +864,7 @@ Sub CheckExpeditionStatus
 	|--- Expedition Over, Already Booted out ... Get a new Expedition !
 	|-----------------------------------------------------------------------
 	/if (${DranikCExpedition}==0 && ${InADungeon}==0) {
-		/echo \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
+		/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 		|-------------------
 		/if ((${Zone.ID}==${RuinedCityofDranik}) && ${RepeatMission}) {
 			|------------------------
@@ -875,7 +874,7 @@ Sub CheckExpeditionStatus
 			/call ForceSpawnStepReset
 			|------------------------
 			/message ==================================================================
-			/echo \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
+			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to re-get an expedition.\ax
 			/message ==================================================================
 			/call GotoRecruiter
 		}
@@ -982,11 +981,11 @@ Sub DoSinglePull(string Enemy)
 	/if (${Bool[${Enemy}]}) {
 		/varset FarmMob ${Enemy}
 		/if (${Debugging} && !${reportTarget}) {
-			/echo Looking for: ${FarmMob}
+			/message Looking for: ${FarmMob}
 			/varset reportTarget ${reportTarget.OriginalValue}
 		}
 	} else /if (!${reportTarget}) {
-		/echo \arAttacking \ay[\apAnything I can get my grubby paws on\ay]\ar.
+		/message \arAttacking \ay[\apAnything I can get my grubby paws on\ay]\ar.
 		/varset reportTarget ${reportTarget.OriginalValue}
 		|--------------------
 		/if (${myTargetID} && !${Target.Type.Equal[Corpse]} && !${Target.Type.Equal[Pet]} && !${Target.Type.Equal[PC]}) {
@@ -1004,8 +1003,8 @@ Sub DoSinglePull(string Enemy)
 			/varcalc BackUpTimer (${BackUpTimer})+1
 			|--------------------
 			/if (${BackUpTimer}>7) {
-				/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
-				/if (${Debugging}) /echo Setting BackUpTimer Plus 1
+				/message \ayHaving trouble getting to a target.. Attempting to get back on mesh.
+				/if (${Debugging}) /message Setting BackUpTimer Plus 1
 				/call BackUp
 				/varset BackUpTimer 0
 			}
@@ -1036,9 +1035,9 @@ Sub DoSinglePull(string Enemy)
 		/call GroupManaChk
 		/call GroupEndChk
 	}
-	/if (${Debugging}) /echo \aymyTargetID has an ID: ${Spawn[id ${myTargetID}].ID} - is a corpse: ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} - I have an XTarget: !${Me.XTarget[1].ID}
+	/if (${Debugging}) /message \aymyTargetID has an ID: ${Spawn[id ${myTargetID}].ID} - is a corpse: ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} - I have an XTarget: !${Me.XTarget[1].ID}
 	/if (!${Spawn[id ${myTargetID}].ID} || ${Spawn[id ${myTargetID}].Type.Equal[Corpse]} && !${Me.XTarget[1].ID} && !${Me.Casting.ID}) {
-		/echo \ay"Looking for a target!"
+		/message \ay"Looking for a target!"
 		/varset myTargetID 0
 		|-------------------
 		/call TargetShortest
@@ -1047,7 +1046,7 @@ Sub DoSinglePull(string Enemy)
 		|/echo \atMy Target: \ay[\ap${Spawn[id ${myTargetID}].Name}\ay]
 		|-------------------
 	} else {
-		/if (${Debugging}) /echo \ayI have an XTarget so I'm going to set that as my target.
+		/if (${Debugging}) /message \ayI have an XTarget so I'm going to set that as my target.
 		|---------------------------------------
 		/if (${Me.XTarget[1].ID}) {
 			/varset myTargetID ${Me.XTarget[1].ID}
@@ -1067,7 +1066,7 @@ Sub DoSinglePull(string Enemy)
 			/return
 		}
 		/varset BackUpTimer 0
-		/echo \agNavigating to: \ay[\ap${Spawn[${myTargetID}].CleanName}\ay] \agID: \ay[\ap${myTargetID}\ay] \agDistance: \ay[\ap${Spawn[${myTargetID}].Distance}\ay]
+		/message \agNavigating to: \ay[\ap${Spawn[${myTargetID}].CleanName}\ay] \agID: \ay[\ap${myTargetID}\ay] \agDistance: \ay[\ap${Spawn[${myTargetID}].Distance}\ay]
 		/if (${Debugging}) /echo \ayNavigating to ${Spawn[${myTargetID}].Name} ID: ${myTargetID} Distance: ${Spawn[${myTargetID}].Distance} > 30 - Line of Sight: ${Spawn[${myTargetID}].LineOfSight}
 		/call WaitNav ${myTargetID}
 		/delay 10
@@ -1168,10 +1167,10 @@ Sub TargetShortest
 	/if (${Debugging}) /echo Setting BackUpTimer +1 to ${BackUpTimer}
 	/if (${Debugging} && ${BackUpTimer}>1) /echo \arCould Be Stuck ${BackUpTimer}
 	/if (${BackUpTimer}>10) {
-	/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
-	/if (${Debugging}) /echo Setting BackUpTimer Plus 1
-	/call BackUp
-	/varset BackUpTimer 0
+		/message \ayHaving trouble getting to a target.. Attempting to get back on mesh.
+		/if (${Debugging}) /echo Setting BackUpTimer Plus 1
+		/call BackUp
+		/varset BackUpTimer 0
 	}
 	/if (${Debugging}) /echo Sub TargetShortest Exit
 /return
@@ -1196,7 +1195,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_1[1,${x}]}
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
-			/echo \ar The Catacomb steps did not load correctly, reloading !
+			/message \ar The Catacomb steps did not load correctly, reloading !
 			/call DoSwarmPull_PathTo
 			/delay 10
 		}
@@ -1213,7 +1212,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		|------------------------------------------
 		| Move group to me before next step
 		|------------------------------------------
-		/echo \at - Calling the group to me before moving to the next step . . . .
+		/message \at - Calling the group to me before moving to the next step . . . .
 		/call GroupWait
 		/delay 1s
 		|------------------------------------------
@@ -1227,7 +1226,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 		/if (${TempSpawnPull_Loc.Length}>0 && ${DranikCExpedition}==1 && ${InADungeon}==1) {
-			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			/message \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
 			|--------------------------------------------------------------
 			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 			|--------------------------------------------------------------
@@ -1286,12 +1285,12 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	|------------------------------------------
 
 	/message ==================================================================
-	/echo \atCompleted all SwarmPull "PathTo" steps.\ax
-	/echo \atUpdating (\ay${IniFileName})\ax INI file with PathTo completion.\ax
+	/message \atCompleted all SwarmPull "PathTo" steps.\ax
+	/message \atUpdating (\ay${IniFileName})\ax INI file with PathTo completion.\ax
 	/call IniChange "Theme" "CompletedPathTo" "TRUE"
 	/call ForceSpawnStepReset
 	/varset SpawnPull_Step 1
-	/echo /ayStarting Main Cycle Run !!!/ax
+	/message /ayStarting Main Cycle Run !!!/ax
 	/message ==================================================================
 	/delay 3s
 	|------------------------------------------------------
@@ -1333,7 +1332,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		/varset TempSpawnPull_Loc ${LocalStepArray_${Zone.ShortName}_2[1,${x}]}
 		|-----------------------------
 		/if (${TempSpawnPull_Loc.Equal[NULL]}) {
-			/echo \ar The Catacomb steps did not load correctly, reloading !
+			/message \ar The Catacomb steps did not load correctly, reloading !
 			/call DoSwarmPull_MainLoop
 			/delay 1s
 		}
@@ -1365,7 +1364,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		|------------------------------------------
 		| Move group to me before next step
 		|------------------------------------------
-		/echo \at - Calling the group to me before moving to the next step . . . .
+		/message \at - Calling the group to me before moving to the next step . . . .
 		/call GroupWait
 		/delay 1s
 		|------------------------------------------
@@ -1379,10 +1378,10 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call CheckExpeditionStatus
 		/if (${TempSpawnPull_Loc.Length}>0 && ${DranikCExpedition}==1 && ${InADungeon}==1) {
-			/echo \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
+			/message \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
 			|-----------------------------------------------------------------------------------------------------------------------------
 			/if (${SpawnsAtStep}>=1) {
-				/echo  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \agKILL THEM ALL\ax \ao!!!\ax
+				/message  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \agKILL THEM ALL\ax \ao!!!\ax
 				|--------------------------------------------------------------
 				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 				|--------------------------------------------------------------
@@ -1413,7 +1412,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 				/call IniChange "Theme" "LastSwarmed_Step" ${x}
 				|-------------------------------------------------------------------------------------------------------
 			} else {
-				/echo  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \arSKIPPING\ax \ao!!!\ax
+				/message  \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \arSKIPPING\ax \ao!!!\ax
 				|-------------------------------------------------------------------------------------------------------
 				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
 				|-------------------------------------------------------------------------------------------------------
@@ -1502,7 +1501,7 @@ Sub Go2LastSwarmLoc
 	|/echo \arGo2LastSwarmLoc: \ayLastSwarmed_Dungeon=(${LastSwarmed_Dungeon}) | LastSwarmed_Step=(${LastSwarmed_Step})
 	|-------------------------------------------------------------------------------------------------------
 	/if (${Debugging}) /echo LastSwarmed_Dungeon=(${LastSwarmed_Dungeon}) | LastSwarmed_Step=(${LastSwarmed_Step})
-	/echo \agThe last known spawn pull \aySTEP\ag is: \ay[\am${LastSwarmed_Step}\ay]
+	/message \agThe last known spawn pull \aySTEP\ag is: \ay[\am${LastSwarmed_Step}\ay]
 
 	|--------------------------------------------------------------------------------------------------------------------------
 	| - Call the SwarmPullStepMove function and pass the location and step from INI file
@@ -1545,7 +1544,7 @@ Sub Go2LastSwarmLoc
 Sub ForceSpawnStepReset
 /if (${Debugging}) /echo Sub ForceSpawnStepReset Entry
 
-	/echo \arForcing \ayLastSwarmed_Step\ax \agto \ay(\at1\ay)\ar.
+	/message \arForcing \ayLastSwarmed_Step\ax \agto \ay(\at1\ay)\ar.
 
 	|----------------------------------------------------------
 	| -- Write STEP 1 to the ini file since we want to set our initial first step for that zone.
@@ -1572,20 +1571,20 @@ Sub DoSwarmPull_PathTo
 | Delete any EXISTING LocalStepArray
 |---------------------------------------------------------
 /if (${Defined[LocalStepArray_${Zone.ShortName}_1]}) {
-	/echo \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_1\am]\ax
+	/message \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_1\am]\ax
 	/deletevar LocalStepArray_${Zone.ShortName}_1
 }
 |---------------------------------------------------------
 
 |------------------------1: CataCombC
-	/echo \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
+	/message \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
 	|------------------------------------------------------
 	|  Define The Array Variables so the dungeon can be Run
 	|------------------------------------------------------
 	|------------------------------------------------------
-	/echo \ayCreating dynamic dungeon array.
+	/message \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_1]}) {
-		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_1[1,14]\am]\ax
+		/message \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_1[1,14]\am]\ax
 		/declare LocalStepArray_${Zone.ShortName}_1[1,14]	string	outer
 		/delay 10
 	}
@@ -1613,23 +1612,23 @@ Sub DoSwarmPull_PathTo
 	|---------------------------------- PATH TO MAIN CYCLE
 
 	|------------------------------------------------------
-	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,1]}\am]\ay
-	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,2]}\am]\ay
-	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,3]}\am]\ay
-	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,4]}\am]\ay
-	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,5]}\am]\ay
-	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,6]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,7]}\am]\ay
-	/echo \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,8]}\am]\ay
-	/echo \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,9]}\am]\ay
-	/echo \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,10]}\am]\ay
-	/echo \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,11]}\am]\ay
-	/echo \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,12]}\am]\ay
-	/echo \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,13]}\am]\ay
-	/echo \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,14]}\am]\ay
+	/message \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,1]}\am]\ay
+	/message \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,2]}\am]\ay
+	/message \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,3]}\am]\ay
+	/message \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,4]}\am]\ay
+	/message \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,5]}\am]\ay
+	/message \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,6]}\am]\ay
+	/message \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,7]}\am]\ay
+	/message \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,8]}\am]\ay
+	/message \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,9]}\am]\ay
+	/message \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,10]}\am]\ay
+	/message \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,11]}\am]\ay
+	/message \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,12]}\am]\ay
+	/message \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,13]}\am]\ay
+	/message \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_1[1,14]}\am]\ay
 	/message ==================================================================
 	|----------------------------------------------------
-	/echo \agGet ready, the fun is starting soon !
+	/message \agGet ready, the fun is starting soon !
 	/delay 5
 	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10
@@ -1657,20 +1656,20 @@ Sub DoSwarmPull_MainLoop
 | Delete any EXISTING LocalStepArray
 |---------------------------------------------------------
 /if (${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-	/echo \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_2\am]\ax
+	/message \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_2\am]\ax
 	/deletevar LocalStepArray_${Zone.ShortName}_2
 }
 |---------------------------------------------------------
 
 |------------------------1: CataCombC
-	/echo \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
+	/message \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
 	|------------------------------------------------------
 	|  Define The Array Variables so the dungeon can be Run
 	|------------------------------------------------------
 	|------------------------------------------------------
-	/echo \ayCreating dynamic dungeon array.
+	/message \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,19]\am]\ax
+		/message \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,19]\am]\ax
 		/declare LocalStepArray_${Zone.ShortName}_2[1,19]	string	outer
 		/delay 10
 	}
@@ -1714,28 +1713,28 @@ Sub DoSwarmPull_MainLoop
 	|---------------------------------- PrCamp
 
 	|------------------------------------------------------
-	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
-	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
-	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,3]}\am]\ay
-	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,4]}\am]\ay
-	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
-	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay
-	/echo \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,8]}\am]\ay
-	/echo \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,9]}\am]\ay
-	/echo \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,10]}\am]\ay
-	/echo \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,11]}\am]\ay
-	/echo \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,12]}\am]\ay
-	/echo \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,13]}\am]\ay
-	/echo \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,14]}\am]\ay
-	/echo \ayStep \am[\ag15\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,15]}\am]\ay
-	/echo \ayStep \am[\ag16\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,16]}\am]\ay
-	/echo \ayStep \am[\ag17\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,17]}\am]\ay
-	/echo \ayStep \am[\ag18\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,18]}\am]\ay
-	/echo \ayStep \am[\ag19\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,19]}\am]\ay
+	/message \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
+	/message \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
+	/message \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,3]}\am]\ay
+	/message \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,4]}\am]\ay
+	/message \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
+	/message \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
+	/message \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay
+	/message \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,8]}\am]\ay
+	/message \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,9]}\am]\ay
+	/message \ayStep \am[\ag10\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,10]}\am]\ay
+	/message \ayStep \am[\ag11\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,11]}\am]\ay
+	/message \ayStep \am[\ag12\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,12]}\am]\ay
+	/message \ayStep \am[\ag13\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,13]}\am]\ay
+	/message \ayStep \am[\ag14\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,14]}\am]\ay
+	/message \ayStep \am[\ag15\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,15]}\am]\ay
+	/message \ayStep \am[\ag16\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,16]}\am]\ay
+	/message \ayStep \am[\ag17\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,17]}\am]\ay
+	/message \ayStep \am[\ag18\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,18]}\am]\ay
+	/message \ayStep \am[\ag19\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,19]}\am]\ay
 	/message ==================================================================
 	|----------------------------------------------------
-	/echo \agGet ready, the fun is starting soon !
+	/message \agGet ready, the fun is starting soon !
 	/delay 5
 	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10
@@ -1762,20 +1761,20 @@ Sub DoSwarmPull_MainLoop_Bigger
 | Delete any EXISTING LocalStepArray
 |---------------------------------------------------------
 /if (${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-	/echo \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_2\am]\ax
+	/message \arDeleting \atOLD \aydungeon array\ar \am[\atLocalStepArray_${Zone.ShortName}_2\am]\ax
 	/deletevar LocalStepArray_${Zone.ShortName}_2
 }
 |---------------------------------------------------------
 
 |------------------------1: CataCombC
-	/echo \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
+	/message \atLoading steps for: \ay[Catacombs of Dranik (Caza)]\at.
 	|------------------------------------------------------
 	|  Define The Array Variables so the dungeon can be Run
 	|------------------------------------------------------
 	|------------------------------------------------------
-	/echo \ayCreating dynamic dungeon array.
+	/message \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-		/echo \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,7]\am]\ax
+		/message \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,7]\am]\ax
 		/declare LocalStepArray_${Zone.ShortName}_2[1,7]	string	outer
 		/delay 10
 	}
@@ -1807,16 +1806,16 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|---------------------------------- PrCamp	
 
 	|------------------------------------------------------
-	/echo \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
-	/echo \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
-	/echo \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,3]}\am]\ay
-	/echo \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,4]}\am]\ay
-	/echo \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
-	/echo \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
-	/echo \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay	
+	/message \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
+	/message \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
+	/message \ayStep \am[\ag3\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,3]}\am]\ay
+	/message \ayStep \am[\ag4\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,4]}\am]\ay
+	/message \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
+	/message \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
+	/message \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay	
 	/message ==================================================================
 	|----------------------------------------------------
-	/echo \agGet ready, the fun is starting soon !
+	/message \agGet ready, the fun is starting soon !
 	/delay 5
 	/if (${Me.XTarget[1].ID}) /call DoClearTargets
 	/delay 10
@@ -1834,9 +1833,9 @@ Sub DoSwarmPull_MainLoop_Bigger
 | SUB: NavToLoc -- [NO Combat and Agro Aware movement]
 | --------------------------------------------------------------------------------------------
 Sub NavToLoc(int Y,int X,int Z)
-	/if (${Debugging}) /echo Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
+	/if (${Debugging}) /message Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/echo \at -- NavToLoc \ay[\amNo Combat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at -- NavToLoc \ay[\amNo Combat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	|-------------------------------------------------------------------------------
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 30) {
 		/if (${Navigation.Active}) {
@@ -1884,7 +1883,7 @@ Sub NavToLoc(int Y,int X,int Z)
 Sub NavToLoc2(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/echo \at -- NavToLoc2 \ay[\amCombat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at -- NavToLoc2 \ay[\amCombat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
 		/if (${Navigation.Active}) {
 			/if (${Debugging}) /echo WaitNav Moving ELSE
@@ -1959,7 +1958,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 Sub NavToLoc3(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc3 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/echo \at -- NavToLoc3 \ay[\amCombat and Agro Aware movement - with invis recheck\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at -- NavToLoc3 \ay[\amCombat and Agro Aware movement - with invis recheck\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
 		/if (${Navigation.Active}) {
 			/if (${Debugging}) /echo WaitNav Moving ELSE
@@ -2032,7 +2031,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 | --------------------------------------------------------------------------------------------
 Sub WaitNav(NavTargetID)
 	/if (${Debugging}) /echo \agEntering Sub WaitNav for ${Spawn[id ${NavTargetID}].Y} ${Spawn[id ${NavTargetID}].X} ${Spawn[id ${NavTargetID}].Z} at Line: ${Macro.CurLine}
-	/echo \at -- WaitNav \ay[\amCombat & Agro aware STAGGERED movement\ay] \atto mob id:\ay[\am${NavTargetID}\ay]\at.
+	/message \at -- WaitNav \ay[\amCombat & Agro aware STAGGERED movement\ay] \atto mob id:\ay[\am${NavTargetID}\ay]\at.
 	/if (!${Spawn[id ${NavTargetID}].ID}) {
 		/delay 5s
 		/return
@@ -2088,7 +2087,7 @@ Sub WaitNav(NavTargetID)
 			} else {
 				/varcalc BackUpTimer (${BackUpTimer})+1
 				/if (${BackUpTimer}>7) {
-					/echo \ayHaving trouble getting to a target.. Attempting to get back on mesh.
+					/message \ayHaving trouble getting to a target.. Attempting to get back on mesh.
 					/if (${Debugging}) /echo Setting BackUpTimer Plus 1
 					/call BackUp
 					/varset BackUpTimer 0
@@ -2127,7 +2126,7 @@ Sub Zoning
 	/target id ${Me.ID}
 	/delay 1s ${Target.ID}==${Me.ID}
 	/if (!${Navigation.MeshLoaded}) {
-		/echo \ayWaiting for you to load a mesh for this zone.
+		/message \ayWaiting for you to load a mesh for this zone.
 		/nav reload
 		/delay 5s
 		/goto :Zoning
@@ -2156,12 +2155,12 @@ Sub Zoning
   /hidecorpse looted
 
 :CheckAgain
-  /echo \ay- Checking for missed corpse(s).
+  /message \ay- Checking for missed corpse(s).
   /squelch /target radius 100 corpse
   /delay 5 ${Target.ID}
 
   /if (${Target.ID} && ${Target.Type.Equal[Corpse]}) {
-    /echo \at+++ \ayLooks like we have a corpse to loot!\ax
+    /message \at+++ \ayLooks like we have a corpse to loot!\ax
     /if (${Target.ID}) /face nolook
 
 	|----------------------------------------------
@@ -2185,7 +2184,7 @@ Sub Zoning
     /squelch /target clear
     /goto :CheckAgain
   } else {
-    /echo \ar+++ \ayNo corpse(s) found to loot.\ax
+    /message \ar+++ \ayNo corpse(s) found to loot.\ax
   }
 
 	/if (${Debugging}) /echo Sub CheckForCorpses Exit
@@ -2307,14 +2306,14 @@ Sub Zoning
 
 	|--------------------------------------
 	/if (!${Corpse.Items}) {
-		/echo \ar- NO LOOT! - Cheap Bastard !
+		/message \ar- NO LOOT! - Cheap Bastard !
     } else {
 		/delay 1s ${Corpse.Items}!=NULL
 		/varset LootTotal ${Corpse.Items}
-		/echo \ay++ Corpse has (\at${LootTotal}\ay) item(s) on it to loot.
+		/message \ay++ Corpse has (\at${LootTotal}\ay) item(s) on it to loot.
 		|---------------------------------------
 		/for LootSlot 1 to ${LootTotal}
-			/echo \ay-- Grabbing corpse item (\am${LootSlot}\ax) of (\am${LootTotal}\ax).
+			/message \ay-- Grabbing corpse item (\am${LootSlot}\ax) of (\am${LootTotal}\ax).
 			/nomodkey /shift /itemnotify Loot${LootSlot} leftmouseup
 			/delay 1s ${Cursor.ID}
 			/if (${Window[QuantityWnd].Open}) /notify QuantityWnd QTYW_Accept_Button leftmouseup
@@ -2338,11 +2337,11 @@ Sub Zoning
 				|--------------------------------------------------------			
 				/if (${Cursor.ID}) {			
 					/if (${Cursor.Name.Equal[Diamond Coin]}) {
-						/echo \at+\ax \agKeeping a\ax \ay(\atDiamond Coin\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
+						/message \at+\ax \agKeeping a\ax \ay(\atDiamond Coin\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
 						/autoinventory 
 						/delay 1s !${Cursor.ID}
 					} else /if (${Cursor.Name.Equal[${DranikCLootArray[1,${x}]}]}) {
-						/echo \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
+						/message \at+\ax \agKeeping a\ax \ay(\at${Cursor.Name}\ay) \ag worth \ay(\at${CursorItemValueInPlat}\ay)\ag platinum ... WOOT!\ax
 						/autoinventory 
 						/delay 1s !${Cursor.ID}
 						/varset x ${DranikCLootArray.Size}
@@ -2358,7 +2357,7 @@ Sub Zoning
 			|---- DESTROY ANYTHING REMAINING
 			|--------------------------------------------------------
 			/if (${Cursor.ID}) {
-				/echo \ar-\ax \arDestroying a\ax \ay(\at${Cursor.Name}\ay)\ar ...\ax
+				/message \ar-\ax \arDestroying a\ax \ay(\at${Cursor.Name}\ay)\ar ...\ax
 				/destroy
 				/delay 1s !${Cursor.ID}
 				/varset x ${DranikCLootArray.Size}
@@ -2458,7 +2457,7 @@ Sub CheckStuck
 	|/echo ${Math.Distance[${OutY1},${OutX1}]}
 	/if (${Math.Distance[${OutY1},${OutX1}]} < 20) {
 		/varcalc StuckCountOut (${StuckCountOut})+1
-		/if (${StuckCountOut}>6) /echo \arStuck ${StuckCountOut}
+		/if (${StuckCountOut}>6) /message \arStuck ${StuckCountOut}
 		/if (${Me.ActiveDisc.Name.Equal[Frenzied Resolve Discipline]}) /stopdisc
 		/if (${StuckCountOut}>6) {
 				|/call doorclick
@@ -2474,7 +2473,7 @@ Sub CheckStuck
 		/varset StuckCountOut 0
 	}
 	/if (${StuckCountOut}>=8) {
-				/echo \ayThink I'm stuck... \agAttempting to get unstuck...
+				/message \ayThink I'm stuck... \agAttempting to get unstuck...
 				/call Stuck
 				/varset StuckCountOut 0
 		}
@@ -2576,12 +2575,12 @@ Sub GroupWait
 	/call DoClearTargets
 	/goto :WaitForGroup
 }
-/echo \ayWaiting for the group. . .
+/message \ayWaiting for the group. . .
 
 /if (${Debugging}) /echo ${Group.Member[1].CleanName}:(${Group.Member[1].Distance}) ${Group.Member[2].CleanName}:(${Group.Member[2].Distance}) ${Group.Member[3].CleanName}:(${Group.Member[3].Distance}) ${Group.Member[4].CleanName}:(${Group.Member[4].Distance}) ${Group.Member[5].CleanName}:(${Group.Member[5].Distance})
 
     /while ((${Group.Member[1].Distance} > 40) || (${Group.Member[2].Distance} > 40) || (${Group.Member[3].Distance} > 40) || (${Group.Member[4].Distance} > 40) || (${Group.Member[5].Distance} > 40) || (${Group.Member[6].Distance} > 40)) {
-        /echo \aywaiting for the group, timer ${GroupWaitTimer}.\ax
+        /message \aywaiting for the group, timer ${GroupWaitTimer}.\ax
 		/e3bca /stand
 		/e3bca /nav id ${Me.ID}
         /delay 5s
@@ -2590,7 +2589,7 @@ Sub GroupWait
 		/goto :WaitForGroup
 	}
 	/varset GroupWaitTimer 0
-	/echo \ay. . . my group is now here.\ax
+	/message \ay. . . my group is now here.\ax
 	/if (${Debugging}) /echo Sub GroupWait Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -2602,7 +2601,7 @@ Sub GroupWaitTimer
 	/if (${Debugging}) /echo Sub GroupWaitTimer Entry
 	/if (${GroupWaitTimer}==8) /varset GroupWaitTimer 0
 	/if (${GroupWaitTimer}==5) {
-		/echo \ayA Group Member might be stuck!
+		/message \ayA Group Member might be stuck!
 		/squelch /e3bcaa /stand
 		/squelch /e3bcaa /removelev
 		/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
@@ -2611,7 +2610,7 @@ Sub GroupWaitTimer
 		/squelch /e3bcaa /keypress back
 	}
 	/if (${GroupWaitTimer}==6) {
-		/echo \ayA Group Member is stuck!
+		/message \ayA Group Member is stuck!
 		/squelch /e3bcaa /moveto loc ${Me.Y} ${Me.X} ${Me.Z}
 		/squelch /e3bcaa /keypress forward hold
 		/delay 2s
@@ -2620,7 +2619,7 @@ Sub GroupWaitTimer
 	}
 	|--- Use Wayfarers Brotherhood Emblem' to COTH the group.
 	/if (${GroupWaitTimer}==7 && ${FindItemCount[Wayfarers Brotherhood Emblem]}>0) {
-		/echo \ayA Group Member is stuck, Attempting to CoH !!!
+		/message \ayA Group Member is stuck, Attempting to CoH !!!
 		/delay 1s
 		/coth group
 		/delay 1s
@@ -2640,10 +2639,10 @@ Sub CheckCasting
 	|-------------------------
 	:CheckCastingNow
 	/if (${Me.Casting.ID}) {
-		/echo \ag-- Waiting to stop casting.
+		/message \ag-- Waiting to stop casting.
 		/delay 1s !${Me.Casting.ID}
 		/goto :CheckCastingNow
-		/echo \ag-- I am done casting.
+		/message \ag-- I am done casting.
 		/delay 1s
 	}
 	|-------------------------
@@ -2658,7 +2657,7 @@ Sub CheckCasting
 Sub GMCheck
 /if (${Debugging}) /echo Sub GMCheck Entry
 /if (${Spawn[gm].ID} && ${AFKGM}) {
-				/echo \ar WARNING GM nearby!
+				/message \ar WARNING GM nearby!
 				/if (${UseBeep}) /beep
 				|------------------------------------------------
 				/call GMMode
@@ -2689,7 +2688,7 @@ Sub GMMode
 | --------------------------------------------------------------------------------------------
 Sub ResetBard
 	/if (${Debugging}) /echo Sub ResetBard Entry
-	/echo \agPerforming Bard Reset !\ax
+	/message \agPerforming Bard Reset !\ax
 
 	/declare x 					int 	local	1
 
@@ -2700,12 +2699,12 @@ Sub ResetBard
 		|-----------------------------------------
 		/while (${Group.Member[${x}].OtherZone}) {
 			:WaitForBardToZoneIn
-				/echo \ay - [\am${Group.Member[${x}].CleanName}\ay] is \arNOT IN ZONE\ax yet, waiting.
+				/message \ay - [\am${Group.Member[${x}].CleanName}\ay] is \arNOT IN ZONE\ax yet, waiting.
 				/delay 3s
 				/if (${Group.Member[${x}].OtherZone}) /goto :WaitForBardToZoneIn
 		}
 		|-----------------------------------------
-		/echo \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
+		/message \ayResetting E3 [\atBRD\ay] MELODY for [\am${Group.Member[${x}].CleanName}\ay].
 		|------------------------
 		|/squelch /e3bct ${Group.Member[${x}].CleanName} /mono E3
 		/squelch /e3bct ${Group.Member[${x}].CleanName} /playmelody ${BRDMelodyName}
@@ -2735,7 +2734,7 @@ Sub CheckInvis
 		|/echo Checking if ${Group.Member[${y}].CleanName} is close.
 		/if (${Group.Member[${y}].Distance}>20) {			
 			:MemberDistanceInvisCheck
-			/echo \ay- \am[\ag${Group.Member[${y}].CleanName}\am]\ay is \am[\ao${Group.Member[${y}].Distance}\am]\ay paces away still.
+			/message \ay- \am[\ag${Group.Member[${y}].CleanName}\am]\ay is \am[\ao${Group.Member[${y}].Distance}\am]\ay paces away still.
 			|------------------------
 			/delay 5 ${Group.Member[${y}].Distance}<20
 			/if (${Group.Member[${y}].Distance}>20) /goto :MemberDistanceInvisCheck
@@ -2751,7 +2750,7 @@ Sub CheckInvis
 	/for y 0 to ${Group.Members}
 		|/echo Checking if ${Group.Member[${y}].CleanName} is Moving.
 		/if (${Group.Member[${y}].Moving}) {
-			/echo \ay- \am[\ag${Group.Member[${y}].CleanName}\am]\ay is Moving.... waiting.
+			/message \ay- \am[\ag${Group.Member[${y}].CleanName}\am]\ay is Moving.... waiting.
 			:MemberMovingInvisCheck
 			|------------------------
 			/delay 5 !${Group.Member[${y}].Moving}
@@ -2780,8 +2779,8 @@ Sub CheckInvis
 
 	|----------------------- IF ME !INVIS
 	/if (!${Me.Invis}) {
-		/echo \arNeed to make myself invisible!
-		/echo \ayAttempting to invis group using alternate abilities !
+		/message \arNeed to make myself invisible!
+		/message \ayAttempting to invis group using alternate abilities !
 		|------------------------------------
 		|------------- UNDEAD ---------------
 		|/if (!${Me.Invis}) /call DoGrpInvisByClass CLR 1212
@@ -2813,12 +2812,12 @@ Sub CheckInvis
 				
 	|----------------------- IF ME !INVIS
 	/if (!${Me.Invis}) {
-		/echo \arNeed to make myself invisible!
-		/echo \ayI am \arSTILL NOT\ay invised, checking for a \am[\atBRD\am]\ay in group to invis.
+		/message \arNeed to make myself invisible!
+		/message \ayI am \arSTILL NOT\ay invised, checking for a \am[\atBRD\am]\ay in group to invis.
 		|-----------------------------
 		/for y 1 to ${Group.Members}
 			/if (${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {
-				/echo \ay[\am${Group.Member[${y}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !
+				/message \ay[\am${Group.Member[${y}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !
 				|------------------------
 				/squelch /e3bct ${Group.Member[${y}].CleanName} /playmelody stop
 				/delay 1s
@@ -2828,7 +2827,7 @@ Sub CheckInvis
 				/if (!${Me.Invis}) {
 					/squelch /e3bct ${Group.Member[${y}].CleanName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
 					/delay 3s
-					/echo \agWaiting for invis to kick in .....
+					/message \agWaiting for invis to kick in .....
 					/delay 5s ${Me.Invis}
 					/goto :CheckBrdInvisNow
 				} else {
@@ -2844,8 +2843,8 @@ Sub CheckInvis
 		
 	|----------------------- IF ME !INVIS
 	/if (!${Me.Invis}) {
-			/echo \arNeed to make myself invisible!
-			/echo \ayI am \arSTILL NOT\ay invised, attempting \atlast resort\ay !
+			/message \arNeed to make myself invisible!
+			/message \ayI am \arSTILL NOT\ay invised, attempting \atlast resort\ay !
 			|-----------------------------
 			/if (${Me.Class.ShortName.Equal[NEC]} || ${Me.Class.ShortName.Equal[SHD]}) {
 				/if (${Me.AltAbility[Cloak of Shadows]}) {
@@ -2855,12 +2854,12 @@ Sub CheckInvis
 				} else /if (${Me.ItemReady[Circlet of Shadows]} && !${Me.Buff[Gather Shadows].ID}) {
 					/useitem Circlet of Shadows
 					/delay 1s
-					/echo \agActivating \ay[\apCirclet of Shadows\ay]
+					/message \agActivating \ay[\apCirclet of Shadows\ay]
 					/delay 1s !${Me.ItemReady[Circlet of Shadows]}
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[BRD]}) {
 				/if (${Me.AltAbility[Shauri's Sonorous Clouding]}) {
@@ -2870,7 +2869,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[MAG]} || ${Me.Class.ShortName.Equal[WIZ]} || ${Me.Class.ShortName.Equal[ENC]}) {
 				/if (${Me.AltAbility[Perfected Invisibility]}) {
@@ -2880,7 +2879,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[SHM]}) {
 				/if (${Me.AltAbility[Spirit Walk]}) {
@@ -2888,7 +2887,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[BST]}) {
 				/if (${Me.AltAbility[Natural Invisibility]}) {
@@ -2896,7 +2895,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[RNG]} || ${Me.Class.ShortName.Equal[DRU]}) {
 				/if (${Me.AltAbility[Camouflage]}) {
@@ -2904,7 +2903,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${Me.Class.ShortName.Equal[ROG]}) {
 				/if (${Me.AbilityReady[Hide]}) {
@@ -2917,7 +2916,7 @@ Sub CheckInvis
 				} else /if (${FindItemCount[Cloudy Potion]}) {
 					/casting "Cloudy Potion|Item"
 				} else {
-					/echo \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
+					/message \ayYou are out of \at[\apCloudy Potions\at]\ay. \agFighting my way through if a group member doesn't have invis!
 				}
 			} else /if (${FindItemCount[Cloudy Potion]}) {
 				/casting "Cloudy Potion|Item"
@@ -2947,10 +2946,10 @@ Sub DoGrpInvisByClass(string InvisClassShortName, String GrpInvisAltAbilityID)
 	/for x 1 to ${Group.Members}
 		|/echo Checking for class (${InvisClassShortName}): (${Group.Member[${x}].CleanName}) - ${Group.Member[${x}].Class.ShortName.Equal[${InvisClassShortName}]} - to use ability: (${GrpInvisAltAbilityID})
 		/if (${Group.Member[${x}].Class.ShortName.Equal[${InvisClassShortName}]}) {
-			/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], attempting to making them cast invis (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) !
+			/message \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], attempting to making them cast invis (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) !
 			|------------------------			
 			/if ((${GrpInvisAltAbilityID}==231) && (${Group.Member[1].Level}<91)) {
-				/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], but can \arNOT\ay use (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) yet due to their level !
+				/message \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\at${InvisClassShortName}\ay], but can \arNOT\ay use (\agAlt Ability \ay[\am${GrpInvisAltAbilityID}\ay]) yet due to their level !
 			} else {
 				/squelch /e3bct ${Group.Member[${x}].CleanName} /target clear
 				/delay 1s
@@ -2978,7 +2977,7 @@ Sub GroupDeathChk
 	/if (${Debugging}) /echo Sub GroupDeathChk Entry
 	|--- If ImDead
 	/if (${Me.State.Equal[DEAD]}) {
-		/echo \arYOU~ have died! Waiting for YOU to get off your face.
+		/message \arYOU~ have died! Waiting for YOU to get off your face.
 		|----------
 		/while (${Me.State.Equal[DEAD]} ) {
 			/call GMCheck
@@ -2998,7 +2997,7 @@ Sub GroupDeathChk
 		/for i 1 to ${Group}
 			| -- If GroupMember IsDead
 			/if (${Group.Member[${i}].State.Equal[DEAD]} ) {
-				/echo ${Group.Member[${i}].Name} has died. Waiting for them to get off their face.
+				/message ${Group.Member[${i}].Name} has died. Waiting for them to get off their face.
 				|------   If No Target ID
 				/if (!${Me.XTarget[1].ID}) {
 					|----------------------------------
@@ -3034,13 +3033,13 @@ Sub GroupManaChk
 		|---
 		|--- If Me LowMana
 		/if ((${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && !${Select[${Me.Class.ShortName},WAR,BER,ROG,MNK,BRD]}) || (${BardMed} && ${Me.PctMana} < ${MedAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
-			/echo \arYOU are low on mana!
+			/message \arYOU are low on mana!
 			/call Group2Me
 			|------   If No Target ID
 			/if (!${Me.XTarget[1].ID}) {
 				|--------------------------------------
 				/while ((${Me.PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && !${Select[${Me.Class.ShortName},WAR,BER,ROG,MNK,BRD]}) || (${BardMed} && ${Me.PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
-					/echo \agYour \am[\atMana\am]\ag is currently at \am[\at${Me.PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
+					/message \agYour \am[\atMana\am]\ag is currently at \am[\at${Me.PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
 					/call GMCheck
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 					/delay 6s
@@ -3057,7 +3056,7 @@ Sub GroupManaChk
 			/for i 1 to ${Group}
 				|------   If Valid GroupMemeber
 				/if ((${Group.Member[${i}].PctMana} < ${MedAt} && ${Group.Member[${i}].Class.CanCast} && !${Group.Member[${i}].State.Equal[DEAD]} && !${Select[${Group.Member[${i}].Class.ShortName},BRD,WAR,MNK,BER,ROG]}) || (${BardMed} && (${Group.Member[${i}].PctMana} < ${MedAt}) && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
-					/echo \ar${Group.Member[${i}].Name} is low on mana!
+					/message \ar${Group.Member[${i}].Name} is low on mana!
 					/call Group2Me
 					|--------------
 					| Make Them Sit
@@ -3069,7 +3068,7 @@ Sub GroupManaChk
 					/if (!${Me.XTarget[1].ID}) {
 						|--------------------------------------
 						/while ((${Group.Member[${i}].PctMana} < ${MedTill} && ${Group.Member[${i}].Class.CanCast} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && !${Select[${Group.Member[${i}].Class.ShortName},BRD,WAR,MNK,BER,ROG]}) || (${BardMed} && ${Group.Member[${i}].PctMana} < ${MedTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
-							/echo \ag${Group.Member[${i}].CleanName}'s \am[\atMana\am]\ag is currently at \am[\at${Group.Member[${i}].PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
+							/message \ag${Group.Member[${i}].CleanName}'s \am[\atMana\am]\ag is currently at \am[\at${Group.Member[${i}].PctMana}\am]\ag%, medding to \am[\at${MedTill}\am]\ag%.
 							/call GMCheck
 							/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 							/delay 3s
@@ -3108,13 +3107,13 @@ Sub GroupEndChk
 		|---
 		|--- If Me LowEnd
 		/if ((${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
-			/echo \arYOU are low on Endurance!
+			/message \arYOU are low on Endurance!
 			/call Group2Me
 			|------   If No Target ID
 			/if (!${Me.XTarget[1].ID}) {
 				|--------------------------------------
 				/while ((${Me.PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Me.PctEndurance} < ${MedEndAt} && !${Me.State.Equal[DEAD]} && ${Me.Class.ShortName.Equal[BRD]})) {
-					/echo \agYour \am[\atEndurance\am]\ag is currently at \am[\at${Me.PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
+					/message \agYour \am[\atEndurance\am]\ag is currently at \am[\at${Me.PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
 					/call GMCheck
 					/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 					/delay 6s
@@ -3133,7 +3132,7 @@ Sub GroupEndChk
 				/if (${Group.Member[${i}].ID}) {
 					|------   If GroupMember LowEnd
 					/if ((${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Group.Member[${i}].PctEndurance} < ${MedEndAt} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
-						/echo \ar${Group.Member[${i}].Name} is low on Endurance!
+						/message \ar${Group.Member[${i}].Name} is low on Endurance!
 						/call Group2Me
 						|--------------
 						| Make Them Sit
@@ -3144,7 +3143,7 @@ Sub GroupEndChk
 						/if (!${Me.XTarget[1].ID}) {
 							|---------------------------------------
 							/while ((${Group.Member[${i}].PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.NotEqual[BRD]}) || (${BardMed} && ${Group.Member[${i}].PctEndurance} < ${MedEndTill} && !${Me.XTarget[1].ID} && !${Group.Member[${i}].State.Equal[DEAD]} && ${Group.Member[${i}].Class.ShortName.Equal[BRD]})) {
-								/echo \ag${Group.Member[${i}].CleanName}'s \am[\atEndurance\am]\ag is currently at \am[\at${Group.Member[${i}].PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
+								/message \ag${Group.Member[${i}].CleanName}'s \am[\atEndurance\am]\ag is currently at \am[\at${Group.Member[${i}].PctEndurance}\am]\ag%, medding to \am[\at${MedEndTill}\am]\ag%.
 								/call GMCheck
 								/if (${Me.Standing} && !${Me.Casting.ID} && !${Me.Mount.ID} && !${Navigation.Active}) /sit
 								/delay 3s
@@ -3270,7 +3269,7 @@ Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
 		/ini ${IniName} ${Section} ${Key} ${Default}
 	}
 	/declare ${Key} ${TypeVar} outer ${Ini[${IniName},${Section},${Key}]}
-	/echo \atLoading \ayINI \ay[\am${IniName}\ay] \ar~ \aoKey: \ag${Key} \aoType: \ag${TypeVar} \aoINI Value: \at\ay[\am${Ini[${IniName},${Section},${Key}]}\ay]
+	/message \atLoading \ayINI \ay[\am${IniName}\ay] \ar~ \aoKey: \ag${Key} \aoType: \ag${TypeVar} \aoINI Value: \at\ay[\am${Ini[${IniName},${Section},${Key}]}\ay]
 	/if (${Debugging}) /echo Sub CheckINI Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -3294,7 +3293,7 @@ Sub CheckThings
 		/call CheckPlugin MQ2Melee
 	} else {
 		/if (${Bool[${Plugin[MQ2Melee]}]}) {
-			/echo \ay -- Unloading \am[\atMQ2Melee\am]\ay plugin.
+			/message \ay -- Unloading \am[\atMQ2Melee\am]\ay plugin.
 			/squelch /plugin MQ2Melee unload noauto
 		}
 	}
@@ -3304,7 +3303,7 @@ Sub CheckThings
 	|----------------------
 	/if (${Bool[${Plugin[MQ2Bucles]}]}) {
         /squelch /plugin MQ2Bucles unload noauto
-        /echo MQ2Bucles detected! This macro doesn't like it! Unloading temporarily ...
+        /message MQ2Bucles detected! This macro doesn't like it! Unloading temporarily ...
     }
 	|----------------------
 
@@ -3313,7 +3312,7 @@ Sub CheckThings
 		/message \ay--- \atENABLING\ax \am${MacroName}\ax LOOTING, we will loot corpses.
 		/if (${LootMethod.Equal[DCONLY]}) {
 			/squelch /lootoff
-			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot [\atDiamond Coin\ay]
+			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will loot [\atDiamond Coin\ay] and [\arHIGH VALUE\ay] loot.
 			|------------------------------------------------
 			|--- LOAD THE ARRAY DATA FOR LOOTING UNDER DCONLY
 			|------------------------------------------------
@@ -3322,7 +3321,7 @@ Sub CheckThings
 		}  
 		/if (${LootMethod.Equal[E3]}) {
 			/squelch /looton
-			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \amE3\ax settings.
+			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to [\amE3]\ax settings.
 			/message \ay    [ if configured in your \amE3\ax config files. \ag(Loot Settings.ini)\ax ]
 		}
 		/message ==================================================================
@@ -3348,7 +3347,7 @@ Sub CheckMesh
 		/nav reload
 		/delay 3s ${Navigation.MeshLoaded}
 		/if (!${Navigation.MeshLoaded}) {
-			/echo "\arNo navigational mesh could be found for this zone. Make one and try again"
+			/message \arNo navigational mesh could be found for this zone. Make one and try again
 			/varset Endmac TRUE
 		}
 	}
@@ -3364,16 +3363,16 @@ Sub CheckMesh
 
 	|------------
 	/if (!${Bool[${Plugin[${pluginname}]}]} && !${pluginname.Equal[E3BCS]}) {
-		/echo \ag${pluginname}\ax \arNOT\ax detected! This macro requires it! Loading ...
+		/message \ag${pluginname}\ax \arNOT\ax detected! This macro requires it! Loading ...
 		/squelch /plugin ${pluginname}
 		/if (!${Bool[${Plugin[${pluginname}]}]}) {
-			/echo \ag${pluginname}\ax \arSTILL NOT\ax detected! This macro requires it! EXITING ...
+			/message \ag${pluginname}\ax \arSTILL NOT\ax detected! This macro requires it! EXITING ...
 			/endmacro
 		} else {
-		    /echo \ag${pluginname}\ax \atNOW\ax detected !
+		    /message \ag${pluginname}\ax \atNOW\ax detected !
 		}
 	} else {
-		/echo \ag${pluginname}\ax detected!
+		/message \ag${pluginname}\ax detected!
 	}
 	|------------
 
@@ -3389,7 +3388,7 @@ Sub CheckMesh
 
 	/declare MerchName	string	local Merchant
 
-	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to locate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
+	/message \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to locate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
 	/target clear
 	/delay 2s !${Target.ID}
 
@@ -3417,7 +3416,7 @@ Sub CheckMesh
 	/if (${Target.ID} && ${Target.Distance}<=20) {
 		/nomodkey /click right target
 		/delay 5s ${Window[MerchantWnd].Open}
-		/echo \ay Attempting to \amAutoSell\ax now.
+		/message \ay Attempting to \amAutoSell\ax now.
 		/delay 1s
 		/call OpenPacks
 		/delay 1s
@@ -3432,7 +3431,7 @@ Sub CheckMesh
 	}
 	|-------------------------------------
 
-	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
+	/message \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
 
 	/if (${Debugging}) /echo Sub AutoSell_Loot_SupplyAgent Exit
   /return
@@ -3445,7 +3444,7 @@ Sub CheckMesh
   /if (${Debugging}) /echo Sub AutoSell_Loot Entry
 
   	|--------------------------
-	/echo \am<***> Sending the rest of my group to Magus as I sell <***>
+	/message \am<***> Sending the rest of my group to Magus as I sell <***>
   	/squelch /e3bca /tar Magus Alaria
 	/delay 5
 	/squelch /e3bca /nav target
@@ -3454,7 +3453,7 @@ Sub CheckMesh
 
 	/declare MerchName	string	local Merabo
 
-	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to locate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
+	/message \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agAttempting to locate a \ay[\at${MerchName}\ay]\ag to \ay[\atAutoSell\ay]\ag ! \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
 	/target clear
 	/delay 2s !${Target.ID}
 
@@ -3482,7 +3481,7 @@ Sub CheckMesh
 	/if (${Target.ID} && ${Target.Distance}<=20) {
 		/nomodkey /click right target
 		/delay 5s ${Window[MerchantWnd].Open}
-		/echo \ay Attempting to \amAutoSell\ax now.
+		/message \ay Attempting to \amAutoSell\ax now.
 		/delay 1s
 		/call OpenPacks
 		/delay 1s
@@ -3497,7 +3496,7 @@ Sub CheckMesh
 	}
 	|-------------------------------------
 
-	/echo \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
+	/message \aw<\ar$\ao$\ay$\ag$\at$\au$\am$\ap$\aw> \agDone Selling! \ag \aw<\ap$\am$\au$\at$\ag$\ay$\ao$\ar$\aw>
 
 	/if (${Debugging}) /echo Sub AutoSell_Loot Exit
   /return
@@ -3511,12 +3510,12 @@ Sub ReclaimAltDC
 
 	/varset CurrentDC ${FindItemCount[=Diamond Coin]}
 	/varset CurrentDCAC ${Me.AltCurrency[20]}
-	/echo \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
+	/message \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
 
 	|-----------------------------------------------
 	/if (${CurrentDC}>0) {
 		; --- If I have DC in inventory, RECLAIM it to Alternate Currency !!!
-		/echo \ag$$$\ay I have [\atDiamond Coin\ay]  to reclaim!\ax
+		/message \ag$$$\ay I have [\atDiamond Coin\ay]  to reclaim!\ax
 
 		; Open the Inventory Window if it is closed
 		|----------------------------------------------
@@ -3538,19 +3537,19 @@ Sub ReclaimAltDC
 		/delay 5
 	} else {
 	    ; --- If I have NO DC in inventory to RECLAIM
-		/echo \ag$$$\ay I have \arNO\ay [\atDiamond Coin\ay] to reclaim!\ax
+		/message \ag$$$\ay I have \arNO\ay [\atDiamond Coin\ay] to reclaim!\ax
 	}
 	|-----------------------------------------------
 	; Update the DC and Alternate DC Currency ammount.
 	/varset CurrentDC ${FindItemCount[=Diamond Coin]}
 	/varset CurrentDCAC ${Me.AltCurrency[20]}
-	/echo \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
+	/message \ayDiamond Coin: Alternate Currency=(\at${CurrentDCAC}\ay) | Inventory=(\at${CurrentDC}\ax)
 	; Close the Inventory Window if it is open
 	|----------------------------------------------
 	/if (${Window[InventoryWindow].Open}) /call CloseInvWindow
 	|----------------------------------------------
 
-	/if (${CurrentDC}==0) /echo \ag$$$ \ayAll available DC was converted to Alternate Currency !
+	/if (${CurrentDC}==0) /message \ag$$$ \ayAll available DC was converted to Alternate Currency !
 
 /if (${Debugging}) /echo Sub ReclaimAltDC Exit
 
@@ -3566,7 +3565,7 @@ Sub ReclaimAltDC
 	:OpenInventoryWindow
 		/nomodkey /keypress inventory
 		/delay 5
-		/if (${Window[InventoryWindow].Open}) /echo Inventory Window (Open).
+		/if (${Window[InventoryWindow].Open}) /message Inventory Window (Open).
 		/if (!${Window[InventoryWindow].Open}) /goto :OpenInventoryWindow
 	}
  /if (${Debugging}) /echo Sub OpenInvWindow Exit
@@ -3583,7 +3582,7 @@ Sub ReclaimAltDC
 	:CloseInventoryWindow
 		/nomodkey /keypress inventory
 		/delay 5
-		/if (!${Window[InventoryWindow].Open}) /echo Inventory Window (Closed).
+		/if (!${Window[InventoryWindow].Open}) /message Inventory Window (Closed).
 		/if (${Window[InventoryWindow].Open}) /goto :CloseInventoryWindow
 	}
 
@@ -3636,19 +3635,21 @@ Sub ReclaimAltDC
 	|-----------------------------
 	/for x 1 to ${Group.Members}
 		/if (${Group.Member[${x}].Class.ShortName.Equal[ROG]}) {
-			/echo \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atROG\ay], making them run to safespot and COH us!
+			/message \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atROG\ay], making them run to safespot and COH us!
 			|---------------------------
 			/squelch /e3bct ${Group.Member[${x}].CleanName} /macro GoSOS.mac "2098.09 274.34 -135.09" ${Me.CleanName} ${Macro.Name}
 			/delay 1s
-			/echo \arPAUSING ${Macro.Name} UNTIL ROGUE SOS COH COMPLETE !\ax
+			/message \arPAUSING ${Macro.Name} UNTIL ROGUE SOS COH COMPLETE !\ax
 			|---------------------------
 	
 			|---------------------------
 			|--- SET the Cycle Loop TRUE
 			|---------------------------
-			/echo \arForcing \ayCompletedPathTo\ax \agUPPER ZONE\ax \ay(\atTRUE\ay)\ar.
+			/message ==================================================================
+			/message \arForcing \ayCompletedPathTo\ax \agUPPER ZONE\ax \ay(\atTRUE\ay)\ar.
 			/call IniChange "Theme" "CompletedPathTo" "TRUE"
 			/call ForceSpawnStepReset
+			/message ==================================================================
 			/mqp
 			|------------------------
 		}
@@ -3664,40 +3665,40 @@ Sub ReclaimAltDC
 | --------------------------------------------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_Catacomb_A
-	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Azia)\am]\ar - BOO - Leaving !\ax
+	/message \ayYou have received an expedition for \am[\atCatacombs of Dranik (Azia)\am]\ar - BOO - Leaving !\ax
 	/squelch /e3bcaa /dzquit
 	/delay 1s
 	/varset DranikCExpedition 0
 	/varset CurrentExpedition NULL
 	/delay 1s
 	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
-	/echo \ar - WRONG EXPEDITION !
+	/message \ar - WRONG EXPEDITION !
 	/say catacombs
 	/doevents flush Catacomb_A
 /return
 |--------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_Catacomb_B
-	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Beza)\am]\ar - BOO - Leaving !\ax
+	/message \ayYou have received an expedition for \am[\atCatacombs of Dranik (Beza)\am]\ar - BOO - Leaving !\ax
 	/squelch /e3bcaa /dzquit
 	/delay 1s
 	/varset DranikCExpedition 0
 	/varset CurrentExpedition NULL
 	/delay 1s
 	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
-	/echo \ar - WRONG EXPEDITION !
+	/message \ar - WRONG EXPEDITION !
 	/say catacombs
 	/doevents flush Catacomb_B
 /return
 |--------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_Catacomb_C
-	/echo \ayYou have received an expedition for \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
+	/message \ayYou have received an expedition for \am[\atCatacombs of Dranik (Caza)\am]\ag - WOOT WOOT WOOT !\ax
 	/varset DranikCExpedition 1
 	/varset CurrentExpedition ${Window[DynamicZoneWnd].Child[DZ_CurrentDZValue].Text}
 	/delay 1s
 	|/echo DranikCExpedition=(${DranikCExpedition}) | CurrentExpedition=(${CurrentExpedition})
-	/echo \ag + CORRECT EXPEDITION !
+	/message \ag + CORRECT EXPEDITION !
 	/doevents flush Catacomb_C
 /return
 |--------------------------------------------------------
