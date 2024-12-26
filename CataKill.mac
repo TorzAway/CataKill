@@ -3639,6 +3639,7 @@ Sub ReclaimAltDC
 			|---------------------------
 			/squelch /e3bct ${Group.Member[${x}].CleanName} /macro GoSOS.mac "2098.09 274.34 -135.09" ${Me.CleanName} ${Macro.Name}
 			/delay 1s
+			/message ==================================================================
 			/message \arPAUSING ${Macro.Name} UNTIL ROGUE SOS COH COMPLETE !\ax
 			|---------------------------
 	
