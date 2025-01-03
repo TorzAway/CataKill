@@ -141,7 +141,7 @@ Sub Main
 		|----------------------------
 		/if (${SwarmPull})  {
 			/message ==================================================================
-			/message \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
+			/message \atCataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \arSWARM PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
 			/popcustom 13 5 ---> ABOUT TO SWARM PULL . . . get ready! <---
 			/message ==================================================================
 			/delay 3s
@@ -177,7 +177,7 @@ Sub Main
 		|---- SinglePull ----
 		|----------------------------
 			/message ==================================================================
-			/message \at/CataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
+			/message \atCataKill \aw<\ar*\ao*\ay*\ag*\at*\au*\am*\ap*\aw> \ayABOUT TO: - \agSINGLE PULL\ay . . . get ready! \aw<\ap*\am*\au*\at*\ag*\ay*\ao*\ar*\aw>
 			/popcustom 15 5 ---> ABOUT TO SINGLE PULL . . . get ready! <---
 			/message ==================================================================
 			/delay 3s
