@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: January 4th, 2025 - 07:50:00 AM
+Last Updated: January 4th, 2025 - 08:32:00 AM
 
 v1.7.6
 
@@ -112,12 +112,16 @@ Sub Main
 		/call GetExpeditionData
 		|-------------------
 		/if (${DranikCExpedition}==1) {
+			/message ==================================================================
 			/message \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
+			/message ==================================================================
 			/call GroupWait
 			/call GoToExpedition
 		} else {
+			/message ==================================================================
 			/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
 			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/message ==================================================================
 			/call GroupWait
 			/call GotoRecruiter
 		}
@@ -128,28 +132,6 @@ Sub Main
 
 	| --- MAIN ------------------------------------------------------------------------------
 	:mainloop
-	|--------------------------------------------
-	|----------------------	 IF IN DRANIK
-	|--------------------------------------------
-	/if (${Zone.ID}==${RuinedCityofDranik}) {
-		/call GetExpeditionData
-		|-------------------
-		/if (${DranikCExpedition}==1) {
-			/message \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
-			/call GroupWait
-			/call GoToExpedition
-		} else {
-			/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
-			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
-			/call GroupWait
-			/call GotoRecruiter
-		}
-		|-------------------
-	}
-	|--------------------------------------------
-	|----------------------	 IF IN DRANIK
-	|--------------------------------------------
-
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
@@ -227,6 +209,26 @@ Sub Main
 	}
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
+	|--------------------------------------------
+
+	|--------------------------------------------
+	|----------------------	 IF IN DRANIK
+	|--------------------------------------------
+	/if (${Zone.ID}==${RuinedCityofDranik}) {
+		/call GetExpeditionData
+		|-------------------
+		/if (${DranikCExpedition}==0) {
+			/message ==================================================================
+			/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
+			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/message ==================================================================
+			/call GroupWait
+			/call GotoRecruiter
+		}
+		|-------------------
+	}
+	|--------------------------------------------
+	|----------------------	 IF IN DRANIK
 	|--------------------------------------------
 	
 	/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
