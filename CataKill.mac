@@ -131,7 +131,7 @@ Sub Main
 	|--------------------------------------------
 	|----------------------	 IF IN DRANIK
 	|--------------------------------------------
-	/if (${Zone.ID}==${CataCombC}) {
+	/if (${Zone.ID}==${RuinedCityofDranik}) {
 		/call GetExpeditionData
 		|-------------------
 		/if (${DranikCExpedition}==1) {
