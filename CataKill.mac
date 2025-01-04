@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: January 3rd, 2025 - 10:27:00 PM
+Last Updated: January 4th, 2025 - 07:50:00 AM
 
-v1.7.5
+v1.7.6
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -125,9 +125,31 @@ Sub Main
 	}
 	|------------------------------------------------------------------------------
 
+
 	| --- MAIN ------------------------------------------------------------------------------
 	:mainloop
-	|/echo START MAINLOOP
+	|--------------------------------------------
+	|----------------------	 IF IN DRANIK
+	|--------------------------------------------
+	/if (${Zone.ID}==${CataCombC}) {
+		/call GetExpeditionData
+		|-------------------
+		/if (${DranikCExpedition}==1) {
+			/message \ag+\ay I currently \agHAVE\ay an expedition assigned to me - \am[\at${CurrentExpedition}\am].\ax
+			/call GroupWait
+			/call GoToExpedition
+		} else {
+			/message \ar-\ay I currently \arDO NOT HAVE\ay an expedition assigned to me !
+			/message \ayI am headed to \am[\atGrand Historian Rygua\am]\ay to get an expedition.\ax
+			/call GroupWait
+			/call GotoRecruiter
+		}
+		|-------------------
+	}
+	|--------------------------------------------
+	|----------------------	 IF IN DRANIK
+	|--------------------------------------------
+
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
@@ -206,12 +228,12 @@ Sub Main
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
+	
 	/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 	/doevents
-	|/delay 1s
+	/delay 1s
 	/goto :mainloop
-	| --- MAIN ------------------------------------------------------------------------------
-
+	
 	/if (${Debugging}) /echo Sub Main Exit
 
 /return
@@ -227,7 +249,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.7.5
+	/declare version			string	outer	1.7.6
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1842,7 +1864,7 @@ Sub DoSwarmPull_MainLoop_Bigger
 Sub NavToLoc(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/message \at -- NavToLoc \ay[\amNo Combat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at-- NavToLoc \ay[\amNo Combat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	|-------------------------------------------------------------------------------
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 30) {
 		/if (${Navigation.Active}) {
@@ -1890,7 +1912,7 @@ Sub NavToLoc(int Y,int X,int Z)
 Sub NavToLoc2(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc2 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/message \at -- NavToLoc2 \ay[\amCombat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at-- NavToLoc2 \ay[\amCombat & Agro aware movement\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
 		/if (${Navigation.Active}) {
 			/if (${Debugging}) /echo WaitNav Moving ELSE
@@ -1965,7 +1987,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 Sub NavToLoc3(int Y,int X,int Z)
 	/if (${Debugging}) /echo Entering Sub NavToLoc3 for ${Y} ${X} ${Z} at Line: ${Macro.CurLine}
 	/varset GroupWaitTimer 0
-	/message \at -- NavToLoc3 \ay[\amCombat and Agro Aware movement - with invis recheck\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
+	/message \at-- NavToLoc3 \ay[\amCombat and Agro Aware movement - with invis recheck\ay] \atto \ay[\am${Y} ${X} ${Z}\ay]\at.
 	/while (${Math.Distance[${Me.Y}, ${Me.X}, ${Me.Z}: ${Y}, ${X}, ${Z}]} > 20) {
 		/if (${Navigation.Active}) {
 			/if (${Debugging}) /echo WaitNav Moving ELSE
@@ -2038,7 +2060,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 | --------------------------------------------------------------------------------------------
 Sub WaitNav(NavTargetID)
 	/if (${Debugging}) /echo \agEntering Sub WaitNav for ${Spawn[id ${NavTargetID}].Y} ${Spawn[id ${NavTargetID}].X} ${Spawn[id ${NavTargetID}].Z} at Line: ${Macro.CurLine}
-	/message \at -- WaitNav \ay[\amCombat & Agro aware STAGGERED movement\ay] \atto mob id:\ay[\am${NavTargetID}\ay]\at.
+	/message \at-- WaitNav \ay[\amCombat & Agro aware STAGGERED movement\ay] \atto mob id:\ay[\am${NavTargetID}\ay]\at.
 	/if (!${Spawn[id ${NavTargetID}].ID}) {
 		/delay 5s
 		/return
