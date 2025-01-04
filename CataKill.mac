@@ -2,7 +2,7 @@
 CataKill.mac - by Kroaking
 Last Updated: January 3rd, 2025 - 07:16:00 PM
 
-v1.7.4
+v1.7.4 d
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -1236,7 +1236,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 				|----------------------------------------------
 				/squelch /nav loc ${TempSpawnPull_Loc}
 				/delay 7
-				/squelch /e3bcza /nav loc ${TempSpawnPull_Loc}					
+				/squelch /e3bcgza /nav loc ${TempSpawnPull_Loc}					
 				|----------------------------------------------
 			}
 			|--------------------------------------------------------------
@@ -1391,7 +1391,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 					|----------------------------------------------
 					/squelch /nav loc ${TempSpawnPull_Loc}
 					/delay 7
-					/squelch /e3bcza /nav loc ${TempSpawnPull_Loc}
+					/squelch /e3bcgza /nav loc ${TempSpawnPull_Loc}
 					|----------------------------------------------
 				}
 				|------------------------------
@@ -1865,7 +1865,7 @@ Sub NavToLoc(int Y,int X,int Z)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID}) /call Group2Me
-			/if (!${Me.Moving}) /squelch /e3bcza /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving}) /squelch /e3bcgza /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
 		}
@@ -1941,7 +1941,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${CheckBots}) /call GroupDeathChk
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
-			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcza /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /e3bcgza /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
 		}
@@ -2015,7 +2015,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 			}
 			/if (${Me.Combat} && !${Me.XTarget[1].ID}) /squelch /target clear
 			/if (!${Me.Combat} && !${Me.XTarget[1].ID} && ${DoInvis}) /call CheckInvis
-			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcza /nav loc ${Y} ${X} ${Z}
+			/if (!${Me.Moving} && !${Me.Combat} && !${Me.XTarget[1].ID} && ${Me.Invis}) /squelch /e3bcgza /nav loc ${Y} ${X} ${Z}
 			/delay 5 ${Me.Moving}
 			/delay 5 ${Navigation.Active}
 		}
@@ -2080,7 +2080,7 @@ Sub WaitNav(NavTargetID)
 		} else {
 			/if (${Me.XTarget[1].ID}) {
 				/if (${Navigation.Active}) /nav stop
-				/e3bcza /target id ${Me.XTarget[1].ID}
+				/e3bcgza /target id ${Me.XTarget[1].ID}
 				/varset NavTargetID ${Me.XTarget[1].ID}
 				/if (${Debugging}) /echo CALL DoSingleMob WaitNav II
 				/call DoSingleMob
