@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: January 4th, 2025 - 08:32:00 AM
+Last Updated: January 8th, 2025 - 10:39:00 AM
 
-v1.7.6
+v1.7.7
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -251,7 +251,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.7.6
+	/declare version			string	outer	1.7.7
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1926,7 +1926,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/popcustom 13 5 ---> GOT AGGRO ON ROUTE <---
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc						
-				/target ${Me.XTarget}
+				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 					|------  CALL GROUP TO ME To FIGHT
@@ -1954,7 +1954,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/popcustom 13 5 ---> GOT AGGRO ON ROUTE <---
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
-				/target ${Me.XTarget}
+				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				|------  CALL GROUP TO ME To FIGHT
@@ -2003,7 +2003,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				|------  CALL GROUP TO ME To FIGHT
 				/call Group2Me
 				|------  CALL GROUP TO ME To FIGHT				
-				/target ${Me.XTarget}
+				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
@@ -2030,7 +2030,7 @@ Sub NavToLoc3(int Y,int X,int Z)
 				|------  CALL GROUP TO ME To FIGHT
 				/call Group2Me
 				|------  CALL GROUP TO ME To FIGHT				
-				/target ${Me.XTarget}
+				/target ${Me.XTarget[1].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
