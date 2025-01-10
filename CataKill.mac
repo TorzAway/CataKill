@@ -822,28 +822,32 @@ Sub GoToExpedition
 	/call GroupWait
 	/if (${Me.XTarget}) /call DoClearTargets
 	/doevents
-	|/squelch /e3bca /removelev
-	/squelch /e3bca /doortarget CASTLESWITCH
+	|----------------------------------------
+	|/squelch /e3bcgz /removelev
+	/squelch /e3bcgz /doortarget CASTLESWITCH
 	/delay 2s
-	/squelch /e3bca /click left door
+	/squelch /e3bcgz /click left door
+	|----------------------------------------
 	|/squelch /removelev
 	/squelch /doortarget CASTLESWITCH
 	/delay 2s
 	/squelch /click left door
+	|----------------------------------------
 	/call Zoning
 
-	/if (${Zone.ID} == ${CataCombC}) {
-		
+	|----------------------------------------
+	/if (${Zone.ID}==${CataCombC}) {		
 		/call ResetBard
 		/delay 2s
-		/squelch /e3bcgz /multiline ; /followoff ; /nav stop ; /stand
+		/squelch /e3bcgz /multiline ; /afollow off ; /nav stop ; /stand
 		/delay 5
 		/squelch /dropinvis 
 		/delay 5
-		/squelch /droplev
-		/delay 5
+		|/squelch /droplev
+		|/delay 5
 		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
 	}
+	|----------------------------------------
 
 	/if (${Debugging}) /echo Sub GoToExpedition Exit
 /return
