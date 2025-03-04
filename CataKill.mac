@@ -2,7 +2,7 @@
 CataKill.mac - by Kroaking
 Last Updated: March 4th, 2025 - 06:10:00 AM
 
-v1.8.1
+v1.8.0
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -251,7 +251,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.8.1
+	/declare version			string	outer	1.8.0
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
