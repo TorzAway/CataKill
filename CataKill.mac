@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: January 20th, 2025 - 10:01:00 AM
+Last Updated: March 4th, 2025 - 06:10:00 AM
 
-v1.8.0
+v1.8.1
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -251,7 +251,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.8.0
+	/declare version			string	outer	1.8.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -327,6 +327,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
+	/call CheckINI ${IniFileName} General MouseLock bool TRUE
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
 	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
 	/call CheckINI ${IniFileName} General UseMq2Melee bool FALSE
@@ -2189,6 +2190,8 @@ Sub Zoning
   /call GMCheck
   
 :CheckAgain
+  |------------------
+  /if (${MouseLock}) /mouseto 190, 550
   |------------------
   |/hidecorpse looted
   /hidecorpse none
