@@ -108,13 +108,13 @@ Sub COH_Group
 			|-------------------------
 			:GetMyCOHTarget
 			/squelch /target id ${Group.Member[${x}].ID}
-			/delay 2s ${Target.ID}==${Group.Member[${x}].ID}
+			/delay 5 ${Target.ID}==${Group.Member[${x}].ID}
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
 			|-------------------------
 			
 			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
 			/g Current target is ${Group.Member[${x}].CleanName}.
-			/delay 1s
+			/delay 5
 			|-------------------------------------
 			
 			:COH_Member
@@ -129,7 +129,7 @@ Sub COH_Group
 				}
 				/delay 1s
 				/call CheckCasting
-				/delay 5
+				/delay 2s
 				|-------------------------------------
 				/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
 					/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
@@ -154,7 +154,7 @@ Sub COH_Group
 		|-------------------------------------
 		/if (${Group.Member[${x}].Distance}<${CoHDistance}) {
 			/target clear
-			/delay 2s !${Target.ID}			
+			/delay 1s !${Target.ID}			
 		}
 		|-------------------------------------		
 	/next x
