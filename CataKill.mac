@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: April 16th, 2025 - 01:27:00 PM
+Last Updated: April 17th, 2025 - 04:36:00 PM
 
-v1.8.3
+v1.8.4
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.8.3
+	/declare version			string	outer	1.8.4
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1827,8 +1827,8 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|------------------------------------------------------
 	/message \ayCreating dynamic dungeon array.
 	/if (!${Defined[LocalStepArray_${Zone.ShortName}_2]}) {
-		/message \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,7]\am]\ax
-		/declare LocalStepArray_${Zone.ShortName}_2[1,7]	string	outer
+		/message \ayCreating \am[\atLocalStepArray_${Zone.ShortName}_2[1,9]\am]\ax
+		/declare LocalStepArray_${Zone.ShortName}_2[1,9]	string	outer
 		/delay 10
 	}
 	|------------------------------------------------------
@@ -1857,7 +1857,15 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|---------------------------------- PrCamp
 	/varset LocalStepArray_${Zone.ShortName}_2[1,7] 1707.48 270.58 -132.80
 	|---------------------------------- PrCamp	
-
+	
+	|---------------------------------- PrCamp-1
+	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 1762.44 -23.85 -133.23
+	|---------------------------------- PrCamp-1
+	
+	|---------------------------------- PrCamp-2 (Signets)
+	/varset LocalStepArray_${Zone.ShortName}_2[1,9] 1140.00 -85.00 -111.37
+	|---------------------------------- PrCamp-2 (Signets)	
+	
 	|------------------------------------------------------
 	/message \ayStep \am[\ag1\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,1]}\am]\ay
 	/message \ayStep \am[\ag2\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,2]}\am]\ay
@@ -1866,6 +1874,8 @@ Sub DoSwarmPull_MainLoop_Bigger
 	/message \ayStep \am[\ag5\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,5]}\am]\ay
 	/message \ayStep \am[\ag6\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,6]}\am]\ay
 	/message \ayStep \am[\ag7\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,7]}\am]\ay	
+	/message \ayStep \am[\ag8\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,8]}\am]\ay
+	/message \ayStep \am[\ag9\am]\ay set to \am[\ag${LocalStepArray_${Zone.ShortName}_2[1,9]}\am]\ay	
 	/message ==================================================================
 	|----------------------------------------------------
 	/message \agGet ready, the fun is starting soon !
