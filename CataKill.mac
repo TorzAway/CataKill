@@ -1859,7 +1859,7 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|---------------------------------- PrCamp	
 	
 	|---------------------------------- PrCamp-1
-	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 1762.44 -23.85 -133.23
+	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 1805.40 21.48 -138.13
 	|---------------------------------- PrCamp-1
 	
 	|---------------------------------- PrCamp-2 (Signets)
