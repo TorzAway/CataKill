@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: April 17th, 2025 - 04:36:00 PM
+Last Updated: April 27th, 2025 - 08:09:00 AM
 
-v1.8.4
+v1.8.6
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.8.4
+	/declare version			string	outer	1.8.6
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -477,13 +477,13 @@ Sub GoToMarrs
 	/message \ayI am headed to \am[\atTemple of Marr\am]\ay.\ax
 	|--- Group - Start in Marrs
 	/delay 10
-	/squelch /e3bcgz /nav stop
-	/squelch /e3bcgz /playmelody stop
-	/squelch /e3bcgz /keypress x
+	/squelch /e3bcgza /nav stop
+	/squelch /e3bcgza /playmelody stop
+	/squelch /e3bcgza /keypress x
 	/delay 6
 	/squelch /e3bcgza /stand
 	/delay 5
-	/squelch /e3bcgz /alt act 511
+	/squelch /e3bcgza /alt act 511
 
 	|---  Now Me !
 	/nav stop
@@ -498,13 +498,13 @@ Sub GoToMarrs
 	|----------------------------
 	/while (${Group.Member[1].OtherZone} || ${Group.Member[2].OtherZone} || ${Group.Member[3].OtherZone} || ${Group.Member[4].OtherZone} || ${Group.Member[5].OtherZone} || ${Group.Member[6].OtherZone}) {
 		|--- Group - Start in Marrs
-		/squelch /e3bcgz /nav stop
-		/squelch /e3bcgz /playmelody stop
-		/squelch /e3bcgz /keypress x
+		/squelch /e3bcaa /nav stop
+		/squelch /e3bcaa /playmelody stop
+		/squelch /e3bcaa /keypress x
 		/delay 6
-		/squelch /e3bcgza /stand
+		/squelch /e3bcaa /stand
 		/delay 5
-		/squelch /e3bcgz /alt act 511
+		/squelch /e3bcaa /alt act 511
 
 		|---  Now Me !
 		/nav stop
@@ -935,31 +935,37 @@ Sub CheckExpeditionStatus
 | --------------------------------------------------------------------------------------------
 Sub DoClearTargets
 	/if (${Debugging}) /echo Sub DoClearTargets Entry
-	/if (${Me.XTarget} || ${Target.ID}) {
-		/delay 5
+	/if (${Me.XTarget} || (${Target.ID} && ${Target.Type.Equal[npc]})) {
 		|/keypress º
-		/delay 5
+		|/delay 5
 		/ClearTargets stick
+		/keypress esc
+		/delay 10		
 		:gotoloopkeepfighting
 		/if (${Me.Sitting}) /stand
 		/if (!${Target.ID} && ${Me.XTarget}) {
 			/squelch /e3bcgz /nav id ${Me.ID}
 			|/keypress º
 			/delay 5
+			|----------			
+			|/xtarget set 1 ${Me.Name}
+			|/delay 3
+			|/xtarget remove
+			|/delay 3
+			|----------			
+			/target ${Me.XTarget[1].ID}
+			/delay 5
 			/ClearTargets stick
-			/delay 20
-			/xtarget set 1 ${Me.Name}
-			/delay 3
-			/xtarget remove
-			/delay 3
+			/keypress esc
+			/delay 10			
 			}
-		/if (${Target.ID} && !${Me.Combat}) {
+		/if ((${Target.ID} && ${Target.Type.Equal[npc]}) && !${Me.Combat}) {
 			/squelch /e3bcgz /nav id ${Me.ID}
 			|/keypress º
 			/delay 5
 			/ClearTargets stick
 			/keypress esc
-			/delay 20
+			/delay 10
 			}
 		/if (${Target.Type.Find[corpse]}) {
 			/keypress esc
@@ -1056,9 +1062,10 @@ Sub DoSinglePull(string Enemy)
 				/if (${Debugging}) /e3bcgz (Line: ${Macro.CurLine}) killthis
 				/squelch /e3bcgz /nav id ${Me.ID}
 				/squelch /e3bcgz /target id ${Me.XTarget}
-				/timed 10 /squelch /e3bcgz /pet attack
-				/timed 15 /squelch /e3bcgz /pet swarm
-				/timed 20 /squelch /e3bcgz /assistme
+				/timed 10 /squelch /e3bcgz /assistme
+				/timed 15 /squelch /e3bcgz /pet attack
+				/timed 20 /squelch /e3bcgz /pet swarm
+				
 			}	
 			|--------------------
 		}
