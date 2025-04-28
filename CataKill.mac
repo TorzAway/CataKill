@@ -332,7 +332,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
-	/call CheckINI ${IniFileName} General MouseLock bool TRUE
+	/call CheckINI ${IniFileName} General MouseLock bool FALSE
 	/call CheckINI ${IniFileName} General MouseLocValX int 290
 	/call CheckINI ${IniFileName} General MouseLocValY int 550
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
@@ -2223,6 +2223,8 @@ Sub Zoning
 
   /call GMCheck
   
+  /message \ay- Checking for missed corpse(s).
+  
 :CheckAgain
   |------------------
   /if (${MouseLock}) /mouseto ${MouseLocValX}, ${MouseLocValY}
@@ -2231,7 +2233,6 @@ Sub Zoning
   /hidecorpse none
   |------------------
 
-  /message \ay- Checking for missed corpse(s).
   /squelch /target radius 100 corpse
   /delay 5 ${Target.ID}
 
