@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: April 27th, 2025 - 08:09:00 AM
+Last Updated: April 27th, 2025 - 10:20:00 PM
 
-v1.8.6
+v1.8.7
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.8.6
+	/declare version			string	outer	1.8.7
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -1441,7 +1441,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			/message \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
 			|-----------------------------------------------------------------------------------------------------------------------------
 			/if (${SpawnsAtStep}>=1) {
-				/message \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \agKILL THEM ALL\ax \ao!!!\ax
+				/message \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_2.Size}\ay] has \at*\ay[\ar${SpawnsAtStep}\ay]\at* \ayspawns, \agKILL THEM ALL\ax \ao!!!\ax
 				|--------------------------------------------------------------
 				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
 				|--------------------------------------------------------------
