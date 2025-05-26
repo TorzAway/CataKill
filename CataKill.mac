@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: April 29th, 2025 - 11:11:00 AM
+Last Updated: May 26th, 2025 - 05:57:00 AM
 
-v1.9.0
+v1.9.2
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.0
+	/declare version			string	outer	1.9.2
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -277,7 +277,11 @@ Sub Declares
 	/declare SitDelay 			timer 	outer 5s
 	/declare Endmac 			bool 	outer FALSE
 	/declare BagsAreFull		bool 	outer FALSE
-
+	/declare GrpHasBrdClass		bool	outer FALSE
+	/declare GrpHasRogClass		bool	outer FALSE
+	/declare GrpBrdName			string	outer
+	/declare GrpRogName			string	outer
+	
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 	|----------------------------------------------------------
 	/declare ZoneCount				int		outer 	0
@@ -288,7 +292,7 @@ Sub Declares
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
 	/declare DranikCExpedition		int		outer	0
-	/declare DranikCLootArray[1,34]	string	outer
+	/declare DranikCLootArray[1,36]	string	outer
 	|----------------------------------------------------------
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 
@@ -866,13 +870,15 @@ Sub GoToExpedition
 	/if (${Zone.ID}==${CataCombC}) {		
 		/call ResetBard
 		/delay 2s
-		/squelch /e3bcgz /multiline ; /afollow off ; /nav stop ; /stand
+		/squelch /e3bcg /multiline ; /afollow off ; /nav stop ; /stand
+		/delay 5
+		/squelch /followoff
 		/delay 5
 		/squelch /dropinvis 
 		/delay 5
 		|/squelch /droplev
 		|/delay 5
-		/if (${DoRogueSosCoh}) /call Rogue_SOS_COH
+		/if (${DoRogueSosCoh} && ${GrpHasRogClass}) /call Rogue_SOS_COH
 	}
 	|----------------------------------------
 
@@ -2255,11 +2261,18 @@ Sub Zoning
 
 		|----------------------------------------------
 		|-----
+		:MoveToCorpse
+		|/echo DEBUG: (MoveToCorpse) CORPSE CODE START
 		/if (${Navigation.PathExists[id ${Target.ID}]}) {
 			/if (${Target.ID} && ${Target.Type.Equal[Corpse]} && (${Target.Distance}>10) && !${Me.Casting.ID}) /nav id ${Target.ID}
+			|/echo DEBUG: (NAV) TO CORPSE CODE - TargetDistance=(${Target.Distance})
 		} else {
 			/if (${Target.ID} && ${Target.Type.Equal[Corpse]} && (${Target.Distance}>10) && !${Me.Casting.ID}) /moveto id ${Target.ID} mdist 10
+			|/echo DEBUG: (MOVE) TO CORPSE CODE - TargetDistance=(${Target.Distance})
 		}
+		/delay 1s ${Target.Distance}<=10
+		/if (${Target.ID} && ${Target.Type.Equal[Corpse]} && (${Target.Distance}>10) && !${Me.Casting.ID}) /goto :MoveToCorpse
+		|/echo DEBUG: (MoveToCorpse) CORPSE CODE END
 		|-----
 		|----------------------------------------------
 
@@ -2360,6 +2373,8 @@ Sub Zoning
 	/varset DranikCLootArray[1,32] Ukun Guts
 	/varset DranikCLootArray[1,33] Wiry Rat Whiskers
 	/varset DranikCLootArray[1,34] Stolen Dragorn Clan Insignia
+	/varset DranikCLootArray[1,35] Cobalt Ore
+	/varset DranikCLootArray[1,36] Rhenium Ore
 
 	/if (${Debugging}) /echo Sub DranikCLootArraySetup Exit
   /return
@@ -2816,6 +2831,44 @@ Sub ResetBard
 | --------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
+| SUB: CheckGroupClasses
+| --------------------------------------------------------------------------------------------
+Sub CheckGroupClasses
+	/if (${Debugging}) /echo Sub CheckGroupClasses Entry
+
+	/declare y 					int 	local	0
+
+	|-----------------------------
+	/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]} || ${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {			
+		/message ==================================================================
+	}	
+	|-----------------------------
+	/for y 1 to ${Group.Members}
+		|/echo Checking class for ${Group.Member[${y}].CleanName}.
+		/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]} || ${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {						
+			/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]}) {
+				/varset GrpHasRogClass TRUE
+				/varset GrpRogName ${Group.Member[${y}].CleanName}
+				/message \ay+ \agThe group has a \aoROGUE\ay - \am[\at${GrpRogName}\am]\ag.
+			}
+			/if (${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {
+				/varset GrpHasBrdClass TRUE
+				/varset GrpBrdName ${Group.Member[${y}].CleanName}
+				/message \ay+ \agThe group has a \aoBARD\ay - \am[\at${GrpBrdName}\am]\ag.
+			}		
+		}		
+	/next y
+	|-----------------------------
+	/if (${GrpHasRogClass} || ${GrpHasBrdClass}) {			
+		/message ==================================================================
+	}	
+	|-----------------------------
+
+	/if (${Debugging}) /echo Sub CheckGroupClasses Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
 | SUB: CheckInvis
 | --------------------------------------------------------------------------------------------
 Sub CheckInvis
@@ -2911,30 +2964,26 @@ Sub CheckInvis
 				
 	|----------------------- IF ME !INVIS
 	/if (!${Me.Invis}) {
-		/message \arNeed to make myself invisible!
-		/message \ayI am \arSTILL NOT\ay invised, checking for a \am[\atBRD\am]\ay in group to invis.
-		|-----------------------------
-		/for y 1 to ${Group.Members}
-			/if (${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {
-				/message \ay[\am${Group.Member[${y}].CleanName}\ay] is a [\atBRD\ay], making them sing invis !
-				|------------------------
-				/squelch /e3bct ${Group.Member[${y}].CleanName} /playmelody stop
-				/delay 1s
-				/squelch /e3bct ${Group.Member[${y}].CleanName} /memspell ${BRDTravelSongSlot} ${BRDTravelSong}
+		/if (${GrpHasBrdClass}) {
+			/message \arNeed to make myself invisible!
+			/message \ayI am \arSTILL NOT\ay invised, making \am[\at${GrpBrdName}\am]\ay sing \am[\at${BRDTravelSong}\am]\ay.
+			|------------------------
+			/squelch /e3bct ${GrpBrdName} /playmelody stop
+			/delay 1s
+			/squelch /e3bct ${GrpBrdName} /memspell ${BRDTravelSongSlot} ${BRDTravelSong}
+			/delay 3s
+			:CheckBrdInvisNow
+			/if (!${Me.Invis}) {
+				/squelch /e3bct ${GrpBrdName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
 				/delay 3s
-				:CheckBrdInvisNow
-				/if (!${Me.Invis}) {
-					/squelch /e3bct ${Group.Member[${y}].CleanName} /cast ${BRDTravelSongSlot} ${BRDTravelSong}
-					/delay 3s
-					/message \agWaiting for invis to kick in .....
-					/delay 5s ${Me.Invis}
-					/goto :CheckBrdInvisNow
-				} else {
-					/varset y ${Group.Members}
-				}
-				|------------------------
+				/message \agWaiting for invis to kick in .....
+				/delay 5s ${Me.Invis}
+				/goto :CheckBrdInvisNow
+			} else {
+				/varset y ${Group.Members}
 			}
-		/next y
+			|------------------------		
+		}
 		|-----------------------------
 		/delay 3s ${Me.Invis}
 	}
@@ -3431,6 +3480,18 @@ Sub CheckThings
 		/message ==================================================================
 	}
 
+	|-------------------------
+	|-- CHECK CLASSES SET VARS
+	|-------------------------
+	/call CheckGroupClasses
+	|-------------------------
+	
+	|-------------------------
+	| Delay to read output.
+	|-------------------------
+	/delay 3s
+	|-------------------------
+	
 	/if (${Endmac}) /end
 	/if (${Debugging}) /echo Sub CheckThings Exit
 
@@ -3730,13 +3791,12 @@ Sub ReclaimAltDC
   /if (${Debugging}) /echo Sub Rogue_SOS_COH Entry
   
 	/declare x  		 int inner	1
-
+	
 	|-----------------------------
-	/for x 1 to ${Group.Members}
-		/if (${Group.Member[${x}].Class.ShortName.Equal[ROG]}) {
-			/message \ay[\am${Group.Member[${x}].CleanName}\ay] is a [\atROG\ay], making them run to safespot and COH us!
+	/if (${GrpHasRogClass}) {
+			/message \ay[\am${GrpRogName}\ay] is a [\atROG\ay], making them run to safespot and COH us!
 			|---------------------------
-			/squelch /e3bct ${Group.Member[${x}].CleanName} /macro GoSOS.mac "2098.09 274.34 -135.09" ${Me.CleanName} ${Macro.Name}
+			/squelch /e3bct ${GrpRogName} /macro GoSOS.mac "2098.09 274.34 -135.09" ${Me.CleanName} ${Macro.Name}
 			/delay 1s
 			/message ==================================================================
 			/message \arPAUSING ${Macro.Name} UNTIL ROGUE SOS COH COMPLETE !\ax
@@ -3751,8 +3811,8 @@ Sub ReclaimAltDC
 			/message ==================================================================
 			/mqp
 			|------------------------
-		}
-	/next x
+
+	}
 	|-----------------------------
 
   /if (${Debugging}) /echo Sub Rogue_SOS_COH Exit
