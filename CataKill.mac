@@ -1369,7 +1369,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/call IniChange "Theme" "CompletedPathTo" "TRUE"
 	/call ForceSpawnStepReset
 	/varset SpawnPull_Step 1
-	/message /ayStarting Main Cycle Run !!!/ax
+	/message \ayStarting Main Cycle Run !!!\ax
 	/message ==================================================================
 	/delay 3s
 	|------------------------------------------------------
