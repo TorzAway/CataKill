@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: May 26th, 2025 - 05:57:00 AM
+Last Updated: June 15th, 2025 - 07:10:00 AM
 
-v1.9.2
+v1.9.3
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.2
+	/declare version			string	outer	1.9.3
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -805,7 +805,7 @@ Sub GetExpedition
 			|------------------------
 			|--- Reset the Cycle Loop
 			|------------------------
-			/if (${DoRogueSosCoh}) {
+			/if (${DoRogueSosCoh} && ${GrpHasRogClass}) {
 				/call IniChange "Theme" "CompletedPathTo" "TRUE"
 			} else {
 				/call IniChange "Theme" "CompletedPathTo" "FALSE"
