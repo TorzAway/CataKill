@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: June 15th, 2025 - 07:10:00 AM
+Last Updated: June 16th, 2025 - 06:54:00 PM
 
-v1.9.3
+v1.9.4
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.3
+	/declare version			string	outer	1.9.4
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -868,8 +868,10 @@ Sub GoToExpedition
 
 	|----------------------------------------
 	/if (${Zone.ID}==${CataCombC}) {		
-		/call ResetBard
-		/delay 2s
+		/if (${GrpHasBrdClass}) {
+			/call ResetBard
+			/delay 2s
+		}
 		/squelch /e3bcg /multiline ; /afollow off ; /nav stop ; /stand
 		/delay 5
 		/squelch /followoff
