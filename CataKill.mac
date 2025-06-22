@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: June 16th, 2025 - 06:54:00 PM
+Last Updated: June 21st, 2025 - 07:37:00 PM
 
-v1.9.4
+v1.9.6
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -256,7 +256,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.4
+	/declare version			string	outer	1.9.6
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -292,7 +292,8 @@ Sub Declares
 	/declare CurrentDC				int		outer	0
 	/declare CurrentDCAC			int		outer	0
 	/declare DranikCExpedition		int		outer	0
-	/declare DranikCLootArray[1,36]	string	outer
+	|--------------------------------------
+		
 	|----------------------------------------------------------
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 
@@ -336,6 +337,14 @@ Sub Declares
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
 	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
+	/call CheckINI ${IniFileName} General LootTradeMats bool FALSE
+	|--------------------------------------
+	/if (${LootTradeMats}) {
+		/declare DranikCLootArray[1,43]	string	outer		
+	} else {
+		/declare DranikCLootArray[1,35]	string	outer		
+	}
+	|--------------------------------------
 	/call CheckINI ${IniFileName} General MouseLock bool FALSE
 	/call CheckINI ${IniFileName} General MouseLocValX int 290
 	/call CheckINI ${IniFileName} General MouseLocValY int 550
@@ -415,7 +424,7 @@ Sub CampInMarrs
 	|---------------------
 	/delay 10
 	/squelch /e3bcgza /nav stop
-	/squelch /e3bcgza /playmelody stop
+	/if (${GrpHasBrdClass}) /squelch /e3bcgza /playmelody stop
 	/squelch /e3bcgza /keypress x
 	/delay 6
 	/squelch /e3bcgza /stand
@@ -489,7 +498,7 @@ Sub GoToMarrs
 	|---------------------
 	/delay 10
 	/squelch /e3bcgza /nav stop
-	/squelch /e3bcgza /playmelody stop
+	/if (${GrpHasBrdClass}) /squelch /e3bcgza /playmelody stop
 	/squelch /e3bcgza /keypress x
 	/delay 6
 	/squelch /e3bcgza /stand
@@ -1095,7 +1104,7 @@ Sub DoSinglePull(string Enemy)
 	|--------------------
 	
 	:findMob
-	/if (${Debugging}) /echo FindMob DoSingleMob
+	/if (${Debugging}) /echo FindMob DoSinglePull
 	/if (${Target.Type.Equal[corpse]}) {
 		/if (${Target.ID} == ${myTargetID}) /varset myTargetID 0
 		/squelch /target clear
@@ -1128,7 +1137,7 @@ Sub DoSinglePull(string Enemy)
 		|---------------------------------------
 	}
 	:navto
-	/if (${Debugging}) /echo DoSingleMob NAVTO
+	/if (${Debugging}) /echo DoSinglePull NAVTO
 	/if (${Target.ID}) /squelch /target clear
 	/if ((${Spawn[${myTargetID}].Distance} > 30 && !${Target.Type.Equal[corpse]} && !${Me.XTarget}) || !${Spawn[${myTargetID}].LineOfSight}) {
 		/if (!${Spawn[${myTargetID}].ID}) {
@@ -2143,7 +2152,7 @@ Sub WaitNav(NavTargetID)
 				/if (${Navigation.Active}) /nav stop
 				/varset NavTargetID ${Me.XTarget}
 				/if (${Debugging}) /echo CALL FARM STUFF WaitNAV
-				/call DoSingleMob
+				/call DoSinglePull
 			} else {
 				/if (${Debugging}) /echo \ayWaitNav Moving
 				/if (${CheckBots}) /call GroupDeathChk
@@ -2173,8 +2182,8 @@ Sub WaitNav(NavTargetID)
 				/if (${Navigation.Active}) /nav stop
 				/e3bcgza /target id ${Me.XTarget}
 				/varset NavTargetID ${Me.XTarget}
-				/if (${Debugging}) /echo CALL DoSingleMob WaitNav II
-				/call DoSingleMob
+				/if (${Debugging}) /echo CALL DoSinglePull WaitNav II
+				/call DoSinglePull
 			} else {
 				/varcalc BackUpTimer (${BackUpTimer})+1
 				/if (${BackUpTimer}>7) {
@@ -2340,7 +2349,7 @@ Sub Zoning
 | --------------------------------------------------------------------------------------------
   Sub DranikCLootArraySetup
     /if (${Debugging}) /echo Sub DranikCLootArraySetup Entry
-	
+	|----------------------------------------------------------
 	/varset DranikCLootArray[1,1] Black Pearl
 	/varset DranikCLootArray[1,2] Blue Diamond
 	/varset DranikCLootArray[1,3] Broken Ukun Leash
@@ -2358,26 +2367,38 @@ Sub Zoning
 	/varset DranikCLootArray[1,15] Gnarled Rat Tail
 	/varset DranikCLootArray[1,16] Murkglider Sinew
 	/varset DranikCLootArray[1,17] Murkglider Stomach
-	/varset DranikCLootArray[1,18] Noc Heart
-	/varset DranikCLootArray[1,19] Opal
-	/varset DranikCLootArray[1,20] Ruby
-	/varset DranikCLootArray[1,21] Sapphire
-	/varset DranikCLootArray[1,22] Shattered Bat Fang
-	/varset DranikCLootArray[1,23] Shattered Visage
-	/varset DranikCLootArray[1,24] Shimmering Ukun Hide
-	/varset DranikCLootArray[1,25] Sleek Bat Fur
-	/varset DranikCLootArray[1,26] Sparse Rat Fur
-	/varset DranikCLootArray[1,27] Splintered Bone Necklace
-	/varset DranikCLootArray[1,28] Starflow Stone
-	/varset DranikCLootArray[1,29] Stone Shard
-	/varset DranikCLootArray[1,30] Tattered Ikaav Braid
-	/varset DranikCLootArray[1,31] Torn Rat Ear
-	/varset DranikCLootArray[1,32] Ukun Guts
-	/varset DranikCLootArray[1,33] Wiry Rat Whiskers
-	/varset DranikCLootArray[1,34] Stolen Dragorn Clan Insignia
-	/varset DranikCLootArray[1,35] Cobalt Ore
-	/varset DranikCLootArray[1,36] Rhenium Ore
-
+	/varset DranikCLootArray[1,18] Noc Claw
+	/varset DranikCLootArray[1,19] Noc Heart
+	/varset DranikCLootArray[1,20] Opal
+	/varset DranikCLootArray[1,21] Ruby
+	/varset DranikCLootArray[1,22] Sapphire
+	/varset DranikCLootArray[1,23] Shattered Bat Fang
+	/varset DranikCLootArray[1,24] Shattered Visage
+	/varset DranikCLootArray[1,25] Shimmering Ukun Hide
+	/varset DranikCLootArray[1,26] Sleek Bat Fur
+	/varset DranikCLootArray[1,27] Sparse Rat Fur
+	/varset DranikCLootArray[1,28] Splintered Bone Necklace
+	/varset DranikCLootArray[1,29] Starflow Stone
+	/varset DranikCLootArray[1,30] Stone Shard
+	/varset DranikCLootArray[1,31] Tattered Ikaav Braid
+	/varset DranikCLootArray[1,32] Torn Rat Ear
+	/varset DranikCLootArray[1,33] Ukun Guts
+	/varset DranikCLootArray[1,34] Wiry Rat Whiskers
+	/varset DranikCLootArray[1,35] Stolen Dragorn Clan Insignia
+	|--------------------------------------------
+	/if (${LootTradeMats}) {
+		/varset DranikCLootArray[1,36] Rhenium Ore
+		/varset DranikCLootArray[1,37] Tungsten Ore
+		/varset DranikCLootArray[1,38] Cobalt Ore
+		|--------------------------------------------
+		/varset DranikCLootArray[1,39] Fine Silk
+		/varset DranikCLootArray[1,40] Superb Silk
+		/varset DranikCLootArray[1,41] Excellent Silk
+		|--------------------------------------------
+		/varset DranikCLootArray[1,42] Excellent Animal Pelt
+		/varset DranikCLootArray[1,43] Superb Animal Pelt	
+	}
+	|--------------------------------------------
 	/if (${Debugging}) /echo Sub DranikCLootArraySetup Exit
   /return
 | --------------------------------------------------------------------------------------------
@@ -3473,6 +3494,11 @@ Sub CheckThings
 			/squelch /looton
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \amE3\ax settings.
 			/message \ay    [ if configured in your \amE3\ax config files. \ag(Loot Settings.ini)\ax ]
+		}
+		/if (${LootTradeMats}) {
+			/message \ay--- \ag Loot Tradeskill Materials set to [TRUE]
+		} else {
+			/message \ay--- \ar Loot Tradeskill Materials set to [FALSE]
 		}
 		/message ==================================================================
 	} else {

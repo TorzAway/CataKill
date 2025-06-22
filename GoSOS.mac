@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: November 12, 2024 - 11:45:00 AM
+Last Updated: June 20th, 2025 - 07:02:00 AM
 
-v2.6
+v2.7
 ****************************************************************************************************************|
 
 #turbo
@@ -64,6 +64,7 @@ Sub Main
 		/echo \ay+ I am \agNOW\ax in \atShroud of Stealth\ax mode.
 		/echo \ay++ Headed to location for COH: \ay[\am${COH_LOC}\ay]
 		/g + Headed to location [${COH_LOC}] for [COH].
+		/e3bct ${RunRequestor} /popcustom 14 2 + Headed to location [${COH_LOC}] for [COH].
 		|-------------------------------
 		/if (${Me.Invis[SOS]}) /nav loc ${COH_LOC}
 		/delay 5
@@ -122,6 +123,7 @@ Sub COH_Group
 			/if (${FindItem[Wayfarers Brotherhood Emblem].ID}) {			
 				/echo \ay- Incomming [\atCOH\ay] on [\am${Group.Member[${x}].CleanName}\ay].
 				/g - Incomming [COH] on [${Group.Member[${x}].CleanName}].
+				/e3bct ${RunRequestor} /popcustom 18 2 - Incomming [COH] on [${Group.Member[${x}].CleanName}].
 				/if (${Target.ID}==${Group.Member[${x}].ID}) {
 					/useitem "Wayfarers Brotherhood Emblem"
 				} else {
@@ -133,9 +135,11 @@ Sub COH_Group
 				|-------------------------------------
 				/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
 					/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
+					/e3bct ${RunRequestor} /popcustom 14 2 + Done casting [COH] on [${Group.Member[${x}].CleanName}].
 					/delay 5				
 				} else {
 					/g - OOPS, re-casting [COH] on [${Group.Member[${x}].CleanName}].
+					/e3bct ${RunRequestor} /popcustom 13 2 - OOPS, re-casting [COH] on [${Group.Member[${x}].CleanName}].
 					/goto :COH_Member
 				}
 				|-------------------------------------				
@@ -162,6 +166,7 @@ Sub COH_Group
 	
 	/echo \at++ All group members are with me now !\ax
 	/g ++ All group members are with me now !
+	/e3bct ${RunRequestor} /popcustom 15 2 ++ All group members are with me now !
 	
 	|---------------------
 	/varset GrpMembersHere 1
@@ -174,6 +179,7 @@ Sub COH_Group
 		/if (${RunRequestor.NotEqual[NULL]} && ${FollowupMac.NotEqual[NULL]}) {
 			/echo \atStarting [${FollowupMac}] on [${RunRequestor}].
 			/g +++ Starting [${FollowupMac}] on [${RunRequestor}].
+			/e3bct ${RunRequestor} /popcustom 15 2 +++ Starting [${FollowupMac}] on [${RunRequestor}].
 			/delay 1s
 			/e3bct ${RunRequestor} /macro ${FollowupMac}
 		}
