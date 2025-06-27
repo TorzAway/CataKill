@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 GoSOS.mac - by Kroaking
-Last Updated: June 20th, 2025 - 07:02:00 AM
+Last Updated: June 22nd, 2025 - 07:48:00 AM
 
-v2.7
+v2.8
 ****************************************************************************************************************|
 
 #turbo
@@ -50,21 +50,29 @@ Sub Main
 		:AmISneaking
 		/if (!${Me.Sneaking}) {
 			/echo \ayI am \arNOT\ax currenty \atSNEAKING\ax.
+			/g + I am NOT currenty SNEAKING.
+			/e3bct ${RunRequestor} /popcustom 13 2 + I am NOT currenty SNEAKING.			
 			/doability Sneak 
 			/delay 5
 			/goto :AmISneaking
 		}
 		/if (${Me.Sneaking} && !${Me.Invis[SOS]}) {
-			/echo \ayI am \arNOT\ax currenty \atHIDING\ax.
+			/echo \ayI am \arNOT\ax currenty \atHIDING\ax.			
+			/g + I am NOT currenty atHIDING.
+			/e3bct ${RunRequestor} /popcustom 13 2 + I am NOT currenty HIDING.
 			/doability Hide 
 			/delay 5
 			/goto :AmISOS
 		}		
 	} else {
 		/echo \ay+ I am \agNOW\ax in \atShroud of Stealth\ax mode.
+		/g + I am NOW in Shroud of Stealth mode.
+		/e3bct ${RunRequestor} /popcustom 14 2 + I am NOW in Shroud of Stealth mode.
+		/delay 5
 		/echo \ay++ Headed to location for COH: \ay[\am${COH_LOC}\ay]
 		/g + Headed to location [${COH_LOC}] for [COH].
 		/e3bct ${RunRequestor} /popcustom 14 2 + Headed to location [${COH_LOC}] for [COH].
+		/delay 5
 		|-------------------------------
 		/if (${Me.Invis[SOS]}) /nav loc ${COH_LOC}
 		/delay 5
@@ -75,6 +83,7 @@ Sub Main
 			
 		/echo \agArrived at COH spot.\ax
 		/g + Arrived at location [${COH_LOC}] for [COH].
+		/e3bct ${RunRequestor} /popcustom 14 2 + Arrived at location [${COH_LOC}] for [COH].
 		/delay 1s		
 		
 		|--------------
@@ -86,6 +95,7 @@ Sub Main
 	|------------------------	
 } else {
 	/echo \arNo valid location is defined for the current zone\ao: \am(\at${Zone.Name}\am)
+	/e3bct ${RunRequestor} /popcustom 13 2 No valid location is defined for the current zone: (${Zone.Name}).
 	/end
 }
 |------------------------------
@@ -108,13 +118,15 @@ Sub COH_Group
 			
 			|-------------------------
 			:GetMyCOHTarget
+			/delay 5
 			/squelch /target id ${Group.Member[${x}].ID}
 			/delay 5 ${Target.ID}==${Group.Member[${x}].ID}
 			/if (${Target.ID}!=${Group.Member[${x}].ID}) /goto :GetMyCOHTarget
 			|-------------------------
 			
 			/echo \atCurrent target is\ao: \ay[\am${Group.Member[${x}].CleanName}\ay]
-			/g Current target is ${Group.Member[${x}].CleanName}.
+			/g * Current target is [${Group.Member[${x}].CleanName}].		
+			/e3bct ${RunRequestor} /popcustom 5 2 * Current target is [${Group.Member[${x}].CleanName}].
 			/delay 5
 			|-------------------------------------
 			
@@ -144,7 +156,8 @@ Sub COH_Group
 				}
 				|-------------------------------------				
 			} else {
-				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !.
+				/echo \arI do NOT have a \aoWayfarers Brotherhood Emblem\ar to \ay[\atCOH\ay] !
+				/e3bct ${RunRequestor} /popcustom 13 2 - I do NOT have a Wayfarers Brotherhood Emblem to [COH] !
 				/end
 			}
 			|-------------------------------------
@@ -152,7 +165,7 @@ Sub COH_Group
 			
 			|-------------------------------------
 		} else {
-			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax
+			/echo \ag* \ay[\am${Group.Member[${x}].CleanName}\ay] \arDOES NOT\ax need of a [\atCOH\ay]. - \aoDistance: \ax\am(\at${Group.Member[${x}].Distance}\am).\ax			
 		}
 		|-------------------------------------		
 		|-------------------------------------
@@ -184,8 +197,9 @@ Sub COH_Group
 			/e3bct ${RunRequestor} /macro ${FollowupMac}
 		}
 	} else {
-		/echo \atLooks like i missed someone!
-		/g +++ Looks like i missed someone!
+		/echo \atLooks like I missed someone!
+		/g +++ Looks like I missed someone!
+		/e3bct ${RunRequestor} /popcustom 13 2 +++ Looks like I missed someone!
 		/delay 1s	
 		/goto :COH_Group
 	}
