@@ -7,7 +7,7 @@ v1.9.7
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
 ****************************************************************************************************************|
-/log on
+/squelch /log on
 
 #Event Catacomb_A "#*#Should you come across a dragorn known as Dragorn Marshal Greshka#*#"
 #Event Catacomb_B "#*#Should you come across a noc known as Elite Overlord Vijaz#*#"

@@ -1,9 +1,11 @@
 |****************************************************************************************************************
-GoSOS.mac - by Kroaking
-Last Updated: June 22nd, 2025 - 07:48:00 AM
+	GoSOS.mac - by Kroaking
+	Last Updated: August 24th, 2025 - 10:15:00 AM
 
-v2.8
+	v2.9
 ****************************************************************************************************************|
+
+/squelch /log on
 
 #turbo
 
@@ -143,7 +145,7 @@ Sub COH_Group
 				}
 				/delay 1s
 				/call CheckCasting
-				/delay 2s
+				/delay 3s ${Group.Member[${x}].Distance}<=${CoHDistance}
 				|-------------------------------------
 				/if (${Group.Member[${x}].Distance}<=${CoHDistance}) {
 					/g + Done casting [COH] on [${Group.Member[${x}].CleanName}].
