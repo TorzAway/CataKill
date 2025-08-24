@@ -1,6 +1,6 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: July  27th, 2025 - 03:37:00 PM
+Last Updated: August 24th, 2025 - 10:15:00 AM
 
 v1.9.7
 
@@ -2935,13 +2935,13 @@ Sub CheckInvis
 	|----------------------------------------------------------------------------
 	|------------- INDIVIDUAL OR UNDEAD ---------------
 	|/squelch /e3bcgz /alt act 1212 	; -- Group Perfected Invisibility to Undead  -- Cleric / Necromancer / Paladin / Shadowknight
-	|/squelch /e3bcgz /alt act 280 	; -- Group Perfected Invisibility to Undead -- Magician / Enchanter / Wizard
-	|/squelch /e3bcgz /alt act 231 	; -- Shauri's Sonorious Clouding -- Bard AA
-	|/squelch /e3bcgz /alt act 531 	; -- Cloak of Shadows -- Necromancer / Shadow Knight
+	|/squelch /e3bcgz /alt act 280 		; -- Group Perfected Invisibility to Undead -- Magician / Enchanter / Wizard
+	|/squelch /e3bcgz /alt act 231 		; -- Shauri's Sonorious Clouding -- Bard AA
+	|/squelch /e3bcgz /alt act 531 		; -- Cloak of Shadows -- Necromancer / Shadow Knight
 	|/squelch /e3bcgz /alt act 8301 	; -- Improved Natural Invisibility -- Beastlord
 	|------------- GROUP ---------------
-	|/squelch /e3bcgz /alt act 630 	; -- Group Silent Presence -- Shaman
-	|/squelch /e3bcgz /alt act 518 	; -- Shared Camouflage -- Druid / Ranger
+	|/squelch /e3bcgz /alt act 630 		; -- Group Silent Presence -- Shaman
+	|/squelch /e3bcgz /alt act 518 		; -- Shared Camouflage -- Druid / Ranger
 	|/squelch /e3bcgz /alt act 1210 	; -- Group Perfect Invisibility -- Magician / Enchanter / Wizard
 	|----------------------------------------------------------------------------
 
