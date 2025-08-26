@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: August 24th, 2025 - 10:15:00 AM
+Last Updated: August 25th, 2025 - 02:12:00 PM
 
-v1.9.7
+v1.9.8
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -160,6 +160,7 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
+				/if (${Target.ID} && !${Me.XTarget} && !${Me.Casting.ID}) /squelch /target clear
 				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				|------------------------------------------
 				/if (!${CompletedPathTo}) {
@@ -197,6 +198,7 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
+				/if (${Target.ID} && !${Me.XTarget} && !${Me.Casting.ID}) /squelch /target clear
 				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				/call DoSinglePull
 				/if (${Me.XTarget}) /call DoClearTargets
@@ -255,7 +257,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.7
+	/declare version			string	outer	1.9.8
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
