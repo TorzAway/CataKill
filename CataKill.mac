@@ -160,8 +160,7 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
-				/if (${Target.ID} && !${Me.XTarget} && !${Me.Casting.ID}) /squelch /target clear
-				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				|------------------------------------------
 				/if (!${CompletedPathTo}) {
 					/call DoSwarmPull_PathTo
@@ -198,8 +197,7 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
-				/if (${Target.ID} && !${Me.XTarget} && !${Me.Casting.ID}) /squelch /target clear
-				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				/call DoSinglePull
 				/if (${Me.XTarget}) /call DoClearTargets
 				/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1354,7 +1352,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		}
 		|-----------------------------------------------
 		| Before we go to next step ...   ECheck if we should loot Corpses.
-		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1519,7 +1517,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		}
 		|-----------------------------------------------
 		| Before we go to next step ...   ECheck if we should loot Corpses.
-		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1545,7 +1543,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|----------------------------------------------------------------
 	|-- Clear the camp location of any corpses before the next cycle.
 	|----------------------------------------------------------------
-	/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+	/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear	/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 	|----------------------------------------------------------------
 
 	|------------------
@@ -2003,7 +2001,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 					/if (${Target.ID}) /face
 					/squelch /attack on
 					/call DoClearTargets
-					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+					/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 					/doevents
 					/if (${UseClickDamage}) /call Clickies_Damage
 				}
@@ -2030,7 +2028,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 				/if (${Target.ID}) /face
 				/squelch /attack on
 				/call DoClearTargets
-				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				/doevents
 				/if (${UseClickDamage}) /call Clickies_Damage
 			}

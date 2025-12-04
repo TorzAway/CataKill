@@ -17,9 +17,9 @@ Sub Main
 |----------------------------------------
 /declare COH_LOC 		string 	outer NULL
 
-/declare RunToLoc		string	outer	${Param0}
-/declare RunRequestor	string	outer	${Param1}
-/declare FollowupMac	string	outer	${Param2}
+/declare RunToLoc		string	outer	${Param0} ${Param1} ${Param2}
+/declare RunRequestor	string	outer	${Param3}
+/declare FollowupMac	string	outer	${Param4}
 /declare GrpMembersHere	int		outer	0
 /declare CoHDistance	int		outer	25
 
@@ -38,6 +38,11 @@ Sub Main
 	/varset COH_LOC ${RunToLoc}
 } 
 |----------------------------------------
+
+|--/echo RunToLoc = (${RunToLoc})
+|--/echo RunRequestor = (${RunRequestor})
+|--/echo FollowupMac = (${FollowupMac})
+|--/echo COH_LOC = (${COH_LOC})
 
 /target clear
 /delay 1s !${Target.ID}
