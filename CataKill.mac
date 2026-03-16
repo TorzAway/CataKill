@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: August 25th, 2025 - 02:12:00 PM
+Last Updated: March 16th, 2026 - 10:02:00 AM
 
-v1.9.8
+v2.0.1
 
 This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
 
@@ -160,7 +160,7 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
-				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				|------------------------------------------
 				/if (!${CompletedPathTo}) {
 					/call DoSwarmPull_PathTo
@@ -196,8 +196,8 @@ Sub Main
 			|-----------------------------------
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
-			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
-				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {			
+				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 				/call DoSinglePull
 				/if (${Me.XTarget}) /call DoClearTargets
 				/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -255,7 +255,7 @@ Sub Declares
 
 	|==================== DO NOT ALTER THESE VALUES ====================
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	1.9.8
+	/declare version			string	outer	2.0.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -339,9 +339,9 @@ Sub Declares
 	/call CheckINI ${IniFileName} General LootTradeMats bool FALSE
 	|--------------------------------------
 	/if (${LootTradeMats}) {
-		/declare DranikCLootArray[1,43]	string	outer		
+		/declare DranikCLootArray[1,45]	string	outer		
 	} else {
-		/declare DranikCLootArray[1,35]	string	outer		
+		/declare DranikCLootArray[1,37]	string	outer		
 	}
 	|--------------------------------------
 	/call CheckINI ${IniFileName} General MouseLock bool FALSE
@@ -421,8 +421,8 @@ Sub CampInMarrs
 	|--- Group - GoToMarrs
 	|---------------------
 	/delay 10
-	/squelch /e3bcgza /nav stop
-	/if (${GrpHasBrdClass}) /squelch /e3bcgza /playmelody stop
+	/squelch /e3bcgza /nav stop	
+	/if (${GrpHasBrdClass}) /squelch /e3bct ${GrpBrdName} /playmelody stop
 	/squelch /e3bcgza /keypress x
 	/delay 6
 	/squelch /e3bcgza /stand
@@ -496,7 +496,7 @@ Sub GoToMarrs
 	|---------------------
 	/delay 10
 	/squelch /e3bcgza /nav stop
-	/if (${GrpHasBrdClass}) /squelch /e3bcgza /playmelody stop
+	/if (${GrpHasBrdClass}) /squelch /e3bct ${GrpBrdName} /playmelody stop
 	/squelch /e3bcgza /keypress x
 	/delay 6
 	/squelch /e3bcgza /stand
@@ -744,13 +744,23 @@ Sub GotoRecruiter
 			/call GetExpedition
 		} else {
 			|-------------
-			/if (${Spawn[${Recruiter}].Distance3D} > 10) {
+			/if (${Spawn[${Recruiter}].Distance3D} > 15) {
 				/message \agGoing to \ay[\ap${Recruiter}\ay] \ag to pick up an expedition...
 				/if (${DoInvis}) /call CheckInvis
 				/delay 1s
-				|---------------------- INVIS VNAV !
-				/call NavToLoc3 ${RecruiterLoc}
-				|---------------------- INVIS VNAV !
+				
+				|------------------------------------------
+				/if (${DoInvis}) {
+					|---------------------- NO INVIS VNAV !
+					/call NavToLoc3 ${RecruiterLoc}
+					|---------------------- NO INVIS VNAV !
+				} else {
+					|---------------------- INVIS VNAV !
+					/call NavToLoc2 ${RecruiterLoc}
+					|---------------------- INVIS VNAV !				
+				}
+				|------------------------------------------
+
 				/delay 5
 				|-------------
 				|-------------
@@ -843,10 +853,17 @@ Sub GoToExpedition
 	/if (${DoInvis}) /call CheckInvis
 	|--- CHECK INVIS !!!
 	/delay 1s
-	
-	|---------------------- INVIS VNAV !
-	/call NavToLoc3 1019.45 -290.80 -75.26
-	|---------------------- INVIS VNAV !
+	|------------------------------------------
+	/if (${DoInvis}) {
+		|---------------------- NO INVIS VNAV !
+		/call NavToLoc3 1019.45 -290.80 -75.26
+		|---------------------- NO INVIS VNAV !
+	} else {
+		|---------------------- INVIS VNAV !
+		/call NavToLoc2 1019.45 -290.80 -75.26
+		|---------------------- INVIS VNAV !				
+	}
+	|------------------------------------------	
 	/delay 5
 
 	|-------------
@@ -966,12 +983,13 @@ Sub DoClearTargets
 	/if (${Me.XTarget} || (${Target.ID} && ${Target.Type.Equal[npc]})) {
 		|/keypress º
 		|/delay 5
-		/ClearTargets stick
+		/ClearTargets usemytarget
 		/keypress esc
-		/delay 10		
-		:gotoloopkeepfighting
+		/delay 10	
+		
+		:gotoloopkeepfighting		
 		/if (${Me.Sitting}) /stand
-		/if (!${Target.ID} && ${Me.XTarget}) {
+		/if (!${Target.ID} && ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 			/squelch /e3bcgz /nav id ${Me.ID}
 			|/keypress º
 			/delay 5
@@ -981,9 +999,9 @@ Sub DoClearTargets
 			|/xtarget remove
 			|/delay 3
 			|----------			
-			/target ${Me.XTarget[1].ID}
+			/target id ${NearestSpawn[npc radius 35 targetable].ID}
 			/delay 5
-			/ClearTargets stick
+			/ClearTargets usemytarget
 			/keypress esc
 			/delay 10			
 			}
@@ -991,7 +1009,7 @@ Sub DoClearTargets
 			/squelch /e3bcgz /nav id ${Me.ID}
 			|/keypress º
 			/delay 5
-			/ClearTargets stick
+			/ClearTargets usemytarget
 			/keypress esc
 			/delay 10
 			}
@@ -1036,9 +1054,12 @@ Sub DoClearTargets
             /goto :gotoloopkeepfighting
         }
 		|-------------------------------------------------------------------
-		/if (${Me.XTarget} || ${Target.ID}) /goto :gotoloopkeepfighting
+		/if (${Me.XTarget} || (${Target.ID} && ${Target.Type.Equal[npc]})) /goto :gotoloopkeepfighting
 	}
 	/delay 20
+	|-----------------------------------
+	/if (!${Me.XTarget} || (!${Target.ID} && !${Bool[${Spawn[npc radius 50].Aggressive}]})) /squelch /target clear
+	|-----------------------------------
 	/if (${Debugging}) /echo Sub DoClearTargets Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -1068,7 +1089,7 @@ Sub DoSinglePull(string Enemy)
 		/if (${myTargetID} && !${Target.Type.Equal[Corpse]} && !${Target.Type.Equal[Pet]} && !${Target.Type.Equal[PC]}) {
 			/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
 			|--------------------
-			/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
+			/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 				/if (${Target.ID}) /face
 				/squelch /attack on
 				|/if (${Select[${Me.Class.ShortName},SHD,MAG,NEC,BST,SHM,ENC,DRU]} && ${Me.Pet.ID}) /pet attack
@@ -1126,9 +1147,9 @@ Sub DoSinglePull(string Enemy)
 		/if (${Debugging}) /echo \ayI have an XTarget so I'm going to set that as my target.
 		|---------------------------------------
 		/if (${Me.XTarget}) {
-			/varset myTargetID ${Me.XTarget}
+			/varset myTargetID ${Target.ID}
 			/if (${Debugging}) /echo CALL DoClearTargets
-			/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) /call DoClearTargets
+			/if (${Me.XTarget} || ${Spawn[id ${Target.ID}].Distance} < 30) /call DoClearTargets
 			/if (${Debugging}) /echo END CALL DoClearTargets			
 		}
 		|---------------------------------------
@@ -1351,8 +1372,8 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			/delay 10
 		}
 		|-----------------------------------------------
-		| Before we go to next step ...   ECheck if we should loot Corpses.
-		/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		| Before we go to next step ...   ECheck if we should loot Corpses.	
+		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1516,8 +1537,8 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 			/delay 10
 		}
 		|-----------------------------------------------
-		| Before we go to next step ...   ECheck if we should loot Corpses.
-		/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		| Before we go to next step ...   ECheck if we should loot Corpses.	
+		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1543,7 +1564,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|----------------------------------------------------------------
 	|-- Clear the camp location of any corpses before the next cycle.
 	|----------------------------------------------------------------
-	/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear	/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+	/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 	|----------------------------------------------------------------
 
 	|------------------
@@ -1766,11 +1787,11 @@ Sub DoSwarmPull_MainLoop
 	|---------------------------------- LEFT BOTTOM
 	/varset LocalStepArray_${Zone.ShortName}_2[1,1] 2016.83 451.40 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,2] 2016.83 571.16 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,3] 2016.83 711.16 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,3] 1990.50 748.16 -134.32
 	|---------------------------------- LEFT BOTTOM
 	|---------------------------------- LEFT MIDDLE
 	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2247.83 451.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2212.21 580.65 -135.43
+	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2188.26 582.50 -134.43
 	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2247.83 711.16 -135.32
 	|---------------------------------- LEFT MIDDLE
 	|---------------------------------- LEFT TOP
@@ -1779,19 +1800,19 @@ Sub DoSwarmPull_MainLoop
 	/varset LocalStepArray_${Zone.ShortName}_2[1,9] 2449.70 711.16 -135.32
 	|---------------------------------- LEFT TOP
 	|---------------------------------- RIGHT TOP
-	/varset LocalStepArray_${Zone.ShortName}_2[1,10] 2449.70 251.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,10] 2417.39 231.31 -134.91
 	/varset LocalStepArray_${Zone.ShortName}_2[1,11] 2449.70 91.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,12] 2449.70 -68.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,12] 2497.22 -81.97.40 -134.72
 	|---------------------------------- RIGHT TOP
 	|---------------------------------- RIGHT MIDDLE
 	/varset LocalStepArray_${Zone.ShortName}_2[1,13] 2228.83 251.40 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,14] 2228.83 91.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,15] 2228.83 -68.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,15] 2282.11 -93.10 -132.69
 	|---------------------------------- RIGHT MIDDLE
 	|---------------------------------- RIGHT BOTTOM
 	/varset LocalStepArray_${Zone.ShortName}_2[1,16] 2007.83 251.40 -135.32
 	/varset LocalStepArray_${Zone.ShortName}_2[1,17] 2007.83 91.40 -135.32
-	/varset LocalStepArray_${Zone.ShortName}_2[1,18] 2007.83 -32.97 -133.30
+	/varset LocalStepArray_${Zone.ShortName}_2[1,18] 1975.42 -58.06 -133.82
 	|---------------------------------- RIGHT BOTTOM
 	|---------------------------------- MAIN CYCLE ABOVE
 	
@@ -1878,13 +1899,13 @@ Sub DoSwarmPull_MainLoop_Bigger
 	/varset LocalStepArray_${Zone.ShortName}_2[1,3] 2449.70 711.16 -135.32
 	|---------------------------------- LEFT TOP
 	|---------------------------------- RIGHT TOP
-	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2449.70 -68.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,4] 2447.29 -98.40 -134.32
 	|---------------------------------- RIGHT TOP
 	|---------------------------------- RIGHT MIDDLE
-	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2228.83 -68.40 -135.32
+	/varset LocalStepArray_${Zone.ShortName}_2[1,5] 2213.83 -96.62 -134.22
 	|---------------------------------- RIGHT MIDDLE
 	|---------------------------------- RIGHT BOTTOM
-	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 2007.83 -32.97 -133.30
+	/varset LocalStepArray_${Zone.ShortName}_2[1,6] 1983.36 -75.24 -132.90
 	|---------------------------------- RIGHT BOTTOM
 	|---------------------------------- MAIN CYCLE ABOVE
 	
@@ -1893,7 +1914,7 @@ Sub DoSwarmPull_MainLoop_Bigger
 	|---------------------------------- PrCamp	
 	
 	|---------------------------------- PrCamp-1
-	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 1805.40 21.48 -138.13
+	/varset LocalStepArray_${Zone.ShortName}_2[1,8] 1821.42 7.47 -133.12
 	|---------------------------------- PrCamp-1
 	
 	|---------------------------------- PrCamp-2 (Signets)
@@ -1940,7 +1961,7 @@ Sub NavToLoc(int Y,int X,int Z)
 			/if (${CheckBots}) /call GroupManaChk
 			/if (${CheckBots}) /call GroupEndChk
 			/call GMCheck
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
 				/call DoSinglePull
@@ -1953,7 +1974,7 @@ Sub NavToLoc(int Y,int X,int Z)
 			/if (${Me.Combat} && !${Me.XTarget}) /squelch /target clear
 			/delay 10
 		} else {
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
 				/call DoSinglePull
@@ -1988,20 +2009,20 @@ Sub NavToLoc2(int Y,int X,int Z)
 			/if (${CheckBots}) /call GroupManaChk
 			/if (${CheckBots}) /call GroupEndChk
 			/call GMCheck
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/popcustom 13 5 ---> GOT AGGRO ON ROUTE <---
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc						
-				/target ${Me.XTarget[1].ID}
+				/target id ${NearestSpawn[npc radius 35 targetable].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
 					|------  CALL GROUP TO ME To FIGHT
 					/call Group2Me
 					|------  CALL GROUP TO ME To FIGHT	
 					/if (${Target.ID}) /face
 					/squelch /attack on
-					/call DoClearTargets
-					/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+					/call DoClearTargets			
+					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
 					/doevents
 					/if (${UseClickDamage}) /call Clickies_Damage
 				}
@@ -2015,23 +2036,23 @@ Sub NavToLoc2(int Y,int X,int Z)
 			/if (${Me.Combat} && !${Me.XTarget}) /squelch /target clear
 			/delay 10
 		} else {
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/popcustom 13 5 ---> GOT AGGRO ON ROUTE <---
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
-				/target ${Me.XTarget[1].ID}
+				/target id ${NearestSpawn[npc radius 35 targetable].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
-				|------  CALL GROUP TO ME To FIGHT
-				/call Group2Me
-				|------  CALL GROUP TO ME To FIGHT					
-				/if (${Target.ID}) /face
-				/squelch /attack on
-				/call DoClearTargets
-				/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
-				/doevents
-				/if (${UseClickDamage}) /call Clickies_Damage
-			}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+					|------  CALL GROUP TO ME To FIGHT
+					/call Group2Me
+					|------  CALL GROUP TO ME To FIGHT					
+					/if (${Target.ID}) /face
+					/squelch /attack on
+					/call DoClearTargets			
+					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+					/doevents
+					/if (${UseClickDamage}) /call Clickies_Damage
+				}
 			} else {
 				/if (${CheckBots}) /call GroupDeathChk
 			}
@@ -2061,22 +2082,22 @@ Sub NavToLoc3(int Y,int X,int Z)
 			/if (${CheckBots}) /call GroupManaChk
 			/if (${CheckBots}) /call GroupEndChk
 			/call GMCheck
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL DoSinglePull NavToLoc
 				|------  CALL GROUP TO ME To FIGHT
 				/call Group2Me
 				|------  CALL GROUP TO ME To FIGHT				
-				/target ${Me.XTarget[1].ID}
+				/target id ${NearestSpawn[npc radius 35 targetable].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
-				/if (${Target.ID}) /face
-				/squelch /attack on
-				/call Group2Me
-				/call DoClearTargets
-				/doevents
-				/if (${UseClickDamage}) /call Clickies_Damage
-			}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+					/if (${Target.ID}) /face
+					/squelch /attack on
+					/call Group2Me
+					/call DoClearTargets
+					/doevents
+					/if (${UseClickDamage}) /call Clickies_Damage
+				}
 			} else {
 				/if (${Debugging}) /echo WaitNav Moving ELSE
 				/if (${CheckBots}) /call GroupDeathChk
@@ -2087,22 +2108,22 @@ Sub NavToLoc3(int Y,int X,int Z)
 			/if (${Me.Combat} && !${Me.XTarget}) /squelch /target clear
 			/delay 10
 		} else {
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
 				/if (${Debugging}) /echo CALL FARM STUFF NavToLoc II
 				|------  CALL GROUP TO ME To FIGHT
 				/call Group2Me
 				|------  CALL GROUP TO ME To FIGHT				
-				/target ${Me.XTarget[1].ID}
+				/target id ${NearestSpawn[npc radius 35 targetable].ID}
 				/if (${Spawn[id ${Target.ID}].Distance} > 30) /squelch /nav id ${Target.ID}
-				/if (${Me.XTarget} && ${Spawn[id ${Target.ID}].Distance} < 30) {
-				/if (${Target.ID}) /face
-				/squelch /attack on
-				/call Group2Me
-				/call DoClearTargets
-				/doevents
-				/if (${UseClickDamage}) /call Clickies_Damage
-			}
+				/if (${Spawn[id ${Target.ID}].Distance} < 30) {
+					/if (${Target.ID}) /face
+					/squelch /attack on
+					/call Group2Me
+					/call DoClearTargets
+					/doevents
+					/if (${UseClickDamage}) /call Clickies_Damage
+				}
 			} else {
 				/if (${CheckBots}) /call GroupDeathChk
 			}
@@ -2141,10 +2162,10 @@ Sub WaitNav(NavTargetID)
 			/call SetLoc
 			/call CheckStuck
 			/call GMCheck
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
-				/varset NavTargetID ${Me.XTarget}
-				/if (${Debugging}) /echo CALL FARM STUFF WaitNAV
+				/varset NavTargetID ${NearestSpawn[npc radius 35 targetable].ID}
+				/if (${Debugging}) /echo CALL DoSinglePull WaitNav I
 				/call DoSinglePull
 			} else {
 				/if (${Debugging}) /echo \ayWaitNav Moving
@@ -2171,10 +2192,10 @@ Sub WaitNav(NavTargetID)
 			|----------------------------------
 			/delay 10
 		} else {
-			/if (${Me.XTarget}) {
+			/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
 				/if (${Navigation.Active}) /nav stop
-				/e3bcgza /target id ${Me.XTarget}
-				/varset NavTargetID ${Me.XTarget}
+				/e3bcgza /target id ${NearestSpawn[npc radius 35 targetable].ID}
+				/varset NavTargetID ${NearestSpawn[npc radius 35 targetable].ID}
 				/if (${Debugging}) /echo CALL DoSinglePull WaitNav II
 				/call DoSinglePull
 			} else {
@@ -2247,6 +2268,7 @@ Sub Zoning
   /call GMCheck
   /message \ay- Checking for missed corpse(s).
   /if (${Bool[${Spawn[Corpse radius 100]}]}) /message \at+++ \ayLooks like we have a corpse to loot.
+  /if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear
   
 :CheckAgain
   |------------------
@@ -2378,18 +2400,20 @@ Sub Zoning
 	/varset DranikCLootArray[1,33] Ukun Guts
 	/varset DranikCLootArray[1,34] Wiry Rat Whiskers
 	/varset DranikCLootArray[1,35] Stolen Dragorn Clan Insignia
+	/varset DranikCLootArray[1,36] Stuffed Christmas Stocking
+	/varset DranikCLootArray[1,37] Spell: Mana Weave
 	|--------------------------------------------
 	/if (${LootTradeMats}) {
-		/varset DranikCLootArray[1,36] Rhenium Ore
-		/varset DranikCLootArray[1,37] Tungsten Ore
-		/varset DranikCLootArray[1,38] Cobalt Ore
+		/varset DranikCLootArray[1,38] Rhenium Ore
+		/varset DranikCLootArray[1,39] Tungsten Ore
+		/varset DranikCLootArray[1,40] Cobalt Ore
 		|--------------------------------------------
-		/varset DranikCLootArray[1,39] Fine Silk
-		/varset DranikCLootArray[1,40] Superb Silk
-		/varset DranikCLootArray[1,41] Excellent Silk
+		/varset DranikCLootArray[1,41] Fine Silk
+		/varset DranikCLootArray[1,42] Superb Silk
+		/varset DranikCLootArray[1,43] Excellent Silk
 		|--------------------------------------------
-		/varset DranikCLootArray[1,42] Excellent Animal Pelt
-		/varset DranikCLootArray[1,43] Superb Animal Pelt	
+		/varset DranikCLootArray[1,44] Excellent Animal Pelt
+		/varset DranikCLootArray[1,45] Superb Animal Pelt	
 	}
 	|--------------------------------------------
 	/if (${Debugging}) /echo Sub DranikCLootArraySetup Exit
@@ -2774,9 +2798,10 @@ Sub CheckCasting
 		/goto :CheckCastingNow
 		/message \ag-- I am done casting.
 		/delay 1s
+		/if (${Target.ID} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /squelch /target clear
 	}
 	|-------------------------
-
+	
 	/if (${Debugging}) /echo Sub CheckCasting Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -2881,6 +2906,46 @@ Sub CheckGroupClasses
 	|-----------------------------
 
 	/if (${Debugging}) /echo Sub CheckGroupClasses Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckDriverPetStatus
+| --------------------------------------------------------------------------------------------
+Sub CheckDriverPetStatus
+	/if (${Debugging}) /echo Sub CheckDriverPetStatus Entry
+
+	|-----------------------------
+	/if (${Select[${Me.Class.ShortName},PAL,SHD,WAR]} && ${Me.Pet.ID}) {
+		/message ==================================================================
+		/message \ay- I have a pet active.\ax
+		|----------------------------------
+		/if (${Select[${Me.Class.ShortName},PAL,WAR]}) {
+			/message \ay- I can not suspend my pet, dismissing it.		
+			/pet leave
+			/delay 5
+		}
+		|----------------------------------
+		/if (${Me.Class.ShortName.Equal[SHD]}) {
+			/message \ay- Attempting to \am[\awSuspended Minion\am]\ay.\ax	
+			|------------------------------
+			/if (${Me.AltAbilityReady[Suspended Minion]}) {
+				/squelch /alt act 176
+				/call CheckCasting
+				/delay 5
+			} else {
+				/message \ay- I can not suspend my pet, dismissing it.
+				/pet leave			
+				/delay 5
+			}
+			|------------------------------
+		}
+		|----------------------------------
+		/message ==================================================================
+	}
+	|-----------------------------
+
+	/if (${Debugging}) /echo Sub CheckDriverPetStatus Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -3453,14 +3518,16 @@ Sub CheckThings
 	/call CheckMesh
 	/call CheckPlugin MQ2Events
 	/call CheckPlugin MQ2MoveUtils
+	
+	|-------------------------
+	|-- CHECK DRIVER PET STATUS
+	|-------------------------
+	/call CheckDriverPetStatus
+	|-------------------------	
 
-	|----------------------
-	/if (${Bool[${Plugin[MQ2Bucles]}]}) {
-        /squelch /plugin MQ2Bucles unload noauto
-        /message MQ2Bucles detected! This macro doesn't like it! Unloading temporarily ...
-    }
-	|----------------------
-
+	|-------------------------	
+	| Looting Selection Setup
+	|-------------------------	
 	/if (${LootCorpse}) {		
 		/message ==================================================================
 		/message \ay--- \atENABLING\ax \am${MacroName}\ax LOOTING, we will loot corpses.
@@ -3490,6 +3557,7 @@ Sub CheckThings
 		/message \ar--- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
 		/message ==================================================================
 	}
+	|-------------------------	
 
 	|-------------------------
 	|-- CHECK CLASSES SET VARS
