@@ -1,10 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: March 16th, 2026 - 10:02:00 AM
+Last Updated: March 24th, 2026 - 08:51:00 PM
 
-v2.0.1
-
-This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be captured via mono queries.
+v2.0.7
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -19,6 +17,8 @@ This will be updated after Rekka pushes Exposed E3 ini settings to E3Bots to be 
 
 #Event BagsFull "#*#There was no place to put that#*#"
 #Event BagsFull "#*#There are no open slots for the held item in your inventory#*#"
+
+#Event TurboLootDone "#*#${MainLooter} tells the group, '[DONE LOOTING #*#]'#*#"
 
 #define /message "/echo \ay[\atCataKill\ay]\aw "
 
@@ -40,30 +40,51 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-
+	/declare version			string		outer	2.0.7
+	/declare LastUpdated		string		outer	"Last Updated: March 26th, 2026 - 10:02:00 AM"
+	
 	/message ==================================================================
  	/call Declares
-	/message ==================================================================	
-	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking	
-	/message ==================================================================	
-	/delay 3s
+	/message ==================================================================
+	/message \at${MacroName}.mac \aw- \atv${version} \awby \ag Kroaking
+	/message \at${LastUpdated}.
+	/message ==================================================================
+	/delay 2s
+	
+	|----------------
+	/call CheckThings
+	|----------------	
 		
 	|------------------------------------------------------------------------------------------------------
-	/message \ag- BRDMelodyName \ayis set to \at[\ag${BRDMelodyName}\at]\ax
-	/message \ag- BRDTravelSongSlot \ayis set to \at[\ag${BRDTravelSongSlot}\at]\ax
-	/message \ag- CheckBots \ayis set to \at[\ag${CheckBots}\at]\ax
-	/message \ag- DoBurns \ayis set to \at[\ag${DoBurns}\at]\ax
-	/message \ag- LootCorpse \ayis set to \at[\ag${LootCorpse}\at]\ax
-	/message \ag- LootMethod \ayis set to \at[\ag${LootMethod}\at]\ax
-	/message \ag- MouseLock \ayis set to \at[\ag${MouseLock}\at]\ax
-	/message \ag- RepeatMission \ayis set to \at[\ag${RepeatMission}\at]\ax
-	/message \ag- UseClickBuffs \ayis set to \at[\ag${UseClickBuffs}\at]\ax
-	/message \ag- UseClickDamage \ayis set to \at[\ag${UseClickDamage}\at]\ax
-	/message ==================================================================
+	|------------
+	/if (${GrpHasBrdClass}) {
+		/message \ag- BRDMelodyName \ayis set to \am[\at${BRDMelodyName}\am]\ax
+		/message \ag- BRDTravelSongSlot \ayis set to \am[\at${BRDTravelSongSlot}\am]\ax
+	}
+	|------------	
+	/message \ag- UseClickBuffs \ayis set to \am[\at${UseClickBuffs}\am]\ax
+	/message \ag- UseClickDamage \ayis set to \am[\at${UseClickDamage}\am]\ax
+	/message \ag- CheckBots \ayis set to \am[\at${CheckBots}\am]\ax
+	/message \ag- DoBurns \ayis set to \am[\at${DoBurns}\am]\ax
+	/message \ag- RepeatMission \ayis set to \am[\at${RepeatMission}\am]\ax
+	/message \ag- LootCorpse \ayis set to \am[\at${LootCorpse}\am]\ax
+	/message \ag- LootMethod \ayis set to \am[\at${LootMethod}\am]\ax	
 	
 	|--------------------------------------------
-	/if (${MouseLock}) /mouseto ${MouseLocValX}, ${MouseLocValY}
+	/if (${MouseLock}) {
+		/message \ag- MouseLock \ayis set to \am[\at${MouseLock}\am]\ax
+		/message \ag- MouseLock \aoCoordinates: \am[\atX=${MouseLocValX}, Y=${MouseLocValY}\am]\ax
+		/mouseto ${MouseLocValX}, ${MouseLocValY}
+	}
 	|--------------------------------------------	
+	
+	|------------
+	/if (${LootMethod.Equal[TURBOLOOT]})  {
+		/message \ag- TurboLooter \ayis set to \am[\ao${TurboLooter}\am]\ax 
+	}
+	|------------
+	
+	/message ==================================================================
 	
 	|------------------------------------------------------------------------------------------------------
 	/if (${SwarmPull}) {
@@ -75,17 +96,23 @@ Sub Main
 	/if (${SwarmPull} && ${BiggerSwarms})  /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ar${BiggerSwarms}\at]\ar.
 	/if (${SwarmPull} && !${BiggerSwarms}) /message \ar***\at \agBiggerSwarms \arHigh Risk PULLING: \ayis set to \at[\ag${BiggerSwarms}\at]\ar.
 	|------------------------------------------------------------------------------------------------------
+
+	|-------------------------------------------------------------	
+	/if ((${GrpHasENCClass} || ${GrpHasWIZClass}) && ${DoPBAOE}) {
+		/message ==================================================================
+		/message \ar ~ NOTE: \aoWe have \ayPBAE\ao classe(s) in group and \am[\atDoPBAOE\am]\ao is currently \am[\ar${DoPBAOE}\am]\ao.
+		/message \ay ~ PBAE Mob count threshhold is currently at\ao: \am[\at${PBAOE_MobCount}\am]\ax
+		/message ==================================================================	
+		/delay 2s
+	}
+	|-------------------------------------------------------------
 	
 	/message ==================================================================
 	/message \am- LastSwarmed_Step \ayis set to \at[\ag${LastSwarmed_Step}\at]\ax
 	/message \am- CompletedPathTo \ayis set to \at[\ag${CompletedPathTo}\at]\ax
 	/message ==================================================================
 	/message \agGetting things ready, sit back...
-	/delay 3s
-	
-	|----------------
-	/call CheckThings
-	|----------------
+	/delay 2s
 	
 	/message \ayI am currently in \am[\at${Zone.Name}\am]\ay.\ax
 	|--------------
@@ -250,12 +277,11 @@ Sub Main
 | --------------------------------------------------------------------------------------------
 Sub Declares
 	/if (${Debugging}) /echo Sub Declares Entry
-	/declare FarmMob 			string outer
-	/declare PullRange 			int outer
 
 	|==================== DO NOT ALTER THESE VALUES ====================
+	/declare FarmMob 			string outer
+	/declare PullRange 			int outer
 	/declare MacroName			string	outer	CataKill
-	/declare version			string	outer	2.0.1
 	/declare IniFileName		string	outer	${MacroName}_${Me.CleanName}.ini
 	/declare FirstRun			int		outer	0
 
@@ -264,22 +290,20 @@ Sub Declares
 	|--------------------------------------
 
 	/message \ay${IniFileName} is the INI being used.
+	/declare BagsAreFull		bool 	outer FALSE
+	/declare CampX 				int 	outer ${Me.X}
+	/declare CampY 				int 	outer ${Me.Y}
+	/declare CampZ 				int 	outer ${Me.Z}
+	/declare DebugRepeatTimer 	timer 	outer 1s
+	/declare Endmac 			bool 	outer FALSE
+	/declare PBAE_State			bool	outer FALSE
+	/declare PauseForTurboloot	bool 	outer FALSE
+	/declare SitDelay 			timer 	outer 5s
 	/declare Targets 			string 	outer
+	/declare courseCorrection 	timer 	outer 1s
 	/declare myTargetID 		int 	outer 0
 	/declare reportTarget 		timer 	outer 5s
 	/declare startZone 			int 	outer ${Zone.ID}
-	/declare courseCorrection 	timer 	outer 1s
-	/declare CampY 				int 	outer ${Me.Y}
-	/declare CampX 				int 	outer ${Me.X}
-	/declare CampZ 				int 	outer ${Me.Z}
-	/declare DebugRepeatTimer 	timer 	outer 1s
-	/declare SitDelay 			timer 	outer 5s
-	/declare Endmac 			bool 	outer FALSE
-	/declare BagsAreFull		bool 	outer FALSE
-	/declare GrpHasBrdClass		bool	outer FALSE
-	/declare GrpHasRogClass		bool	outer FALSE
-	/declare GrpBrdName			string	outer
-	/declare GrpRogName			string	outer
 	
 	|** SPECIFIC of CataKill.mac/SwarmPull declares **|
 	|----------------------------------------------------------
@@ -328,53 +352,57 @@ Sub Declares
 	|** SPECIFIC of CataKill.mac/PullFarm.mac type declares **|
 
 	/call CheckINI ${IniFileName} General AssistMe bool TRUE
+	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
+	/call CheckINI ${IniFileName} General DoPBAOE bool FALSE
 	/call CheckINI ${IniFileName} General DoRogueSosCoh bool FALSE	
-	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
-	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
-	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
-	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE
+	/call CheckINI ${IniFileName} General GroupNavToMe bool TRUE	
+	/call CheckINI ${IniFileName} General LootCorpse bool FALSE
+	/call CheckINI ${IniFileName} General LootMethod string E3	
 	/call CheckINI ${IniFileName} General LootTradeMats bool FALSE
 	|--------------------------------------
 	/if (${LootTradeMats}) {
-		/declare DranikCLootArray[1,45]	string	outer		
+		/declare DranikCLootArray[1,45]		outer		
 	} else {
 		/declare DranikCLootArray[1,37]	string	outer		
 	}
 	|--------------------------------------
-	/call CheckINI ${IniFileName} General MouseLock bool FALSE
+	/call CheckINI ${IniFileName} General MouseLock bool TRUE
 	/call CheckINI ${IniFileName} General MouseLocValX int 290
 	/call CheckINI ${IniFileName} General MouseLocValY int 550
+	/call CheckINI ${IniFileName} General PBAOE_MobCount int 5
+	/call CheckINI ${IniFileName} General ReclaimDC bool FALSE
+	/call CheckINI ${IniFileName} General RepeatMission bool TRUE
+	/call CheckINI ${IniFileName} General SwarmPull bool FALSE
+	/call CheckINI ${IniFileName} General TurboLooter string ${GrpMainLooter}
 	/call CheckINI ${IniFileName} General UseClickBuffs bool FALSE
 	/call CheckINI ${IniFileName} General UseClickDamage bool FALSE
-	/call CheckINI ${IniFileName} General LootCorpse bool FALSE
-	/call CheckINI ${IniFileName} General ReclaimDC bool FALSE
-	/call CheckINI ${IniFileName} General LootMethod string DCONLY
-
+	|------------------------------------------------------------
 	/declare BRDTravelSong string  outer "Selo's Song of Travel"
 	/call CheckINI ${IniFileName} BardSong BRDTravelSongSlot string 11
 	/call CheckINI ${IniFileName} BardSong BRDMelodyName string base
-
+	|------------------------------------------------------------
 	/call CheckINI ${IniFileName} Pull PullAbility string ReplaceMeWithYourSkill
 	/call CheckINI ${IniFileName} Pull PullAbilityRange int 30
 	/call CheckINI ${IniFileName} Pull PullRequiresLineOfSight bool TRUE
 	/call CheckINI ${IniFileName} Pull UseCastSpells bool FALSE
-
+	|------------------------------------------------------------
 	/call CheckINI ${IniFileName} Endurance MedEndAt int 8
 	/call CheckINI ${IniFileName} Endurance MedEndTill int 100
-
+	|------------------------------------------------------------
 	/call CheckINI ${IniFileName} Mana MedAt int 30
 	/call CheckINI ${IniFileName} Mana MedTill int 100
 	/call CheckINI ${IniFileName} Mana BardMed bool TRUE
-
+	|------------------------------------------------------------
 	/call CheckINI ${IniFileName} Alerts AFKGM bool TRUE
 	/call CheckINI ${IniFileName} Alerts UseBeep bool TRUE
-
+	|------------------------------------------------------------
 	/call CheckIni ${IniFileName} Theme LastSwarmed_Dungeon string NONE
 	/call CheckIni ${IniFileName} Theme LastSwarmed_Step string 1
 	/call CheckIni ${IniFileName} Theme CompletedPathTo bool FALSE
+	|------------------------------------------------------------
 
 	|** End of LDON.mac/PullFarm.mac type declares **|
 
@@ -390,6 +418,7 @@ Sub Declares
 	|** Catacombs of Dranik (Caza) Zones **|
 
 	|** End ZoneID as Variable **|
+	|==================== DO NOT ALTER THESE VALUES ====================
 
 	|-------------------------------
 	/if (${FirstRun}) {
@@ -980,60 +1009,205 @@ Sub CheckExpeditionStatus
 | --------------------------------------------------------------------------------------------
 Sub DoClearTargets
 	/if (${Debugging}) /echo Sub DoClearTargets Entry
-	/if (${Me.XTarget} || (${Target.ID} && ${Target.Type.Equal[npc]})) {
-		|/keypress º
-		|/delay 5
-		/ClearTargets usemytarget
+	
+	/declare i int 	local	0
+
+	|--------------------------------------------------
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]} || (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive})) {
+		/ClearTarget usemytarget
 		/keypress esc
-		/delay 10	
+		/delay 10
 		
-		:gotoloopkeepfighting		
-		/if (${Me.Sitting}) /stand
-		/if (!${Target.ID} && ${Bool[${Spawn[npc radius 35].Aggressive}]}) {
-			/squelch /e3bcgz /nav id ${Me.ID}
-			|/keypress º
-			/delay 5
-			|----------			
-			|/xtarget set 1 ${Me.Name}
-			|/delay 3
-			|/xtarget remove
-			|/delay 3
-			|----------			
+		:gotoloopkeepfighting
+		|------------------------
+		/if (${Me.Sitting} || ${Me.Feigning}) /stand
+		|------------------------
+		
+		|--------------------------------------------------------------------------------------------------
+		|-- Call PBAE_Enabled state detection if we have classe(s) and ${DoPBAOE}
+		|--------------------------------------------------------------------------------------------------
+		/if ((${GrpHasENCClass} || ${GrpHasWIZClass}) && ${DoPBAOE}) {
+			|-------------------------------------
+			/if (!${PBAE_State} && ${Target.ID} && ${Debugging}) {
+				|-- Degub Condition
+				/message ==================================================================
+				/message \ayPBAE_DEBUGGER\ax
+				/message \aoPBAE_State\ay=\am(\ag${PBAE_State}\am)\ao | \aoTargetID\ay=\am(\ag${Target.ID}\am)\ao | \aoTargetDistance\ay=\am(\ag${Target.Distance}\am)\ax
+				/message \aoSpawnCount\ay=\am(\ag${SpawnCount[npc radius 25]}\am)\ao | \aoPBAOE_MobCount\ay=\am(\ag${PBAOE_MobCount}\am)\ao | \aoAggressive\ay=\am(\ag${Bool[${Spawn[npc radius 25].Aggressive}]}\am)\ax
+				/message ==================================================================
+			}
+			|-------------------------------------
+			/call CheckPBAELogic
+		}
+		|--------------------------------------------------------------------------------------------------
+		
+		|------------------------------
+		|-- Dont have target, but aggressive mob near.
+		|------------------------------
+		/if (!${Target.ID} && ${Bool[${Spawn[npc radius 35].Aggressive}]}) {			
+			|-----
+			/if (${Navigation.PathExists[id ${Me.ID}]}) {
+				/squelch /e3bcgz /nav id ${Me.ID}
+			} else {
+				/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
+			}
+			|-----
+			/delay 5			
 			/target id ${NearestSpawn[npc radius 35 targetable].ID}
 			/delay 5
-			/ClearTargets usemytarget
+			/if (${Target.ID}!=0) /message \ayTargetting aggressive mob \aoID: \am[\at${NearestSpawn[npc radius 35 targetable].ID}\am] \aoName: \am[\at${NearestSpawn[npc radius 35 targetable].CleanName}\am]\ay and attacking !\ax
+			/ClearTarget usemytarget
 			/keypress esc
 			/delay 10			
+		}
+		|------------------------------
+		
+		|------------------------------
+		|-- Have a target, kill it.
+		|------------------------------
+		/if (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive}) {				
+			|-----
+			/if (${Navigation.PathExists[id ${Me.ID}]}) {
+				/squelch /e3bcgz /nav id ${Me.ID}
+			} else {
+				/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
 			}
-		/if ((${Target.ID} && ${Target.Type.Equal[npc]}) && !${Me.Combat}) {
-			/squelch /e3bcgz /nav id ${Me.ID}
-			|/keypress º
+			|-----
 			/delay 5
-			/ClearTargets usemytarget
+			/if (${Target.ID}!=0) /message \ayAttacking targeted mob \aoID: \am[\at${Target.ID}\am] \aoName: \am[\at${Target.CleanName}\am]\ay !\ax			
+			/ClearTarget usemytarget
 			/keypress esc
 			/delay 10
+		}
+		|------------------------------
+		
+		|------------------------------
+		|-- RUNNER: Dont have target, Xtarget MOB may be fleeing.
+		|------------------------------
+		/if ((${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) || (${Me.XTarget} && ${Spawn[npc fleeing].ID}) || ${Spawn[npc fleeing].ID}) {
+
+			|------------------------------
+			/if (${Spawn[npc fleeing].ID}) {
+				|-----
+				/if (${Navigation.PathExists[id ${Spawn[npc fleeing].ID}]}) {
+					/squelch /nav id ${Spawn[npc fleeing].ID}
+				} else {
+					/squelch /moveto id ${Spawn[npc fleeing].ID} mdist 10
+				}
+				|-----
+				/delay 5	
+				|-----
+				/if (${Navigation.PathExists[id ${Spawn[npc fleeing].ID}]}) {
+					/squelch /e3bcgz /nav id ${Spawn[npc fleeing].ID}
+				} else {
+					/squelch /e3bcgz /moveto id ${Spawn[npc fleeing].ID} mdist 10
+				}
+				|-----
+				/delay 5			
+				/target id ${Spawn[npc fleeing].ID}
+				/delay 5					
+				/if (${Target.ID}!=0) /message \arFound a \am[\atRandom\am]\ar fleeing mob! \ayTargetting \aoID: \am[\at${Me.XTarget[${i}].ID}\am] \ayName\ao: \am[\at${Me.XTarget[${i}].CleanName}\am]\ay and attacking !\ax
+				/ClearTarget usemytarget
+				/keypress esc
+				/delay 10
 			}
+			|------------------------------
+			
+			|------------------------------
+			|-- Xtarget
+			/if ((${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) || (${Me.XTarget} && ${Spawn[npc fleeing].ID})) {
+				|-----
+				/if (${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) {
+					/message \aoAn XTarget mob is out of range.\ax
+				}
+				|-----
+
+				|-----
+				/if	(${Me.XTarget} && ${Spawn[npc fleeing].ID}) {
+					/message \aoXTarget mob is fleeing.\ax
+				}
+				|-----				
+			
+				|------------------
+				/if	(${Me.XTarget}) {
+					/for i 1 to ${Me.XTargetSlots}
+						/if (${Me.XTarget[${i}].ID}) {					
+							|-----
+							/if (${Navigation.PathExists[id ${Me.XTarget[${i}].ID}]}) {
+								/squelch /nav id ${Me.XTarget[${i}].ID}
+							} else {
+								/squelch /moveto id ${Me.XTarget[${i}].ID}
+							}
+							|-----							
+							/delay 5	
+							|-----
+							/if (${Navigation.PathExists[id ${Me.XTarget[${i}].ID}]}) {
+								/squelch /e3bcgz /nav id ${Me.XTarget[${i}].ID}
+							} else {
+								/squelch /e3bcgz /moveto id ${Me.XTarget[${i}].ID}
+							}
+							|-----			
+							/delay 5			
+							/target id ${Me.XTarget[${i}].ID}
+							/delay 5					
+							/if (${Target.ID}!=0) /message \arFound a \am[\atXTarget\am]\ar fleeing mob! \ayTargetting \aoID: \am[\at${Me.XTarget[${i}].ID}\am] \ayName\ao: \am[\at${Me.XTarget[${i}].CleanName}\am]\ay and attacking !\ax
+							/ClearTarget usemytarget
+							/keypress esc
+							/delay 10
+							/break
+						}
+					/next i
+				}				
+				|------------------
+			}
+			|------------------------------
+		}
+		|------------------------------
+		|-- RUNNER
+		|------------------------------	
+		
+		|------------------------------
+		/if (${Target.Distance} > 20) {
+			|--
+			/if (${Navigation.PathExists[id ${Target.ID}]}) {
+					/squelch /nav id ${Target.ID}
+				} else {
+					/squelch /moveto id ${Target.ID} mdist 10
+			}
+			|--
+			/stick 15
+			|--
+			/if (${Navigation.PathExists[id ${Me.ID}]}) {
+					/squelch /e3bcgz /nav id ${Me.ID}
+				} else {
+					/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
+			}
+			|--
+		}
+		|------------------------------
+		|------------------------------
 		/if (${Target.Type.Find[corpse]}) {
-			/keypress esc
-			}
-		/if (${Target.Distance.Int} > 20) /stick 15
-		|-------------------------------------------------------------------
-        /if (${Target.ID} && ${Me.Combat} && ${Target.Type.Equal[npc]}) {
+			/squelch /target clear
+		}
+		|------------------------------
+			
+		|-------------------------- DO BURNS -----------------------------------------
+        /if (${Target.ID} && ${Me.Combat} && ${Target.Type.Equal[npc]} && ${DoBurns}) {
 			| --- Explosion of Spite
-			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]} && ${DoBurns}) {
+			/if (${SpawnCount[npc radius 50]} >2 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[749]}) {
 				/alt act 749
 				/if (${DoBurns}) /quickburn
 				/if (${DoBurns}) /longburn
 				/delay 20
 				/goto :gotoloopkeepfighting
-				}
+			}
 			| --- Explosion of Hatred
-			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]} && ${DoBurns}) {
+			/if (${SpawnCount[npc radius 50]} >4 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[822]}) {
 				/alt act 822
 				/if (${DoBurns}) /fullburn
 				/delay 20
 				/goto :gotoloopkeepfighting
-				}
+			}
 			| --- Projection of Doom
 			/if (${SpawnCount[npc radius 50]} >6 && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[3215]} && ${DoBurns}) /alt act 3215
 			| --- EpicBurn
@@ -1043,24 +1217,65 @@ Sub DoClearTargets
 			| --- Chattering Bones
 			/if (${Cast.Ready[3822]} && ${DoBurns}) /alt act 3822
 			| --- Encroaching Darkness
-			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]} && ${DoBurns}) {
+			/if ((${SpawnCount[npc radius 50]} <3) && ${Spawn[npc radius 50].Aggressive} && ${Cast.Ready[826]}) {
 				/squelch /e3bcgz /nav target
 				/assistme
 				/alt act 826
-				}
+			}
             /delay 2s
             /if (${Debugging}) /echo DEBUG: KillMob: Combat Loop
 
             /goto :gotoloopkeepfighting
         }
-		|-------------------------------------------------------------------
-		/if (${Me.XTarget} || (${Target.ID} && ${Target.Type.Equal[npc]})) /goto :gotoloopkeepfighting
+		|-------------------------- DO BURNS -----------------------------------------
+		|--------------------------------------------------
+		/if	(${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]} || (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive})) /goto :gotoloopkeepfighting
+		|--------------------------------------------------
 	}
+	|--------------------------------------------------
+	
+	|------------------------
+	|-- FORCE TURN OFF PBAE
+	|------------------------
+	/if (${PBAE_State}) {			
+			/varset PBAE_State FALSE
+			/message \aoPBAE is currently \am[\arENABLED\am]\ao, disabling \am[\atPBAE\am]\ao now.\ax
+			/pbaeoff
+	}
+	|------------------------
+	
+	|------------------------
 	/delay 20
 	|-----------------------------------
 	/if (!${Me.XTarget} || (!${Target.ID} && !${Bool[${Spawn[npc radius 50].Aggressive}]})) /squelch /target clear
 	|-----------------------------------
 	/if (${Debugging}) /echo Sub DoClearTargets Exit
+/return
+| --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------
+| SUB: CheckPBAELogic
+| --------------------------------------------------------------------------------------------
+Sub CheckPBAELogic
+	/if (${Debugging}) /echo CheckPBAELogic Sub Entry
+	
+	|-- TURN ON PBAE
+	/if (!${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}>=${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {
+		/varset PBAE_State TRUE
+		/message \aoPBAE is currently \am[\agDISABLED\am]\ao, enabling \am[\atPBAE\am]\ao now.\ax
+		/popcustom 13 2 -> PBAE ON <
+		/pbaeon
+	}
+	|-- TURN OFF PBAE
+	/if (${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}<${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {			
+		/varset PBAE_State FALSE
+		/message \aoPBAE is currently \am[\arENABLED\am]\ao, disabling \am[\atPBAE\am]\ao now.\ax
+		/popcustom 2 2 -> PBAE OFF <-
+		/pbaeoff
+	}
+	|-------------------------------------------------------------
+
+	/if (${Debugging}) /echo CheckPBAELogic Sub Exit
 /return
 | --------------------------------------------------------------------------------------------
 
@@ -2267,8 +2482,8 @@ Sub Zoning
 
   /call GMCheck
   /message \ay- Checking for missed corpse(s).
-  /if (${Bool[${Spawn[Corpse radius 100]}]}) /message \at+++ \ayLooks like we have a corpse to loot.
-  /if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear
+  /if (${Bool[${Spawn[Corpse radius 75]}]}) /message \at+++ \ayLooks like we have a corpse to loot.
+  /if (${Target.ID} && (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]})) /squelch /target clear
   
 :CheckAgain
   |------------------
@@ -2278,7 +2493,7 @@ Sub Zoning
   /hidecorpse none
   |------------------
 
-  /squelch /target radius 100 corpse
+  /squelch /target radius 75 corpse
   /delay 5 ${Target.ID}
 	
 	|----------------------------------------------
@@ -2306,15 +2521,16 @@ Sub Zoning
 		/call CheckCasting
 		/delay 5 !${Me.Moving}	
 		|--------------------------------------------------------------------------------
-		/if (!${Me.XTarget} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[DCONLY]}) /call LootMob_DC_Only
-		/if (!${Me.XTarget} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[E3]}) /call LootMob_E3
+		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[DCONLY]}) /call LootMob_DC_Only
+		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[E3]}) /call LootMob_E3
+		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[Turbo]}) /call LootMob_Turboloot
 		/delay 5
 		|--------------------------------------------------------------------------------
 	}
     /squelch /target clear
 	|-------------------------
 	
-    /if (${Bool[${Spawn[Corpse radius 100]}]}) /goto :CheckAgain
+    /if (${Bool[${Spawn[Corpse radius 75]}]}) /goto :CheckAgain
   } else {
     /message \ar+++ \ayNo corpse(s) found to loot.\ax
   }
@@ -2322,6 +2538,56 @@ Sub Zoning
 	/if (${Debugging}) /echo Sub CheckForCorpses Exit
   /return
 | --------------------------------------------------------------------------------------------
+
+
+
+	
+
+
+
+| --------------------------------------------------------------------------------------------
+|SUB: LootMob_Turboloot -- Let Turboloot Looting handle your corpseloot.
+| --------------------------------------------------------------------------------------------
+  Sub LootMob_Turboloot
+	/if (${Debugging}) /echo Sub LootMob_Turboloot Entry
+
+	|---------------------------------------
+	| -- Let TURBOLOOT Looting System handle this !
+	|---------------------------------------
+	/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]}) {
+		/message \at+++ \ayHaving \am[\ag${MainLooter}\am]\ay loot via \am[\aoTurboLoot\am]\ay.
+		/squelch /e3bct ${MainLooter} /mac TurboLoot
+		/varset PauseForTurboloot TRUE
+		|---------------------------
+		/while (${PauseForTurboloot}) {
+			/delay 5
+			/doevents
+		}
+		|---------------------------
+		/message \at+++ \ayDone having \am[\ag${MainLooter}\am]\ay loot via \am[\aoTurboLoot\am]\ay.
+	} else {
+		/call DoClearTargets
+	}
+	|---------------------------------------
+	| -- Let TURBOLOOT Looting System handle this !
+	|---------------------------------------
+	|--------------------------------------------
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 50].Aggressive}]}) /call DoClearTargets
+	|--------------------------------------------
+	/doevents
+	|-------------------------------------------------------------------------------------
+	
+	/if (${Debugging}) /echo Sub LootMob_Turboloot Exit
+  /return
+| --------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
 
 | --------------------------------------------------------------------------------------------
 |SUB: LootMob_E3 -- Let E3 Looting handle your corpseloot.
@@ -2336,23 +2602,23 @@ Sub Zoning
 	/lootn never
 	
 	|---------------------------------------
-	| -- Let E3 Looting System handle this !
+	| -- HANDLE CONDITIONALY !
 	|---------------------------------------
-	/if (!${Me.XTarget}) {
+	 /if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]}) {
 		/message \at+++ \ayLooting - \ag Corpse\ao: \ar[\am${Target.CleanName}\ar] \agID\ao: \ar[\am${Target.ID}\ar].
 		/loot
 	} else {
 		/call DoClearTargets
 	}
 	|---------------------------------------
-	| -- Let E3 Looting System handle this !
+	| -- HANDLE CONDITIONALY !
 	|---------------------------------------
 	|--------------------------------------------
-	/if (${Me.XTarget}) /call DoClearTargets
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 50].Aggressive}]}) /call DoClearTargets
 	|--------------------------------------------
 	/doevents
 	|-------------------------------------------------------------------------------------
-	/if (!${Me.XTarget} && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
+	/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]}  && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
 	|-------------------------------------------------------------------------------------
 
 	/if (${Debugging}) /echo Sub LootMob_E3 Exit
@@ -2441,7 +2707,7 @@ Sub Zoning
 	|---------------------------------------
 	| -- HANDLE CONDITIONALY !
 	|---------------------------------------
-	/if (!${Me.XTarget}) {
+	 /if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]}) {
 		/message \at+++ \ayLooting - \ag Corpse\ao: \ar[\am${Target.CleanName}\ar] \agID\ao: \ar[\am${Target.ID}\ar].
 		/loot
 	} else {
@@ -2517,7 +2783,7 @@ Sub Zoning
 			|--------------------------------------------------------
 		/doevents
 		|--------------------------------------------
-		/if (${Me.XTarget}) /call DoClearTargets
+		 /if (${Me.XTarget} || ${Bool[${Spawn[npc radius 50].Aggressive}]}) /call DoClearTargets
 		|--------------------------------------------
 		/next LootSlot
 		|---------------------------------------
@@ -2526,11 +2792,11 @@ Sub Zoning
     /notify LootWnd DoneButton leftmouseup
     /delay 1s !${Window[LootWnd].Open}
 	|--------------------------------------------
-    /if (${Me.XTarget}) /call DoClearTargets
+    /if (${Me.XTarget} || ${Bool[${Spawn[npc radius 50].Aggressive}]}) /call DoClearTargets
     |--------------------------------------------
     /doevents
     |-------------------------------------------------------------------------------------
-    /if (!${Me.XTarget} && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
+    /if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]}  && !${Me.Casting.ID} && !${Me.Moving}) /call CheckIfBagsFull
     |-------------------------------------------------------------------------------------
 
   /if (${Debugging}) /echo Sub LootMob_DC_Only Exit
@@ -2877,34 +3143,39 @@ Sub ResetBard
 Sub CheckGroupClasses
 	/if (${Debugging}) /echo Sub CheckGroupClasses Entry
 
-	/declare y 					int 	local	0
+	/declare i 					int 	local	0
+	/declare targetClasses string local BRD,BER,BST,CLR,DRU,ENC,MAG,MNK,NEC,PAL,RNG,ROG,SHD,SHM,WAR,WIZ
 
-	|-----------------------------
-	/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]} || ${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {			
-		/message ==================================================================
-	}	
-	|-----------------------------
-	/for y 1 to ${Group.Members}
-		|/echo Checking class for ${Group.Member[${y}].CleanName}.
-		/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]} || ${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {						
-			/if (${Group.Member[${y}].Class.ShortName.Equal[ROG]}) {
-				/varset GrpHasRogClass TRUE
-				/varset GrpRogName ${Group.Member[${y}].CleanName}
-				/message \ay+ \agThe group has a \aoROGUE\ay - \am[\at${GrpRogName}\am]\ag.
+	|--/message ==================================================================
+	/message \ayChecking current Group Members \am[\at${Group.Members}\am]\ay against all classes.\ax
+	|-- /message \ayClasses to be checked\ao:\ax
+	|-- /message \am[\at${targetClasses}\am]\ax
+
+	|---------------------------------------------------
+	|---- CREATE DEFAULT CLASS VARIABLES FOR ALL CLASSES
+	|---------------------------------------------------
+    /for i 0 to ${Group.Members}
+		
+		|--/message ==================================================================
+        |-- /message \ayChecking \am[\at${Group.Member[${i}].CleanName}\am]\ao: \am[\ay${Group.Member[${i}].Class.ShortName}\am] \awItemSelect- \am[\ay${Select[${Group.Member[${i}].Class.ShortName},${targetClasses}]}\am] 
+		|------------
+		/if (${Select[${Group.Member[${i}].Class.ShortName},${targetClasses}]}) {
+            |-- /message Found a target class: \am[\ay${Group.Member[${i}].Class.ShortName}\am] - \am[\ay${Group.Member[${i}].CleanName}\am] \awin \am[\aytargetClasses\am]\ax.
+			/if (!${Defined[GrpHas${Group.Member[${i}].Class.ShortName}Class]}) {
+				|-- /message \ar--- \agMaking a \am[\atGrpHas${Group.Member[${i}].Class.ShortName}Class\am]\ag DECLARE for class \am[\at${Group.Member[${i}].Class.ShortName}\am]\ax
+				/declare GrpHas${Group.Member[${i}].Class.ShortName}Class	bool	outer	TRUE			
+				|-- /message \ar--- Created\ao:\aw /declare GrpHas${Group.Member[${i}].Class.ShortName}Class	bool	outer	TRUE
 			}
-			/if (${Group.Member[${y}].Class.ShortName.Equal[BRD]}) {
-				/varset GrpHasBrdClass TRUE
-				/varset GrpBrdName ${Group.Member[${y}].CleanName}
-				/message \ay+ \agThe group has a \aoBARD\ay - \am[\at${GrpBrdName}\am]\ag.
-			}		
-		}		
-	/next y
-	|-----------------------------
-	/if (${GrpHasRogClass} || ${GrpHasBrdClass}) {			
-		/message ==================================================================
-	}	
-	|-----------------------------
-
+			/message \ay+ \agThe group has a \am[\ao${Group.Member[${i}].Class.ShortName}\am] - \am[\at${Group.Member[${i}].CleanName}\am]\ag.
+		}
+		|------------
+	/next i
+    }
+	/message ==================================================================
+	|---------------------------------------------------
+	|---- CREATE DEFAULT CLASS VARIABLES FOR ALL CLASSES
+	|---------------------------------------------------	
+	
 	/if (${Debugging}) /echo Sub CheckGroupClasses Exit
 /return
 | --------------------------------------------------------------------------------------------
@@ -3508,16 +3779,49 @@ Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
 | --------------------------------------------------------------------------------------------
 Sub CheckThings
 	/if (${Debugging}) /echo Sub CheckThings Entry
+	
+
+	/message \ayChecking running status of \am[\atxfix.lua\am]\ao:\ax
+
+	|--------
+	/if (!${Lua.Script[xfix].Status.Equal[Running]}) {
+		/message \atTrying to start xfix.lua...\ax
+		/lua run xfix
+		/delay 2s
+	}
+	|--------
+
+	|--------
+	/if (!${Lua.Script[xfix].Status.Equal[Running]}) {
+		/message \arxfix.lua can not be started, and it IS needed, exiting !\ax
+		/message ==================================================================
+		/end
+	} else {
+		/message \agxfix is already active.
+		/message ==================================================================
+	}
+	|--------
 
 	/grouproles set ${Me.CleanName} 1
 	/delay 5
 	/grouproles set ${Me.CleanName} 2
 	/delay 5
-
+	
+	|---------------------------------
+	| Plugin check - Enabble / disable
+	|---------------------------------
+	|---------
+	/if (${Bool[${Plugin[MQ2Bucles]}]}) {
+        /squelch /plugin MQ2Bucles unload noauto
+        /message MQ2Bucles detected! This macro doesn't like it! Unloading temporarily ...
+    }
+	|---------
 	/call CheckPlugin MQ2Nav
 	/call CheckMesh
-	/call CheckPlugin MQ2Events
+	/call CheckPlugin MQ2Events	
 	/call CheckPlugin MQ2MoveUtils
+	
+	|---------------------------------
 	
 	|-------------------------
 	|-- CHECK DRIVER PET STATUS
@@ -3970,6 +4274,12 @@ Sub Event_Too_Far
 	/doevents flush Too_Far
 /return
 |--------------------------------------------------------
+|--------------------------------------------------------
+Sub Event_TurboLootDone
+	/varset PauseForTurboloot FALSE
+	/doevents flush TurboLootDone
+/return
+|-------------------------------------------------------
 |--------------------------------------------------------
 Sub Event_BagsFull
 	/varset BagsAreFull TRUE
