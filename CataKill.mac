@@ -2,7 +2,7 @@
 CataKill.mac - by Kroaking
 Last Updated: March 30th, 2026 - 06:24:00 AM
 
-v2.0.9
+v2.1.0
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -41,8 +41,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.0.9
-	/declare LastUpdated		string		outer	"Last Updated: March 30th, 2026 - 06:24:00 AM"
+	/declare version			string		outer	2.1.0
+	/declare LastUpdated		string		outer	"Last Updated: March 30th, 2026 - 09:11:00 AM"
 	
 	/message ==================================================================
  	/call Declares
@@ -1054,13 +1054,13 @@ Sub DoClearTargets
 		|------------------------------
 		/if (!${Target.ID} && ${Bool[${Spawn[npc radius 35].Aggressive}]}) {			
 			|-----
-			/if (${Navigation.PathExists[id ${Me.ID}]}) {
+			/if (!${Target.ID} && ${Navigation.PathExists[id ${Me.ID}]}) {
 				/squelch /e3bcgz /nav id ${Me.ID}
-			} else {
+			} else /if (!${Target.ID} && !${Navigation.PathExists[id ${Me.ID}]}) {
 				/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
 			}
 			|-----
-			/delay 5			
+			/delay 5
 			/target id ${NearestSpawn[npc radius 35 targetable].ID}
 			/delay 5
 			|------------
@@ -1080,14 +1080,17 @@ Sub DoClearTargets
 		|------------------------------
 		/if (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive}) {				
 			|-----
-			/if (${Navigation.PathExists[id ${Me.ID}]}) {
-				/squelch /e3bcgz /nav id ${Me.ID}
-			} else {
-				/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
+			/if (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive} && (${Target.Distance}>20) && ${Navigation.PathExists[id ${Target.ID}]}) {
+				/squelch /nav id ${Spawn[npc fleeing].ID}
+				/delay 5
+				/squelch /e3bcgz /nav id ${Spawn[npc fleeing].ID}
+			} else /if (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive} && (${Target.Distance}>20) && !${Navigation.PathExists[id ${Target.ID}]}) {
+				/squelch /moveto id ${Spawn[npc fleeing].ID} mdist 10
+				/delay 5
+				/squelch /e3bcgz /moveto id ${Spawn[npc fleeing].ID} mdist 10
 			}
-			|-----			
-			/delay 5
 			|-----
+			/delay 5
 			|------------
 			/if (${CurrentTarget}!=${Target.ID}) {
 				/if (${Target.ID}!=0) /message \ayTargetting aggressive mob \aoID: \am[\at${NearestSpawn[npc radius 35 targetable].ID}\am] \aoName: \am[\at${NearestSpawn[npc radius 35 targetable].CleanName}\am]\ay and attacking !\ax
@@ -1106,13 +1109,13 @@ Sub DoClearTargets
 		/if ((${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) || (${Me.XTarget} && ${Spawn[npc fleeing].ID}) || ${Spawn[npc fleeing].ID}) {
 
 			|------------------------------
-			/if (${Spawn[npc fleeing].ID}) {
+			/if (${Spawn[npc fleeing].ID}) {	
 				|-----
-				/if (${Navigation.PathExists[id ${Spawn[npc fleeing].ID}]}) {
+				/if (${Spawn[npc fleeing].ID} && (${Spawn[npc fleeing].Distance}>20) && ${Navigation.PathExists[id ${Spawn[npc fleeing].ID}]}) {
 					/squelch /nav id ${Spawn[npc fleeing].ID}
 					/delay 5
 					/squelch /e3bcgz /nav id ${Spawn[npc fleeing].ID}
-				} else {
+				} else /if (${Spawn[npc fleeing].ID} && (${Spawn[npc fleeing].Distance}>20) && !${Navigation.PathExists[id ${Spawn[npc fleeing].ID}]}) {
 					/squelch /moveto id ${Spawn[npc fleeing].ID} mdist 10
 					/delay 5
 					/squelch /e3bcgz /moveto id ${Spawn[npc fleeing].ID} mdist 10
@@ -1151,13 +1154,13 @@ Sub DoClearTargets
 				|------------------
 				/if	(${Me.XTarget}) {
 					/for i 1 to ${Me.XTargetSlots}
-						/if (${Me.XTarget[${i}].ID}) {					
+						/if (${Me.XTarget[${i}].ID}) {	
 							|-----
-							/if (${Navigation.PathExists[id ${Me.XTarget[${i}].ID}]}) {
+							/if (${Me.XTarget} && (${Me.XTarget[${i}].Distance}>20) && ${Navigation.PathExists[id ${Me.XTarget[${i}].ID}]}) {
 								/squelch /nav id ${Me.XTarget[${i}].ID}
 								/delay 5
 								/squelch /e3bcgz /nav id ${Me.XTarget[${i}].ID}
-							} else {
+							} else /if (${Me.XTarget} && (${Me.XTarget[${i}].Distance}>20) && !${Navigation.PathExists[id ${Me.XTarget[${i}].ID}]}) {
 								/squelch /moveto id ${Me.XTarget[${i}].ID}
 								/delay 5
 								/squelch /e3bcgz /moveto id ${Me.XTarget[${i}].ID}
