@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: March 30th, 2026 - 06:24:00 AM
+Last Updated: March 31st, 2026 - 06:07:00 PM
 
-v2.1.0
+v2.1.1
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -18,6 +18,8 @@ v2.1.0
 
 #Event BagsFull "#*#There was no place to put that#*#"
 #Event BagsFull "#*#There are no open slots for the held item in your inventory#*#"
+
+#event NavMeshReload "#*#Could not locate destination on navmesh#*#"
 
 #event TurboLootDone "#*# tells the group, '[DONE LOOTING]'#*#"
 
@@ -41,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.1.0
-	/declare LastUpdated		string		outer	"Last Updated: March 30th, 2026 - 09:11:00 AM"
+	/declare version			string		outer	2.1.1
+	/declare LastUpdated		string		outer	"Last Updated: March 31st, 2026 - 06:07:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -63,13 +65,13 @@ Sub Main
 		/message \ag- BRDTravelSongSlot \ayis set to \am[\at${BRDTravelSongSlot}\am]\ax
 	}
 	|------------	
-	/message \ag- UseClickBuffs \ayis set to \am[\at${UseClickBuffs}\am]\ax
-	/message \ag- UseClickDamage \ayis set to \am[\at${UseClickDamage}\am]\ax
 	/message \ag- CheckBots \ayis set to \am[\at${CheckBots}\am]\ax
 	/message \ag- DoBurns \ayis set to \am[\at${DoBurns}\am]\ax
-	/message \ag- RepeatMission \ayis set to \am[\at${RepeatMission}\am]\ax
 	/message \ag- LootCorpse \ayis set to \am[\at${LootCorpse}\am]\ax
-	/message \ag- LootMethod \ayis set to \am[\at${LootMethod}\am]\ax	
+	/message \ag- LootMethod \ayis set to \am[\at${LootMethod}\am]\ax
+	/message \ag- RepeatMission \ayis set to \am[\at${RepeatMission}\am]\ax
+	/message \ag- UseClickBuffs \ayis set to \am[\at${UseClickBuffs}\am]\ax
+	/message \ag- UseClickDamage \ayis set to \am[\at${UseClickDamage}\am]\ax	
 	
 	|--------------------------------------------
 	/if (${MouseLock}) {
@@ -161,9 +163,12 @@ Sub Main
 	}
 	|------------------------------------------------------------------------------
 
-
 	| --- MAIN ------------------------------------------------------------------------------
 	:mainloop	
+	|---------
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets
+	|---------
+	
 	|--------------------------------------------
 	|----------------------	 IF IN CATACOMB-C
 	|--------------------------------------------
@@ -188,7 +193,8 @@ Sub Main
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
 			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
-				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+				/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets
+				/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 				|------------------------------------------
 				/if (!${CompletedPathTo}) {
 					/call DoSwarmPull_PathTo
@@ -224,8 +230,9 @@ Sub Main
 			|-----------------------------------
 			/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 			|-------------------------While
-			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {			
-				/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {	
+				/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets			
+				/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 				/call DoSinglePull
 				/if (${Me.XTarget}) /call DoClearTargets
 				/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -267,6 +274,7 @@ Sub Main
 	/doevents
 	/delay 1s
 	/goto :mainloop
+	| --- MAIN ------------------------------------------------------------------------------
 	
 	/if (${Debugging}) /echo Sub Main Exit
 
@@ -1297,14 +1305,14 @@ Sub CheckPBAELogic
 	|-- TURN ON PBAE
 	/if (!${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}>=${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {
 		/varset PBAE_State TRUE
-		/message \aoPBAE is currently \am[\agDISABLED\am]\ao, enabling \am[\atPBAE\am]\ao now.\ax
+		/message \aoPBAE is currently \am[\agDISABLED\am]\ao: ~ \am[\arENABLING\am]\ao ~ \am[\atPBAE\am]\ao now.\ax
 		/popcustom 13 2 -> PBAE ON <
 		/pbaeon
 	}
 	|-- TURN OFF PBAE
 	/if (${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}<${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {			
 		/varset PBAE_State FALSE
-		/message \aoPBAE is currently \am[\arENABLED\am]\ao, disabling \am[\atPBAE\am]\ao now.\ax
+		/message \aoPBAE is currently \am[\arENABLED\am]\ao: ~ \am[\agDISABLING\am]\ao ~ \am[\atPBAE\am]\ao now.\ax
 		/popcustom 2 2 -> PBAE OFF <-
 		/pbaeoff
 	}
@@ -1623,7 +1631,7 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		}
 		|-----------------------------------------------
 		| Before we go to next step ...   ECheck if we should loot Corpses.	
-		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1788,7 +1796,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		}
 		|-----------------------------------------------
 		| Before we go to next step ...   ECheck if we should loot Corpses.	
-		/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+		/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
@@ -1814,7 +1822,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 	|----------------------------------------------------------------
 	|-- Clear the camp location of any corpses before the next cycle.
 	|----------------------------------------------------------------
-	/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+	/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 	|----------------------------------------------------------------
 
 	|------------------
@@ -2272,7 +2280,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 					/if (${Target.ID}) /face
 					/squelch /attack on
 					/call DoClearTargets			
-					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+					/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 					/doevents
 					/if (${UseClickDamage}) /call Clickies_Damage
 				}
@@ -2299,7 +2307,7 @@ Sub NavToLoc2(int Y,int X,int Z)
 					/if (${Target.ID}) /face
 					/squelch /attack on
 					/call DoClearTargets			
-					/if (${LootCorpse} && !${Me.XTarget}) /call CheckForCorpses
+					/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 					/doevents
 					/if (${UseClickDamage}) /call Clickies_Damage
 				}
@@ -2558,7 +2566,7 @@ Sub Zoning
 		|--------------------------------------------------------------------------------
 		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[DCONLY]}) /call LootMob_DC_Only
 		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[E3]}) /call LootMob_E3
-		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[Turbo]}) /call LootMob_Turboloot
+		/if (!${Me.XTarget} && !${Bool[${Spawn[npc radius 50].Aggressive}]} && !${Me.Casting.ID} && !${Me.Moving} && ${LootMethod.Equal[TURBOLOOT]}) /call LootMob_Turboloot
 		/delay 5
 		|--------------------------------------------------------------------------------
 	}
@@ -3806,7 +3814,6 @@ Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
 Sub CheckThings
 	/if (${Debugging}) /echo Sub CheckThings Entry
 	
-
 	/message \ayChecking running status of \am[\atxfix.lua\am]\ao:\ax
 
 	|--------
@@ -3827,11 +3834,15 @@ Sub CheckThings
 		/message ==================================================================
 	}
 	|--------
-
+	
+	|-----------------------
+	|-- SEET GROUP ROLES ---
+	|-----------------------
 	/grouproles set ${Me.CleanName} 1
 	/delay 5
 	/grouproles set ${Me.CleanName} 2
 	/delay 5
+	|-----------------------
 	
 	|---------------------------------
 	| Plugin check - Enabble / disable
@@ -3846,7 +3857,6 @@ Sub CheckThings
 	/call CheckMesh
 	/call CheckPlugin MQ2Events	
 	/call CheckPlugin MQ2MoveUtils
-	
 	|---------------------------------
 	
 	|-------------------------
@@ -3864,19 +3874,23 @@ Sub CheckThings
 		/message ==================================================================		
 		/if (${LootMethod.Equal[DCONLY]}) {
 			/squelch /lootoff
-			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot [\atDiamond Coin\ay] and \arHIGH VALUE ITEMS \am(\ao>=\at${MinItemValue}\am)\ay.\ax
+			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot\ax
+			/message \ay    [\atDiamond Coin\ay] and \arHIGH VALUE ITEMS \am(\ao>=\at${MinItemValue}\am)\ay.\ax
 			|------------------------------------------------
+			|--------------
+			/if (${LootTradeMats}) {
+				/message \ay--- \ag Loot Tradeskill Materials set to [TRUE]
+			} else {
+				/message \ay--- \ar Loot Tradeskill Materials set to [FALSE]
+			}
+			|--------------
 		}  
 		/if (${LootMethod.Equal[E3]}) {
 			/squelch /looton
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \am${LootMethod}\ax settings.
 			/message \ay    [ If configured in your \am${LootMethod}\ax config files. \ag("Loot Settings.ini")\ax ]
 		}
-		/if (${LootTradeMats}) {
-			/message \ay--- \ag Loot Tradeskill Materials set to [TRUE]
-		} else {
-			/message \ay--- \ar Loot Tradeskill Materials set to [FALSE]
-		}		
+		
 		/if (${LootMethod.Equal[TURBOLOOT]}) {
 			/squelch /lootoff
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \am${LootMethod}\ax settings.
@@ -4314,6 +4328,15 @@ Sub Event_Too_Far
 	/doevents flush Too_Far
 /return
 |--------------------------------------------------------
+|--------------------------------------------------------
+  Sub Event_NavMeshReload
+	/message \agReloading navmesh for zone: \ay(\am${Zone.Name}\ay)\ag on all toons.
+	/squelch /e3bcgza /nav reload
+	/call BackUp
+	/delay 1s
+    /doevents flush NavMeshReload
+  /return  
+|-------------------------------------------------------- 
 |--------------------------------------------------------
 Sub Event_TurboLootDone
 	/message \at+ \am[\ag${TurboLooter}\am]\ay has finished looting.
