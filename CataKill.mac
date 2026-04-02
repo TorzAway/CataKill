@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: March 31st, 2026 - 06:07:00 PM
+Last Updated: April 2nd, 2026 - 05:48:00 PM
 
-v2.1.1
+v2.1.2
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -43,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.1.1
-	/declare LastUpdated		string		outer	"Last Updated: March 31st, 2026 - 06:07:00 PM"
+	/declare version			string		outer	2.1.2
+	/declare LastUpdated		string		outer	"Last Updated: April 2nd, 2026 - 05:48:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -1221,6 +1221,27 @@ Sub DoClearTargets
 			/delay 5
 		}
 		|------------------------------
+
+		|------------------------------
+		| Target LineOfSight Check
+		|------------------------------
+		/if (${Target.ID} && ${Target.Type.Equal[npc]} && ${Target.Aggressive} && !${Target.LineOfSight}) {	
+			/if (${Target.ID}!=0) /message \ayMob \aoID: \am[\at${Target.ID}\am] \ag|\ax \aoName: \am[\at${Target.CleanName}\am]\ay \ag|\ax \aoDistance: \am[\at${Target.Distance}\am]\ay is \ar[NOT IN LINE OF SIGHT]\ay, adjusting group !\ax
+			|---------------------
+			/if (${Navigation.PathExists[id ${Target.ID}]}) {
+					/squelch /nav id ${Target.ID}
+					/delay 2s ${Target.LineOfSight}
+					/squelch /face fast
+					/squelch /e3bcgz /nav id ${Me.ID}					
+				} else {
+					/squelch /moveto id ${Target.ID} mdist 10
+					/delay 2s ${Target.LineOfSight}
+					/squelch /face fast
+					/squelch /e3bcgz /moveto id ${Me.ID} mdist 10
+			}
+			|---------------------
+		}		
+		|------------------------------	
 		
 		|------------------------------
 		/if (${Target.Type.Find[corpse]}) {
@@ -3838,10 +3859,15 @@ Sub CheckThings
 	|-----------------------
 	|-- SEET GROUP ROLES ---
 	|-----------------------
+	/message \aySetting group role(s)\ao:\ax.
+	/message \ayMaking myself \am[\atMain Tank\am]\ay.
 	/grouproles set ${Me.CleanName} 1
 	/delay 5
+	/message \ayMaking myself \am[\atMain Assist\am]\ay.
 	/grouproles set ${Me.CleanName} 2
 	/delay 5
+	/message ==================================================================
+	/delay 2s
 	|-----------------------
 	
 	|---------------------------------
