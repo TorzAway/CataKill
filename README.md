@@ -15,10 +15,9 @@ MQ\Config\CataKill_[ToonName].ini
 InI Setings Explained:
 
 [General]
+AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 --- 
 Debugging=FALSE - (Turn Debugging On/Off) - [DO NOT ALTER OR EDIT THIS]
----
-AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 ---
 CheckBots=TRUE - (Turn to TRUE/FALSE to Enable/Disable group Mana and Endurance checking)
 ---
@@ -27,6 +26,10 @@ DoBurns=FALSE - (Turn to TRUE/FALSE to Enable/Disable calls for burns if overwhe
 DoRogueSosCoh=TRUE - (Turn to TRUE/FALSE to Enable/Disable having your rogue SOS and COH you to top of zone.)
 ---
 DoInvis=TRUE - (Turn to TRUE/FALSE to Enable/Disable calls for CheckInvis in Dranik)
+---
+DoPBAOE=FALSE - (Turn to TRUE/FALSE to Enable/Disable calls for PBAE if WIZ or ENC in group.)
+---
+PBAOE_MobCount=5 - (Number of mobs to activate PBAE on)
 ---
 SwarmPull=FALSE - (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
 ---
@@ -46,7 +49,10 @@ LootCorpse=TRUE - (Turn to TRUE to Loot corpses)
 ---
 ReclaimDC=TRUE - (Turn to TRUE to reclaim Diamond Coin)
 ---
-LootMethod=DCONLY - (OPTIONS: DCONLY to loot Diamond COin and HIGH VALUE stackable items / E3 to have E# system handle all looting)
+RepeatMission=TRUE - ( Reget mission  when it epies or camp to Marrs if not.)
+---
+LootMethod=DCONLY - (OPTIONS: DCONLY to loot Diamond Coin and HIGH VALUE stackable items / E3 to have E3 system handle all looting / 
+TURBOLOOT to use Turboloot system.)
 ---
 ---
 [Camp]
