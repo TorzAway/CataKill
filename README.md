@@ -15,6 +15,7 @@ MQ\Config\CataKill_[ToonName].ini
 InI Setings Explained:
 
 [General]
+--- 
 AssistMe=TRUE - [DO NOT ALTER OR EDIT THIS]
 --- 
 Debugging=FALSE - (Turn Debugging On/Off) - [DO NOT ALTER OR EDIT THIS]
