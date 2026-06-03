@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: May 10th, 2026 - 08:26:00 PM
+Last Updated: May 23rd, 2026 - 04:00:00 PM
 
-v2.1.8
+v2.2.0
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -43,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.1.8
-	/declare LastUpdated		string		outer	"Last Updated: May 10th, 2026 - 08:26:00 PM"
+	/declare version			string		outer	2.2.0
+	/declare LastUpdated		string		outer	"Last Updated: May 23rd, 2026 - 04:00:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -192,7 +192,7 @@ Sub Main
 			|-----------------------------------
 			/if (!${Me.Combat} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckExpeditionStatus
 			|-------------------------While
-			/while (${InADungeon}==1) && ${DranikCExpedition}==1) {
+			/while (${InADungeon}==1 && ${DranikCExpedition}==1) {
 				/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets
 				/if (${LootCorpse} && !${Me.XTarget} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /call CheckForCorpses
 				|------------------------------------------
@@ -777,8 +777,10 @@ Sub GotoRecruiter
 		|---------------
 		/if (!${Defined[Recruiter]}) {
 			/declare Recruiter string outer Grand Historian Rygua
-			/declare RecruiterLoc string outer ${Spawn[${Recruiter}].Y} ${Spawn[${Recruiter}].X} ${Spawn[${Recruiter}].Z}
+			/declare RecruiterLoc string outer 0 0 0
 		}
+		|--- Always refresh loc in case spawn was not visible at declare time or is stale
+		/varset RecruiterLoc ${Spawn[${Recruiter}].Y} ${Spawn[${Recruiter}].X} ${Spawn[${Recruiter}].Z}
 		|---------------
 		|/removelev
 		|----------------------------------------------
@@ -991,6 +993,15 @@ Sub CheckExpeditionStatus
 		/call CheckInADungeon
 		/if (${DranikCExpedition}==0 && ${InADungeon}==1) /goto :WaitTillIGetBooted
 	}
+	|-----------------------------------------------------------------------
+
+	|-----------------------------------------------------------------------
+	|--- Wait for zone to finish loading after being booted to Dranik
+	|-----------------------------------------------------------------------
+	/message \ay - Waiting for zone to finish loading after being booted...\ax
+	/delay 5s
+	/call CheckInADungeon
+	/call CheckHaveDranikCExpedition
 	|-----------------------------------------------------------------------
 
 	|-----------------------------------------------------------------------
@@ -3143,7 +3154,7 @@ Sub CheckCasting
 Sub PCnGMCheck
 /if (${Debugging}) /echo Sub PCnGMCheck Entry
 
-/if (${Spawn[gm].ID} && ${AFKGM}) {
+/if (${Spawn[gm].ID} && (${Zone.ID}==${RuinedCityofDranik}) && ${AFKGM}) {
 	/message \ar WARNING GM nearby!
 	/if (${UseBeep}) /beep
 	|------------------------------------------------
@@ -3151,7 +3162,7 @@ Sub PCnGMCheck
 	|------------------------------------------------
 }
 
-/if ((${SpawnCount[pc]}>${Math.Calc[${Group.Members}+1]}) && ${AFKPC}) {
+/if ((${SpawnCount[pc radius 500 nopcnogroup]}>0) && (${Zone.ID}==${RuinedCityofDranik}) && ${AFKPC}) {
 	/message \ar WARNING PC's IN ZONE!
 	/if (${UseBeep}) /beep
 	|------------------------------------------------
@@ -4315,7 +4326,7 @@ Sub ReclaimAltDC
 			/call AutoSell_Loot_SupplyAgent
 			/delay 1s
 		} else {
-			message ==================================================================
+			/message ==================================================================
 			/message \ar +++ Your bags are full and you can not summon a \ay[\atResupply Agent\ay]\ar to AutoSell.\ax
 			/message \ar --- DISABLING ${MacroName} LOOTING, YOU WILL NOT LOOT CORPSES !
 			/message ==================================================================
