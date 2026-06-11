@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: June 3rd, 2026 - 09:01:00 PM
+Last Updated: June 10th, 2026 - 07:35:00 PM
 
-v2.2.2
+v2.2.3
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -21,7 +21,7 @@ v2.2.2
 
 #event NavMeshReload "#*#Could not locate destination on navmesh#*#"
 
-#event TurboLootDone "#*# tells the group, '[DONE LOOTING]'#*#"
+#event TurboLootDone "#*# tells the group, '[DONE LOOTING#*#]'#*#"
 
 #define /message "/echo \ay[\atCataKill\ay]\aw "
 
@@ -43,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.2
-	/declare LastUpdated		string		outer	"Last Updated: June 3rd, 2026 - 09:01:00 PM"
+	/declare version			string		outer	2.2.3
+	/declare LastUpdated		string		outer	"Last Updated: June 10th, 2026 - 07:35:00 PM"
 	
 	/message ==================================================================
  	/call Declares
