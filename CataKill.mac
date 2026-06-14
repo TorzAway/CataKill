@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: June 10th, 2026 - 07:35:00 PM
+Last Updated: June 14th, 2026 - 02:19:00 PM
 
-v2.2.3
+v2.2.4
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -43,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.3
-	/declare LastUpdated		string		outer	"Last Updated: June 10th, 2026 - 07:35:00 PM"
+	/declare version			string		outer	2.2.4
+	/declare LastUpdated		string		outer	"Last Updated: June 14th, 2026 - 02:19:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -3187,8 +3187,12 @@ Sub PC_CheckMode
 
 /if (${UseBeep}) /beep
 /message [WaitForZonePCs] Crowded — ${SpawnCount[pc]} PCs (waiting for < ${Math.Calc[${Group.Members}+1]})...
-/delay 10s
-/if (${SpawnCount[pc]}>${Math.Calc[${Group.Members}+1]}) /goto :WaitForLowPopulation
+
+/while (${SpawnCount[pc radius 500 nopcnogroup]}>${Math.Calc[${Group.Members}+1]}) {
+	/if (${UseBeep}) /beep
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets	
+	/delay 3s	
+}
 
 :ResumePC
 /message [WaitForZonePCs] Clear — ${SpawnCount[pc]} PCs. Continuing.
@@ -3208,8 +3212,12 @@ Sub GM_CheckMode
 
 /if (${UseBeep}) /beep
 /message [WaitForNoGM] HEY !!! — GM IS IN ZONE !!!)...
-/delay 10s
-/if (${Spawn[gm].ID}) /goto :WaitForNoGM
+
+/while (${Spawn[gm].ID}) {
+	/if (${UseBeep}) /beep	
+	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets	
+	/delay 3s
+}
 
 :ResumeGM
 /message [WaitForNoGM] Clear — NO GM. Continuing.
