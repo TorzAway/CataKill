@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: June 14th, 2026 - 02:19:00 PM
+Last Updated: July 14th, 2026 - 11:14:00 AM
 
-v2.2.4
+v2.2.5
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -43,8 +43,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.4
-	/declare LastUpdated		string		outer	"Last Updated: June 14th, 2026 - 02:19:00 PM"
+	/declare version			string		outer	2.2.5
+	/declare LastUpdated		string		outer	"Last Updated: July 14th, 2026 - 11:14:00 AM"
 	
 	/message ==================================================================
  	/call Declares
@@ -4015,11 +4015,23 @@ Sub CheckThings
 			|--------------
 			/message \ag--- Seting up \am[\aoDRANIK LOOT ARRAY\am] \ag- \am[\at${DranikCLootArray.Size}\am]\ag - items for \am[\aoDCONLY\am]\ag. 
 			/call DranikCLootArraySetup			
+			|--------------------------------------------------
+			/if (${Lua.Script[turbo].Status.Equal[Running]}) {
+				/message \ao--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) DISABLING TURBOLOOT LUA.
+				/lua stop turbo
+			}						
+			|--------------------------------------------------			
 		}  
 		/if (${LootMethod.Equal[E3]}) {
 			/squelch /looton
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \am${LootMethod}\ax settings.
 			/message \ay    [ If configured in your \am${LootMethod}\ax config files. \ag("Loot Settings.ini")\ax ]
+			|--------------------------------------------------
+			/if (${Lua.Script[turbo].Status.Equal[Running]}) {
+				/message \ao--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) DISABLING TURBOLOOT LUA.
+				/lua stop turbo
+			}						
+			|--------------------------------------------------
 		}
 		
 		/if (${LootMethod.Equal[TURBOLOOT]}) {
