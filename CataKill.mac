@@ -1,12 +1,14 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: July 14th, 2026 - 11:14:00 AM
+Last Updated: July 17th, 2026 - 04:05:00 PM
 
-v2.2.5
+v2.2.6
 
 ****************************************************************************************************************|
 /squelch /log on
 #chat group
+
+#include Turbo.inc
 
 #Event Catacomb_A "#*#Should you come across a dragorn known as Dragorn Marshal Greshka#*#"
 #Event Catacomb_B "#*#Should you come across a noc known as Elite Overlord Vijaz#*#"
@@ -43,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.5
-	/declare LastUpdated		string		outer	"Last Updated: July 14th, 2026 - 11:14:00 AM"
+	/declare version			string		outer	2.2.6
+	/declare LastUpdated		string		outer	"Last Updated: July 17th, 2026 - 04:05:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -4018,6 +4020,8 @@ Sub CheckThings
 			|--------------------------------------------------
 			/if (${Lua.Script[turbo].Status.Equal[Running]}) {
 				/message \ao--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) DISABLING TURBOLOOT LUA.
+				/call TurboMain off
+				/delay 5
 				/lua stop turbo
 			}						
 			|--------------------------------------------------			
@@ -4029,6 +4033,8 @@ Sub CheckThings
 			|--------------------------------------------------
 			/if (${Lua.Script[turbo].Status.Equal[Running]}) {
 				/message \ao--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) DISABLING TURBOLOOT LUA.
+				/call TurboMain off
+				/delay 5
 				/lua stop turbo
 			}						
 			|--------------------------------------------------
