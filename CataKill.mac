@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: July 17th, 2026 - 04:05:00 PM
+Last Updated: July 29th, 2026 - 11:18:00 AM
 
-v2.2.6
+v2.2.7
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.6
-	/declare LastUpdated		string		outer	"Last Updated: July 17th, 2026 - 04:05:00 PM"
+	/declare version			string		outer	2.2.7
+	/declare LastUpdated		string		outer	"Last Updated: July 29th, 2026 - 11:18:00 AM"
 	
 	/message ==================================================================
  	/call Declares
@@ -1591,6 +1591,10 @@ Sub TargetShortest
 Sub SwarmPullStepMove_1(string SpawnPull_Step)
 	/declare x 						int 	local 	${SpawnPull_Step}
 	/declare TempSpawnPull_Loc		string 	local	NULL
+	/declare mStrLoc				string	local	NULL
+	/declare mNavLocY				int		local	NULL
+	/declare mNavLocX				int		local	NULL
+	/declare SpawnsAtStep			int		local	NULL
 
 	/if (${Debugging}) /echo Sub SwarmPullStepMove_1 Entry
 	/if (${Debugging}) /echo SpawnPull_Loc=(${SpawnPull_Loc}) | SpawnPull_Step=(${SpawnPull_Step})
@@ -1609,6 +1613,21 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 			/delay 10
 		}
 		|-----------------------------
+
+		|------------------------------------------
+		/varset mNavLocY ${TempSpawnPull_Loc.Arg[1, ]}
+		/varset mNavLocX ${TempSpawnPull_Loc.Arg[2, ]}
+		|-------------------------
+		/if (${mNavLocY}>=0) {
+            /varset mStrLoc ${mNavLocX} ${mNavLocY}
+        } else {
+            /varset mStrLoc (${mNavLocX} ${mNavLocY})
+        }
+		 |-------------------------
+		/varset SpawnsAtStep ${SpawnCount[npc loc ${mNavLocX} ${mNavLocY} radius 100]}
+		|/echo SpawnsAtStep=(${SpawnsAtStep})
+		|/echo  mStrLoc=(${mStrLoc}) | mNavLocY=(${mNavLocY}) | mNavLocYX(${mNavLocX})
+		|------------------------------------------
 
 		|------------------------------------------
 		/if (!${Me.XTarget} && ${CheckBots}) {
@@ -1636,35 +1655,47 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
 		/if (${TempSpawnPull_Loc.Length}>0 && ${DranikCExpedition}==1 && ${InADungeon}==1) {
 			/message \agNext location to Nav to is: \aySTEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] Coordinates: [\am${TempSpawnPull_Loc}\ay]
-			|--------------------------------------------------------------
-			|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
-			|--------------------------------------------------------------
-			/if (!${Me.Combat} && !${Me.XTarget} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
-				|----------------------------------------------
-				|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
-				|----------------------------------------------
-				/squelch /nav loc ${TempSpawnPull_Loc}
-				/delay 7
-				/squelch /e3bcgza /nav loc ${TempSpawnPull_Loc}					
-				|----------------------------------------------
-			}
-			|--------------------------------------------------------------
-			/while (${Navigation.Active}) {
-				/call SetLoc
-				/call CheckStuck
+			|-----------------------------------------------------------------------------------------------------------------------------
+			/if (${SpawnsAtStep}>=1) {
+				/message \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] has \at*\ay[\ar${SpawnsAtStep}\ay]\at* \ayspawns, \agKILL THEM ALL\ax \ao!!!\ax
+				|--------------------------------------------------------------
+				|/echo \agARRAY RETURNED DATA for step \ay[${x}]\ag: TempSpawnPull_Loc=(\am${TempSpawnPull_Loc})
+				|--------------------------------------------------------------
+				/if (!${Me.Combat} && !${Me.XTarget} && (${InADungeon}==1) && (${DranikCExpedition}==1)) {
+					|----------------------------------------------
+					|-- Just nav to loc, using NavToLoc function will cause you to engage mobs along the path !
+					|----------------------------------------------
+					/squelch /nav loc ${TempSpawnPull_Loc}
+					/delay 7
+					/squelch /e3bcgza /nav loc ${TempSpawnPull_Loc}					
+					|----------------------------------------------
+				}
+				|--------------------------------------------------------------
+				/while (${Navigation.Active}) {
+					/call SetLoc
+					/call CheckStuck
+					/delay 5
+				}
+				/squelch /e3bcgz /nav id ${Me.ID}
 				/delay 5
+				|----------------------------------------------------------
+
+				|-------------------------------------------------------------------------------------------------------
+				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+				|-------------------------------------------------------------------------------------------------------
+				/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+				/call IniChange "Theme" "LastSwarmed_Step" ${x}
+				|-------------------------------------------------------------------------------------------------------
+			} else {
+				/message \ao - STEP: \ay[\am${x}\ay] of \ay[\am${LocalStepArray_${Zone.ShortName}_1.Size}\ay] has [\at${SpawnsAtStep}\ay] spawns, \arSKIPPING\ax \ao!!!\ax
+				|-------------------------------------------------------------------------------------------------------
+				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
+				|-------------------------------------------------------------------------------------------------------
+				/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
+				/call IniChange "Theme" "LastSwarmed_Step" ${x}
+				|-------------------------------------------------------------------------------------------------------
 			}
-			/squelch /e3bcgz /nav id ${Me.ID}
-			/delay 5
-			|----------------------------------------------------------
-
-			|-------------------------------------------------------------------------------------------------------
-			|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
-			|-------------------------------------------------------------------------------------------------------
-			/call IniChange "Theme" "LastSwarmed_Dungeon" ${Zone.ShortName}
-			/call IniChange "Theme" "LastSwarmed_Step" ${x}
-			|-------------------------------------------------------------------------------------------------------
-
+			|-----------------------------------------------------------------------------------------------------------------------------
 			|---------------------------------------------------------------
 			| Use the DoClearTargets for SPawnPull system instead, of COMBAT
 			|---------------------------------------------------------------
@@ -2577,8 +2608,8 @@ Sub Zoning
   |------------------
   /if (${MouseLock}) /mouseto ${MouseLocValX}, ${MouseLocValY}
   |------------------
-  |/hidecorpse looted
-  /hidecorpse none
+  /if (${LootMethod.Equal[E3]}) /hidecorpse looted
+  /if (!${LootMethod.Equal[E3]}) /hidecorpse none
   |------------------
 
   /squelch /target radius 75 corpse
