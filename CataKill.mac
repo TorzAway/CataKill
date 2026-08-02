@@ -2662,10 +2662,14 @@ Sub Zoning
     /squelch /target clear
 	|-------------------------
 	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 50].Aggressive}]}) /call DoClearTargets	
-    /if (${Bool[${Spawn[Corpse radius 75]}]}) /goto :CheckAgain
-  } else {
-    /message \ar+++ \ayNo corpse(s) found to loot.\ax
-  }
+
+	|-------------------------------------------
+	/if (${Bool[${Spawn[Corpse radius 100]}]}) {
+		/goto :CheckAgain
+	} else {
+		/message \ar+++ \ayNo corpse(s) found to loot.\ax
+	}
+	|-------------------------------------------
 
 	/if (${Debugging}) /echo Sub CheckForCorpses Exit
   /return
