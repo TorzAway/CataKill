@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: July 29th, 2026 - 11:18:00 AM
+Last Updated: August 12th, 2026 - 10:45:00 AM
 
-v2.2.7
+v2.2.8
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.7
-	/declare LastUpdated		string		outer	"Last Updated: July 29th, 2026 - 11:18:00 AM"
+	/declare version			string		outer	2.2.8
+	/declare LastUpdated		string		outer	"Last Updated: August 12th, 2026 - 10:45:00 AM"
 	
 	/message ==================================================================
  	/call Declares
@@ -68,13 +68,13 @@ Sub Main
 	}
 	|------------	
 	/message \ag- CheckBots \ayis set to \am[\at${CheckBots}\am]\ax
+	/message \ag- CheckDriverPet \ayis set to \am[\at${CheckDriverPet}\am]\ax
 	/message \ag- DoBurns \ayis set to \am[\at${DoBurns}\am]\ax
 	/message \ag- LootCorpse \ayis set to \am[\at${LootCorpse}\am]\ax
 	/message \ag- LootMethod \ayis set to \am[\at${LootMethod}\am]\ax
 	/message \ag- RepeatMission \ayis set to \am[\at${RepeatMission}\am]\ax
 	/message \ag- UseClickBuffs \ayis set to \am[\at${UseClickBuffs}\am]\ax
-	/message \ag- UseClickDamage \ayis set to \am[\at${UseClickDamage}\am]\ax	
-	
+	/message \ag- UseClickDamage \ayis set to \am[\at${UseClickDamage}\am]\ax		
 	|--------------------------------------------
 	/if (${MouseLock}) {
 		/message \ag- MouseLock \ayis set to \am[\at${MouseLock}\am]\ax
@@ -365,7 +365,8 @@ Sub Declares
 
 	/call CheckINI ${IniFileName} General AssistMe bool TRUE
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
-	/call CheckINI ${IniFileName} General CheckBots bool TRUE
+	/call CheckINI ${IniFileName} General CheckBots bool TRUE	
+	/call CheckINI ${IniFileName} General CheckDriverPet bool FALSE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
 	/call CheckINI ${IniFileName} General DoPBAOE bool FALSE
@@ -1348,6 +1349,7 @@ Sub CheckPBAELogic
 	|-- TURN ON PBAE
 	/if (!${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}>=${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {
 		/varset PBAE_State TRUE
+		/e3varset PBAOE true
 		/message \aoPBAE is currently \am[\agDISABLED\am]\ao: ~ \am[\arENABLING\am]\ao ~ \am[\atPBAE\am]\ao now.\ax
 		/popcustom 13 2 -> PBAE ON <
 		/pbaeon
@@ -1355,6 +1357,7 @@ Sub CheckPBAELogic
 	|-- TURN OFF PBAE
 	/if (${PBAE_State} && ${Target.ID} && (${Target.Distance}<=25) && (${SpawnCount[npc radius 25]}<${PBAOE_MobCount}) && ${Bool[${Spawn[npc radius 25].Aggressive}]}) {			
 		/varset PBAE_State FALSE
+		/e3varset PBAOE false
 		/message \aoPBAE is currently \am[\arENABLED\am]\ao: ~ \am[\agDISABLING\am]\ao ~ \am[\atPBAE\am]\ao now.\ax
 		/popcustom 2 2 -> PBAE OFF <-
 		/pbaeoff
@@ -4040,7 +4043,7 @@ Sub CheckThings
 	|-------------------------
 	|-- CHECK DRIVER PET STATUS
 	|-------------------------
-	/call CheckDriverPetStatus
+	/if (${CheckDriverPet}) /call CheckDriverPetStatus
 	|-------------------------	
 
 	|-------------------------	
