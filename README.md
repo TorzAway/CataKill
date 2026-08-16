@@ -32,7 +32,7 @@ DoPBAOE=FALSE - (Turn to TRUE/FALSE to Enable/Disable calls for PBAE if WIZ or E
 ---
 PBAOE_MobCount=5 - (Number of mobs to activate PBAE on)
 ---
-SwarmPull=FALSE - (Turn to TRUE for SarmPulls / FALSE for SinglePulls)
+SwarmPull=FALSE - (Turn to TRUE for SwarmPulls / FALSE for SinglePulls)
 ---
 BiggerSwarms=FALSE - (Turn to TRUE for BIGGER SwarmPulls (whole Corridors) / FALSE for standard room pulls)
 ---

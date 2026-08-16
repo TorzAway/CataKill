@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: August 12th, 2026 - 10:45:00 AM
+Last Updated: August 15th, 2026 - 10:25:00 AM
 
-v2.2.8
+v2.2.9
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.8
-	/declare LastUpdated		string		outer	"Last Updated: August 12th, 2026 - 10:45:00 AM"
+	/declare version			string		outer	2.2.9
+	/declare LastUpdated		string		outer	"Last Updated: August 15th, 2026 - 10:25:00 AM"
 	
 	/message ==================================================================
  	/call Declares
