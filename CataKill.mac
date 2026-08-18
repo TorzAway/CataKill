@@ -3187,17 +3187,18 @@ Sub CheckCasting
 	/if (${Debugging}) /echo Sub CheckCasting Entry
 
 	|-------------------------
-	:CheckCastingNow
 	/if (${Me.Casting.ID}) {
+		/message \ayCurrently casting \am(\at${Me.Casting.Name}\am)\ay.
+		:CheckCastingNow	
 		/message \ag-- Waiting to stop casting.
 		/delay 1s !${Me.Casting.ID}
-		/goto :CheckCastingNow
+		/if (${Me.Casting.ID}) /goto :CheckCastingNow
 		/message \ag-- I am done casting.
 		/delay 1s
-		/if (${Target.ID} && !${Bool[${Spawn[npc radius 35].Aggressive}]}) /squelch /target clear
+		/if (${Target.ID} && (!${Me.XTarget} || !${Bool[${Spawn[npc radius 35].Aggressive}]})) /squelch /target clear
 	}
-	|-------------------------
-	
+	|------------------------
+
 	/if (${Debugging}) /echo Sub CheckCasting Exit
 /return
 | --------------------------------------------------------------------------------------------
