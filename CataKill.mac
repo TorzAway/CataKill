@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: August 15th, 2026 - 10:25:00 AM
+Last Updated: September 19th, 2026 - 05:09:00 PM
 
-v2.2.9
+v2.3.0
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.2.9
-	/declare LastUpdated		string		outer	"Last Updated: August 15th, 2026 - 10:25:00 AM"
+	/declare version			string		outer	2.3.0
+	/declare LastUpdated		string		outer	"Last Updated: September 19th, 2026 - 05:09:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -366,7 +366,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General AssistMe bool TRUE
 	/call CheckINI ${IniFileName} General BiggerSwarms bool FALSE
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE	
-	/call CheckINI ${IniFileName} General CheckDriverPet bool FALSE
+	/call CheckIni ${IniFileName} General CheckDriverPet bool FALSE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
 	/call CheckINI ${IniFileName} General DoPBAOE bool FALSE
@@ -3243,6 +3243,7 @@ Sub PC_CheckMode
 
 /while (${SpawnCount[pc radius 500 nopcnogroup]}>${Math.Calc[${Group.Members}+1]}) {
 	/if (${UseBeep}) /beep
+	/if (${Me.Moving} || ${Nav.Active}) /nav stop
 	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets	
 	/delay 3s	
 }
@@ -3268,6 +3269,7 @@ Sub GM_CheckMode
 
 /while (${Spawn[gm].ID}) {
 	/if (${UseBeep}) /beep	
+	/if (${Me.Moving} || ${Nav.Active}) /nav stop
 	/if (${Me.XTarget} || ${Bool[${Spawn[npc radius 35].Aggressive}]}) /call DoClearTargets	
 	/delay 3s
 }
