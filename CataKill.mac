@@ -4057,6 +4057,7 @@ Sub CheckThings
 		/message \ay--- \atENABLING\ax \am${MacroName}\ax LOOTING, WE WILL LOOT CORPSE(S).
 		/message ==================================================================		
 		/if (${LootMethod.Equal[DCONLY]}) {
+			/e3varset GrpMainLooter NOBODY
 			/e3varset ShouldLoot false
 			/squelch /lootoff
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot\ax
@@ -4081,6 +4082,7 @@ Sub CheckThings
 			|--------------------------------------------------			
 		}  
 		/if (${LootMethod.Equal[E3]}) {
+			/e3varset GrpMainLooter NOBODY
 			/e3varset ShouldLoot true
 			/squelch /looton
 			/message \ay--- \agLOOTING METHOD:\ax (\am${LootMethod}\ax) we will only loot according to \am${LootMethod}\ax settings.
@@ -4114,6 +4116,7 @@ Sub CheckThings
 		/message ==================================================================
 		/delay 3s
 	} else {
+		/e3varset GrpMainLooter NOBODY
 		/e3varset ShouldLoot false
 		/squelch /lootoff
 		/message ==================================================================
