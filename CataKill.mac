@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: November 6th, 2026 - 09:01:00 AM
+Last Updated: November 6th, 2026 - 12:37:00 PM
 
-v2.3.1
+v2.3.2
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.3.1
-	/declare LastUpdated		string		outer	"Last Updated: November 6th, 2026 - 09:01:00 AM"
+	/declare version			string		outer	2.3.2
+	/declare LastUpdated		string		outer	"Last Updated: November 6th, 2026 - 12:37:00 PM"
 	
 	/message ==================================================================
  	/call Declares
@@ -59,7 +59,7 @@ Sub Main
 	|----------------
 	/call CheckThings
 	|----------------	
-		
+			
 	|------------------------------------------------------------------------------------------------------
 	|------------
 	/if (${GrpHasBRDClass}) {
@@ -70,6 +70,7 @@ Sub Main
 	/message \ag- CheckBots \ayis set to \am[\at${CheckBots}\am]\ax
 	/message \ag- CheckDriverPet \ayis set to \am[\at${CheckDriverPet}\am]\ax
 	/message \ag- DoBurns \ayis set to \am[\at${DoBurns}\am]\ax
+	/message \ag- DoEvolve \ayis set to \am[\at${DoEvolve}\am]\ax
 	/message \ag- LootCorpse \ayis set to \am[\at${LootCorpse}\am]\ax
 	/message \ag- LootMethod \ayis set to \am[\at${LootMethod}\am]\ax
 	/message \ag- RepeatMission \ayis set to \am[\at${RepeatMission}\am]\ax
@@ -1713,7 +1714,12 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
-    /next x
+		
+		|--------------------
+		/if (${DoEvolve}) /call TurnOnEvolution
+		|---------------------
+		
+	/next x
 	|----------------------------------------------------------------------------------------------
 
 	|------------------
@@ -1877,6 +1883,11 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 		| Before we go to next step ...   EXIT the loop if we have mission success !
 		|-----------------------------------------------
 		/if (!${Me.Combat} && !${Me.XTarget}) /call CheckExpeditionStatus
+
+		|--------------------
+		/if (${DoEvolve}) /call TurnOnEvolution
+		|---------------------
+	
     /next x
 	|-------------------------------------------------------------------------------------------------------
 
@@ -1963,17 +1974,6 @@ Sub Go2LastSwarmLoc
 	|-----------------------------------------------------------------------
 	|/echo \arGo2LastSwarmLoc: \ay/call SwarmPullStepMove ${LastSwarmed_Step}
 	|-----------------------------------------------------------------------
-
-	|-----------------------------------
-	|- Activate Item Evolution if needed
-	|-----------------------------------
-	/if (${DoEvolve}) {
-		/message ==================================================================
-		/message \ag+\ax \aoACTIVATING \atItem Evolution \ag !!!\ax
-		/message ==================================================================	
-		/e3bcgza /notify InventoryWindow IWEI_AllOnButton leftmouseup
-	}
-	|-----------------------------------
 
 	|-----------------------------------
 	|- Retrieve the last mission results
@@ -4004,8 +4004,12 @@ Sub CheckINI(string IniName,string Section,string Key,string TypeVar,Default)
 Sub CheckThings
 	/if (${Debugging}) /echo Sub CheckThings Entry
 	
+	|--------------------
+	/if (${DoEvolve}) /call TurnOnEvolution
+	|---------------------		
+	
 	/message \ayChecking running status of \am[\atxfix.lua\am]\ao:\ax
-
+	
 	|--------
 	/if (!${Lua.Script[xfix].Status.Equal[Running]}) {
 		/message \atTrying to start xfix.lua...\ax
@@ -4024,7 +4028,7 @@ Sub CheckThings
 		/message ==================================================================
 	}
 	|--------
-	
+
 	|-----------------------
 	|-- SEET GROUP ROLES ---
 	|-----------------------
@@ -4154,6 +4158,25 @@ Sub CheckThings
 
 /return
 | --------------------------------------------------------------------------------------------
+
+| --------------------------------------------------------------------------------------------------
+| SUB: TurnOnEvolution
+| --------------------------------------------------------------------------------------------------
+Sub TurnOnEvolution
+/if (${Debugging}) /echo Sub TurnOnEvolution Entry
+	
+	|-----------------------------------
+	|- Activate Item Evolution if needed
+	|-----------------------------------
+		/message ==================================================================
+		/message \ag+\ax \aoACTIVATING \atItem Evolution \ag !!!\ax
+		/message ==================================================================	
+		/e3bcgza /notify InventoryWindow IWEI_AllOnButton leftmouseup
+	|-----------------------------------
+
+/if (${Debugging}) /echo Sub TurnOnEvolution Exit
+/return
+| --------------------------------------------------------------------------------------------------
 
 | --------------------------------------------------------------------------------------------
 | SUB: CheckMesh  ( Called from CheckThings )
