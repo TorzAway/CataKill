@@ -1,8 +1,8 @@
 |****************************************************************************************************************
 CataKill.mac - by Kroaking
-Last Updated: September 19th, 2026 - 05:09:00 PM
+Last Updated: November 6th, 2026 - 09:01:00 AM
 
-v2.3.0
+v2.3.1
 
 ****************************************************************************************************************|
 /squelch /log on
@@ -45,8 +45,8 @@ Sub Main
 	/declare Announce			bool		outer	FALSE
 	/declare CurrentExpedition 	string		outer	NULL
 	/declare ExpeditionDesc 	string		outer	NULL
-	/declare version			string		outer	2.3.0
-	/declare LastUpdated		string		outer	"Last Updated: September 19th, 2026 - 05:09:00 PM"
+	/declare version			string		outer	2.3.1
+	/declare LastUpdated		string		outer	"Last Updated: November 6th, 2026 - 09:01:00 AM"
 	
 	/message ==================================================================
  	/call Declares
@@ -368,6 +368,7 @@ Sub Declares
 	/call CheckINI ${IniFileName} General CheckBots bool TRUE	
 	/call CheckIni ${IniFileName} General CheckDriverPet bool FALSE
 	/call CheckINI ${IniFileName} General DoBurns bool FALSE
+	/call CheckINI ${IniFileName} General DoEvolve bool FALSE
 	/call CheckINI ${IniFileName} General DoInvis bool TRUE
 	/call CheckINI ${IniFileName} General DoPBAOE bool FALSE
 	/call CheckINI ${IniFileName} General DoRogueSosCoh bool FALSE	
@@ -1679,10 +1680,10 @@ Sub SwarmPullStepMove_1(string SpawnPull_Step)
 					/call CheckStuck
 					/delay 5
 				}
+				|------------------------------
 				/squelch /e3bcgz /nav id ${Me.ID}
 				/delay 5
-				|----------------------------------------------------------
-
+				|------------------------------
 				|-------------------------------------------------------------------------------------------------------
 				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
 				|-------------------------------------------------------------------------------------------------------
@@ -1846,8 +1847,7 @@ Sub SwarmPullStepMove_2(string SpawnPull_Step)
 				|------------------------------
 				/squelch /e3bcgz /nav id ${Me.ID}
 				/delay 5
-				|----------------------------------------------------------
-
+				|------------------------------
 				|-------------------------------------------------------------------------------------------------------
 				|- WRITE: LastSwarmed_Dungeon and LastSwarmed_Step to ini file, to pickup at this point if we break macro.
 				|-------------------------------------------------------------------------------------------------------
@@ -1963,6 +1963,17 @@ Sub Go2LastSwarmLoc
 	|-----------------------------------------------------------------------
 	|/echo \arGo2LastSwarmLoc: \ay/call SwarmPullStepMove ${LastSwarmed_Step}
 	|-----------------------------------------------------------------------
+
+	|-----------------------------------
+	|- Activate Item Evolution if needed
+	|-----------------------------------
+	/if (${DoEvolve}) {
+		/message ==================================================================
+		/message \ag+\ax \aoACTIVATING \atItem Evolution \ag !!!\ax
+		/message ==================================================================	
+		/e3bcgza /notify InventoryWindow IWEI_AllOnButton leftmouseup
+	}
+	|-----------------------------------
 
 	|-----------------------------------
 	|- Retrieve the last mission results
